@@ -48,75 +48,40 @@ std::vector<float> Arm::joints() const {
 //---------------------------------------------------------------------------------------------------------------------
 void Arm::position(Eigen::Vector3f _position) {
     mArmjoints[0] = atan2(_position[1], _position[0]);
-
-    float x = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
-    if(_position[0] < 0){
-        x *= -1;
+ 
+    float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
+    float x = _position[2] - mBaseHeight;
+ 
+    float D = (x*x+y*y-mHumerus*mHumerus-mRadius*mRadius)/(2*mHumerus*mRadius);
+    float auxD = 1 - D*D;
+    if(auxD < 0){
+      auxD = 0;
+      std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
     }
-    float z = _position[2] - mBaseHeight;
-
-    float maxDistance = mHumerus + mRadius -0.01 ;
-    float minDistance = mHumerus - mRadius + 0.01;
-    float targetDistance = sqrt(x*x+z*z);
-    if(targetDistance > maxDistance){
-        Eigen::Vector2f dir = {x, z};
-        dir /= dir.norm();
-        dir *= maxDistance;
-        x = dir[0];
-        z = dir[1];
-    }else if(targetDistance < minDistance){
-        Eigen::Vector2f dir = {x, z};
-        dir /= dir.norm();
-        dir *= minDistance;
-        x = dir[0];
-        z = dir[1];
+ 
+    float theta2a = atan2(sqrt(auxD), D);
+    float theta2b = atan2(-sqrt(auxD), D);
+ 
+    float k1a = mHumerus + mRadius*cos(theta2a);
+    float k2a = mRadius*sin(theta2a);
+    float theta1a = atan2(y,x)-atan2(k2a,k1a);
+ 
+    float k1b = mHumerus + mRadius*cos(theta2b);
+    float k2b = mRadius*sin(theta2b);
+    float theta1b = atan2(y,x)-atan2(k2b,k1b);
+ 
+    float angleDistA = abs(theta1a - mArmjoints[1]) + abs(theta2a - mArmjoints[2]);
+    float angleDistB = abs(theta1b - mArmjoints[1]) + abs(theta2b - mArmjoints[2]);
+ 
+    if(angleDistA < angleDistB){
+        mArmjoints[1] = theta1a;
+        mArmjoints[2] = theta2a;
+    }else{
+        mArmjoints[1] = theta1b;
+        mArmjoints[2] = theta2b;
     }
-
-    float errorAbs = 9999;
-    while(errorAbs > 0.005){
-        cv::Mat display = cv::Mat::zeros(500,500,CV_8UC3);
-        double max = 0.5, min = -0.5;
-
-        Eigen::Matrix2f J;
-        J(0,0) = mHumerus*cos(mArmjoints[1]) + mRadius*cos(mArmjoints[1]+mArmjoints[2]);
-        J(1,0) = -mHumerus*sin(mArmjoints[1]) - mRadius*sin(mArmjoints[1]+mArmjoints[2]);
-        J(0,1) = mRadius*cos(mArmjoints[1]+mArmjoints[2]);
-        J(1,1) = -mRadius*sin(mArmjoints[1]+mArmjoints[2]);
-
-        Eigen::Matrix2f Jinv = J.inverse();
-
-        float xc = mHumerus*sin(mArmjoints[1]) + mRadius*sin(mArmjoints[1]+mArmjoints[2]);
-        float zc = mHumerus*cos(mArmjoints[1]) + mRadius*cos(mArmjoints[1]+mArmjoints[2]);
-
-
-        //float x1 = mHumerus*sin(mArmjoints[1]);
-        //float z1 = mHumerus*cos(mArmjoints[1]);
-        //cv::circle(display, cv::Point((x-min)/max*250,(z-min)/max*250), 3, cv::Scalar(0,0,255),3);
-        //auto p1 = cv::Point((x1-min)/max*250,(z1-min)/max*250);
-        //auto p2 = cv::Point((xc-min)/max*250,(zc-min)/max*250);
-        //cv::line(display, cv::Point(250,250), p1, cv::Scalar(255,0,0),2);
-        //cv::line(display, p1, p2, cv::Scalar(0,255,0),2);
-        //cv::imshow("display", display);
-        //cv::waitKey(30);
-        
-
-        //std::cout << x << "/" << xc << ", " <<z<<"/"<< zc << std::endl;
-
-        Eigen::Vector2f error = {
-            x-xc,
-            z-zc
-        };
-        errorAbs = error.norm();
-        Eigen::Vector2f incAngles = 0.05*(Jinv*error);
-
-        mArmjoints[1] += incAngles[0];
-        mArmjoints[2] += incAngles[1];
-
-        //std::cout << "JOINTS: "<< mArmjoints[1]*180/M_PI << ", " <<mArmjoints[2]*180/M_PI  << std::endl;
-
-        joints(mArmjoints); // send joints to arduino
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
+ 
+    joints(mArmjoints); // send joints to arduino
 }
 
 //---------------------------------------------------------------------------------------------------------------------

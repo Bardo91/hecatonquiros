@@ -11,7 +11,6 @@
 
 class Arm {
 public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     /// Constructor getting authority of serial port.
     Arm(std::string &_port, int _baudrate, int _id = 1);
 
@@ -53,8 +52,8 @@ private:
 	serial::Serial	*mArduinoCom;
     std::vector<float> mArmjoints = std::vector<float>(3);
 
-    Eigen::Matrix4f mT01, mT12, mT23;
-    Eigen::Matrix4f mFinalT;
+    Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23;
+    Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
 
     float   mHome1 = 0*M_PI/180.0,
             mHome2 = 0*M_PI/180.0,
