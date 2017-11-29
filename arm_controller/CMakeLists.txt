@@ -42,7 +42,6 @@ find_package(catkin REQUIRED COMPONENTS
 			geometry_msgs
 			std_msgs
 			roscpp
-			argument_parser
 			)
 
 
