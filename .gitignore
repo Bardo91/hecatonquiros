@@ -3,3 +3,4 @@
 *.lck
 
 *build*
+/cad_models/arm_3_dog/serial_model/OldVersions
