@@ -73,13 +73,13 @@ void Arm::position(Eigen::Vector3f _position) {
     float angleDistA = abs(theta1a - mArmjoints[1]) + abs(theta2a - mArmjoints[2]);
     float angleDistB = abs(theta1b - mArmjoints[1]) + abs(theta2b - mArmjoints[2]);
  
-    if(angleDistA < angleDistB){
+    //if(angleDistA < angleDistB){
         mArmjoints[1] = theta1a;
         mArmjoints[2] = theta2a;
-    }else{
-        mArmjoints[1] = theta1b;
-        mArmjoints[2] = theta2b;
-    }
+    //}else{
+    //    mArmjoints[1] = theta1b;
+    //    mArmjoints[2] = theta2b;
+    //}
  
     joints(mArmjoints); // send joints to arduino
 }
