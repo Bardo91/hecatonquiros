@@ -60,8 +60,8 @@ void Arm::position(Eigen::Vector3f _position) {
     float D = (x*x+y*y-mHumerus*mHumerus-mRadius*mRadius)/(2*mHumerus*mRadius);
     float auxD = 1 - D*D;
     if(auxD < 0){
-      auxD = 0;
-      std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
+        auxD = 0;
+        //std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
     }
  
     float theta2a = atan2(sqrt(auxD), D);
@@ -132,8 +132,8 @@ bool Arm::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_tran
     float D = (x*x+y*y-mHumerus*mHumerus-mRadius*mRadius)/(2*mHumerus*mRadius);
     float auxD = 1 - D*D;
     if(auxD < 0){ // NON REACHABLE POINT
-      std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
-      return false;
+        //std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
+        return false;
     }else{  // REACHABLE POINT
         float theta2a = atan2(sqrt(auxD), D);
 
