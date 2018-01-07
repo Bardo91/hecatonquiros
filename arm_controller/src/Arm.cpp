@@ -12,6 +12,11 @@
 #include <chrono>
 
 //---------------------------------------------------------------------------------------------------------------------
+Arm::Arm() {
+    home();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 Arm::Arm(std::string & _port, int _baudrate, int _id) {
     mArduinoCom = new serial::Serial(_port, _baudrate, serial::Timeout::simpleTimeout(1000));
     mArmId = _id;
@@ -112,6 +117,13 @@ Eigen::Vector3f Arm::position() {
 
 //---------------------------------------------------------------------------------------------------------------------
 bool Arm::checkIk(Eigen::Vector3f _position){
+    std::vector<Eigen::Matrix4f> ts;
+    return checkIk(_position, ts);
+}
+
+
+//---------------------------------------------------------------------------------------------------------------------
+bool Arm::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
     float theta0a = atan2(_position[1], _position[0]);
  
     float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -129,17 +141,44 @@ bool Arm::checkIk(Eigen::Vector3f _position){
         float k2a = mRadius*sin(theta2a);
         float theta1a = atan2(y,x)-atan2(k2a,k1a);
 
-        if( (theta0a>=(-90*M_PI/180) && theta0a<=(90*M_PI/180)) && 
-            (theta1a>=(-90*M_PI/180) && theta1a<=(90*M_PI/180)) && 
-            (theta2a>=(-90*M_PI/180) && theta2a<=(90*M_PI/180)) ){
-            // Perfectly reachable point
-            return true;
-        }
-        else{   
-            // Exceeding some joint max angle
-            return false;
-        }
+        return directKinematic({theta0a, theta1a, theta2a}, _transformations);
     } 
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+bool Arm::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+    Eigen::Matrix4f t01, t12, t23;
+
+    t01 <<	cos(_angles[0]),   0,  sin(_angles[0]),  0,
+            sin(_angles[0]),   0,  -cos(_angles[0]), 0,
+            0,          1,  0,         mBaseHeight,
+            0,          0,  0,         1;
+
+    t12 <<	cos(M_PI/2 + _angles[1]),  -sin(M_PI/2 + _angles[1]),  0,  mHumerus * cos(M_PI/2 + _angles[1]),
+            sin(M_PI/2 + _angles[1]),  cos(M_PI/2 + _angles[1]),  0,  mHumerus * sin(M_PI/2 + _angles[1]),
+            0,                  0,                  1,  0,
+            0,                  0,                  0,  1;
+
+    t23 <<	cos(_angles[2]),  -sin(_angles[2]),  0,   mRadius * cos(_angles[2]),
+            sin(_angles[2]),  cos(_angles[2]),   0,   mRadius * sin(_angles[2]),
+            0,         0,          1,   0,
+            0,         0,          0,   1;
+
+
+    _transformations.push_back(t01);
+    _transformations.push_back(t12);
+    _transformations.push_back(t23);
+
+    if( (_angles[0]>=(-90*M_PI/180) && _angles[0]<=(90*M_PI/180)) && 
+        (_angles[1]>=(-90*M_PI/180) && _angles[1]<=(90*M_PI/180)) && 
+        (_angles[2]>=(-90*M_PI/180) && _angles[2]<=(90*M_PI/180)) ){
+        // Perfectly reachable point
+        return true;
+    }
+    else{   
+        // Exceeding some joint max angle
+        return false;
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -156,45 +195,55 @@ void Arm::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen:
 
 //---------------------------------------------------------------------------------------------------------------------
 void Arm::sendCurrentJoints() {
-    std::string cmd;
-    std::stringstream order;
-    order << "a"<< mArmId << mArmjoints[0]*180.0/M_PI << "," << mArmjoints[1]*180.0/M_PI << "," << mArmjoints[2]*180.0/M_PI << "\r\n";
-    cmd = order.str();
-    mArduinoCom->write(cmd);
+    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+        std::string cmd;
+        std::stringstream order;
+        order << "a"<< mArmId << mArmjoints[0]*180.0/M_PI << "," << mArmjoints[1]*180.0/M_PI << "," << mArmjoints[2]*180.0/M_PI << "\r\n";
+        cmd = order.str();
+        mArduinoCom->write(cmd);
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void Arm::closeClaw(){
-    std::string cmd;
-    std::stringstream order;
-    order << "c"<< mArmId << "c\r\n";
-    cmd = order.str();
-    mArduinoCom->write(cmd);
+    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+        std::string cmd;
+        std::stringstream order;
+        order << "c"<< mArmId << "c\r\n";
+        cmd = order.str();
+        mArduinoCom->write(cmd);
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void Arm::openClaw(){
-    std::string cmd;
-    std::stringstream order;
-    order << "c"<< mArmId << "o\r\n";
-    cmd = order.str();
-    mArduinoCom->write(cmd);
+    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+        std::string cmd;
+        std::stringstream order;
+        order << "c"<< mArmId << "o\r\n";
+        cmd = order.str();
+        mArduinoCom->write(cmd);
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void Arm::stopClaw(){
-    std::string cmd;
-    std::stringstream order;
-    order << "c"<< mArmId << "s\r\n";
-    cmd = order.str();
-    mArduinoCom->write(cmd);
+    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+        std::string cmd;
+        std::stringstream order;
+        order << "c"<< mArmId << "s\r\n";
+        cmd = order.str();
+        mArduinoCom->write(cmd);
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void Arm::actuateWrist(float _actionWrist) {
-    std::string cmd;
-    std::stringstream order;
-    order << "w"<< mArmId << _actionWrist << "\r\n";
-    cmd = order.str();
-    mArduinoCom->write(cmd);
+    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+        std::string cmd;
+        std::stringstream order;
+        order << "w"<< mArmId << _actionWrist << "\r\n";
+        cmd = order.str();
+        mArduinoCom->write(cmd);
+    }
 }

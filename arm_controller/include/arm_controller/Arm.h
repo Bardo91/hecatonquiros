@@ -11,6 +11,9 @@
 
 class Arm {
 public:
+    /// Constructor for virtual usage.
+    Arm();
+
     /// Constructor getting authority of serial port.
     Arm(std::string &_port, int _baudrate, int _id = 1);
 
@@ -40,6 +43,12 @@ public:
     /// Position in cartesian coordinates (meters)
     bool checkIk(Eigen::Vector3f _position);
 
+    /// Position in cartesian coordinates (meters)
+    bool checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations);
+
+    /// Compute DK and check if valid
+    bool directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
+
     //void lastTransformations(Eigen::Matrix4f &_t01, Eigen::Matrix4f &_t12, Eigen::Matrix4f &_t23, Eigen::Matrix4f &_t34);
     void lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2);
 
@@ -52,7 +61,7 @@ private:
     void sendCurrentJoints();
 
 private:
-	serial::Serial	*mArduinoCom;
+	serial::Serial	*mArduinoCom = nullptr;
     std::vector<float> mArmjoints = std::vector<float>(3);
 
     Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23;

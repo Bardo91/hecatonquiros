@@ -14,7 +14,7 @@
 
 bool ArmVis::init(pcl::visualization::PCLVisualizer * _viewer, std::string _folderFiles) {
 	mViewer = _viewer;
-	if (pcl::io::loadPolygonFileSTL(_folderFiles + "/arm_0_top.stl", mBarMesh1) == 0) {
+	if (pcl::io::loadPolygonFileSTL(_folderFiles + "/arm_0_bottom.stl", mBarMesh1) == 0) {
 		PCL_ERROR("Failed to load STL file\n");
 		return false;
 	}
