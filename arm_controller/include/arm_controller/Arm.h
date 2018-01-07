@@ -46,6 +46,12 @@ public:
     /// Position in cartesian coordinates (meters)
     bool checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations);
 
+    /// Position in cartesian coordinates (meters)
+    bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
+
+    /// Position in cartesian coordinates (meters)
+    bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
+
     /// Compute DK and check if valid
     bool directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
 

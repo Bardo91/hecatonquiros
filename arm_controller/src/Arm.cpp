@@ -118,12 +118,25 @@ Eigen::Vector3f Arm::position() {
 //---------------------------------------------------------------------------------------------------------------------
 bool Arm::checkIk(Eigen::Vector3f _position){
     std::vector<Eigen::Matrix4f> ts;
-    return checkIk(_position, ts);
+    std::vector<float> angles;
+    return checkIk(_position, angles, ts);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 bool Arm::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
+    std::vector<float> angles;
+    return checkIk(_position, angles,_transformations);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+bool Arm::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
+    std::vector<Eigen::Matrix4f> ts;
+    return checkIk(_position,_angles, ts);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+bool Arm::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
     float theta0a = atan2(_position[1], _position[0]);
  
     float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -140,8 +153,9 @@ bool Arm::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_tran
         float k1a = mHumerus + mRadius*cos(theta2a);
         float k2a = mRadius*sin(theta2a);
         float theta1a = atan2(y,x)-atan2(k2a,k1a);
+        _angles = {theta0a, theta1a, theta2a};
 
-        return directKinematic({theta0a, theta1a, theta2a}, _transformations);
+        return directKinematic(_angles, _transformations);
     } 
 }
 
