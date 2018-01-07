@@ -37,6 +37,9 @@ public:
 
 	Eigen::Matrix4f pose() const;
 
+    /// Position in cartesian coordinates (meters)
+    bool checkIk(Eigen::Vector3f _position);
+
     //void lastTransformations(Eigen::Matrix4f &_t01, Eigen::Matrix4f &_t12, Eigen::Matrix4f &_t23, Eigen::Matrix4f &_t34);
     void lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2);
 

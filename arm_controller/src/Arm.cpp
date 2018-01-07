@@ -111,6 +111,38 @@ Eigen::Vector3f Arm::position() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+bool Arm::checkIk(Eigen::Vector3f _position){
+    float theta0a = atan2(_position[1], _position[0]);
+ 
+    float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
+    float x = _position[2] - mBaseHeight;
+ 
+    float D = (x*x+y*y-mHumerus*mHumerus-mRadius*mRadius)/(2*mHumerus*mRadius);
+    float auxD = 1 - D*D;
+    if(auxD < 0){ // NON REACHABLE POINT
+      std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
+      return false;
+    }else{  // REACHABLE POINT
+        float theta2a = atan2(sqrt(auxD), D);
+
+        float k1a = mHumerus + mRadius*cos(theta2a);
+        float k2a = mRadius*sin(theta2a);
+        float theta1a = atan2(y,x)-atan2(k2a,k1a);
+
+        if( (theta0a>=(-90*M_PI/180) && theta0a<=(90*M_PI/180)) && 
+            (theta1a>=(-90*M_PI/180) && theta1a<=(90*M_PI/180)) && 
+            (theta2a>=(-90*M_PI/180) && theta2a<=(90*M_PI/180)) ){
+            // Perfectly reachable point
+            return true;
+        }
+        else{   
+            // Exceeding some joint max angle
+            return false;
+        }
+    } 
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 Eigen::Matrix4f Arm::pose() const {
     return Eigen::Matrix4f();
 }
