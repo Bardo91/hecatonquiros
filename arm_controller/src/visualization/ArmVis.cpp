@@ -34,15 +34,15 @@ void ArmVis::draw(Eigen::Matrix4f  _t1, Eigen::Matrix4f  _t2, Eigen::Matrix4f _t
 
 	pcl::PointCloud<pcl::PointXYZ> pctbar1, pctbar2, pctbar3;
 	pcl::fromPCLPointCloud2(mBarMesh1.cloud, pctbar1);
+	for(auto &p: pctbar1) { p.x /=1000; p.y /=1000;  p.z /=1000;}
 	pcl::fromPCLPointCloud2(mBarMesh2.cloud, pctbar2);
+	for(auto &p: pctbar2) { p.x /=1000; p.y /=1000;  p.z /=1000;}
 	pcl::fromPCLPointCloud2(mBarMesh3.cloud, pctbar3);
+	for(auto &p: pctbar3) { p.x /=1000; p.y /=1000;  p.z /=1000;}
 
     pcl::transformPointCloud(pctbar1, pctbar1, _t1);
-	for(auto &p: pctbar1) { p.x /=1000; p.y /=1000;  p.z /=1000;}
 	pcl::transformPointCloud(pctbar2, pctbar2, _t2);
-	for(auto &p: pctbar2) { p.x /=1000; p.y /=1000;  p.z /=1000;}
 	pcl::transformPointCloud(pctbar3, pctbar3, _t3);
-	for(auto &p: pctbar3) { p.x /=1000; p.y /=1000;  p.z /=1000;}
 
     mViewer->addPolygonMesh<pcl::PointXYZ>(pctbar1.makeShared(), mBarMesh1.polygons, "arm_bar1", 0);
     mViewer->addPolygonMesh<pcl::PointXYZ>(pctbar2.makeShared(), mBarMesh2.polygons, "arm_bar2", 0);

@@ -149,19 +149,19 @@ bool Arm::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_tran
 bool Arm::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
     Eigen::Matrix4f t01, t12, t23;
 
-    t01 <<	cos(_angles[0]),   0,  sin(_angles[0]),  0,
-            sin(_angles[0]),   0,  -cos(_angles[0]), 0,
-            0,          1,  0,         mBaseHeight,
+    t01 <<	cos(_angles[0]),  -sin(_angles[0]),  0, 0,
+            sin(_angles[0]),  cos(_angles[0]), 0, 0,
+            0,          0,  1,         mBaseHeight,
             0,          0,  0,         1;
 
-    t12 <<	cos(M_PI/2 + _angles[1]),  -sin(M_PI/2 + _angles[1]),  0,  mHumerus * cos(M_PI/2 + _angles[1]),
-            sin(M_PI/2 + _angles[1]),  cos(M_PI/2 + _angles[1]),  0,  mHumerus * sin(M_PI/2 + _angles[1]),
-            0,                  0,                  1,  0,
+    t12 <<	cos(-M_PI/2 + _angles[1]), 0, sin(-M_PI/2 + _angles[1]), mHumerus * cos(-M_PI/2 + _angles[1]),
+            0,1,0,0,
+            -sin(-M_PI/2 + _angles[1]), 0, cos(-M_PI/2 + _angles[1]),  -mHumerus * sin(-M_PI/2 + _angles[1]),
             0,                  0,                  0,  1;
 
-    t23 <<	cos(_angles[2]),  -sin(_angles[2]),  0,   mRadius * cos(_angles[2]),
-            sin(_angles[2]),  cos(_angles[2]),   0,   mRadius * sin(_angles[2]),
-            0,         0,          1,   0,
+    t23 <<	cos(_angles[2]),  0, sin(_angles[2]),   mRadius * cos(_angles[2]),
+            0,1,0,0,
+            -sin(_angles[2]), 0,  cos(_angles[2]),    -mRadius * sin(_angles[2]),
             0,         0,          0,   1;
 
 
