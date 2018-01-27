@@ -1,9 +1,24 @@
+//---------------------------------------------------------------------------------------------------------------------
+//  HECATONQUIROS
+//---------------------------------------------------------------------------------------------------------------------
+//  Copyright 2018 ViGUS University of Seville
+//---------------------------------------------------------------------------------------------------------------------
+//  Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
+//  and associated documentation files (the "Software"), to deal in the Software without restriction, 
+//  including without limitation the rights to use, copy, modify, merge, publish, distribute, 
+//  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is 
+//  furnished to do so, subject to the following conditions:
 //
+//  The above copyright notice and this permission notice shall be included in all copies or substantial 
+//  portions of the Software.
 //
-//
-//
-//
-//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING 
+//  BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
+//  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES 
+//  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+//  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//---------------------------------------------------------------------------------------------------------------------
+
 
 #include <arm_controller/Arm.h>
 #include <iostream>
@@ -12,31 +27,31 @@
 #include <chrono>
 
 //---------------------------------------------------------------------------------------------------------------------
-Arm::Arm() {
+Arm3DoF::Arm3DoF() {
     home();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Arm::Arm(std::string & _port, int _baudrate, int _id) {
+Arm3DoF::Arm3DoF(std::string & _port, int _baudrate, int _id) {
     mArduinoCom = new serial::Serial(_port, _baudrate, serial::Timeout::simpleTimeout(1000));
     mArmId = _id;
     home();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Arm::Arm(serial::Serial * _serialPort, int _id) {
+Arm3DoF::Arm3DoF(serial::Serial * _serialPort, int _id) {
     mArduinoCom = _serialPort;
     mArmId = _id;
     home();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::home(){
+void Arm3DoF::home(){
   joints({mHome1, mHome2, mHome3});
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::joints(std::vector<float> _q) {
+void Arm3DoF::joints(std::vector<float> _q) {
     mArmjoints[0] = _q[0];
     mArmjoints[1] = _q[1];
     mArmjoints[2] = _q[2];
@@ -44,14 +59,14 @@ void Arm::joints(std::vector<float> _q) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::vector<float> Arm::joints() const {
+std::vector<float> Arm3DoF::joints() const {
     return mArmjoints;
 }
 
 
 #include <opencv2/opencv.hpp>
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::position(Eigen::Vector3f _position) {
+void Arm3DoF::position(Eigen::Vector3f _position) {
     mArmjoints[0] = atan2(_position[1], _position[0]);
  
     float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -90,7 +105,7 @@ void Arm::position(Eigen::Vector3f _position) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Eigen::Vector3f Arm::position() {
+Eigen::Vector3f Arm3DoF::position() {
     float mA0 = mArmjoints[0];
     float mA1 = mArmjoints[1];
     float mA2 = mArmjoints[2];
@@ -116,7 +131,7 @@ Eigen::Vector3f Arm::position() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm::checkIk(Eigen::Vector3f _position){
+bool Arm3DoF::checkIk(Eigen::Vector3f _position){
     std::vector<Eigen::Matrix4f> ts;
     std::vector<float> angles;
     return checkIk(_position, angles, ts);
@@ -124,19 +139,19 @@ bool Arm::checkIk(Eigen::Vector3f _position){
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
+bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
     std::vector<float> angles;
     return checkIk(_position, angles,_transformations);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
+bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
     std::vector<Eigen::Matrix4f> ts;
     return checkIk(_position,_angles, ts);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
     float theta0a = atan2(_position[1], _position[0]);
  
     float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -160,7 +175,7 @@ bool Arm::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::v
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+bool Arm3DoF::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
     Eigen::Matrix4f t01, t12, t23;
 
     t01 <<	cos(_angles[0]),  -sin(_angles[0]),  0, 0,
@@ -196,11 +211,11 @@ bool Arm::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Eigen::Matrix4f Arm::pose() const {
+Eigen::Matrix4f Arm3DoF::pose() const {
     return Eigen::Matrix4f();
 }
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2) {
+void Arm3DoF::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2) {
     position();
     _t0 = mT01;
     _t1 = mT12;
@@ -208,7 +223,7 @@ void Arm::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen:
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::sendCurrentJoints() {
+void Arm3DoF::sendCurrentJoints() {
     if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
         std::string cmd;
         std::stringstream order;
@@ -219,7 +234,7 @@ void Arm::sendCurrentJoints() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::closeClaw(){
+void Arm3DoF::closeClaw(){
     if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
         std::string cmd;
         std::stringstream order;
@@ -230,7 +245,7 @@ void Arm::closeClaw(){
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::openClaw(){
+void Arm3DoF::openClaw(){
     if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
         std::string cmd;
         std::stringstream order;
@@ -241,7 +256,7 @@ void Arm::openClaw(){
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::stopClaw(){
+void Arm3DoF::stopClaw(){
     if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
         std::string cmd;
         std::stringstream order;
@@ -252,7 +267,7 @@ void Arm::stopClaw(){
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm::actuateWrist(float _actionWrist) {
+void Arm3DoF::actuateWrist(float _actionWrist) {
     if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
         std::string cmd;
         std::stringstream order;
