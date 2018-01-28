@@ -29,7 +29,7 @@ namespace hecatonquiros{
         if(_config.sharedSerialPort == nullptr){
             mPort = _config.port;
             mBaudRate = _config.baudrate;
-            mSerialPort = new serial::Serial(mSerialPort, mBaudRate);
+            mSerialPort = new serial::Serial(mSerialPort, mBaudRate, serial::Timeout::simpleTimeout(1000));
         }else{
             mSerialPort = _config.sharedSerialPort;
         }
