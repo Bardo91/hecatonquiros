@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot name="myfirst">
+<robot name="arm4DoF">
    <!-- BASE -->
    <link name="base_link">
       <visual>
          <geometry>
-            <mesh filename="package://arm_description/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://gazebo_simulation/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
          </geometry>
       </visual>
    </link>
@@ -13,7 +13,7 @@
    <link name="arm_0_top">
       <visual>
          <geometry>
-            <mesh filename="package://arm_description/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://gazebo_simulation/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 0 -1.57075" xyz="0 0 0" />
       </visual>
@@ -26,7 +26,7 @@
    <link name="arm_0_bottom">
       <visual>
          <geometry>
-            <mesh filename="package://arm_description/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://gazebo_simulation/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 3.1415 3.1415" xyz="0 0 0" />
       </visual>
@@ -41,7 +41,7 @@
    <link name="arm_1">
       <visual>
          <geometry>
-            <mesh filename="package://arm_description/meshes/arm_1.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://gazebo_simulation/meshes/arm_1.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 0 0" xyz="0 0 0" />
       </visual>
@@ -56,7 +56,7 @@
    <link name="arm_2">
       <visual>
          <geometry>
-            <mesh filename="package://arm_description/meshes/arm_2.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://gazebo_simulation/meshes/arm_2.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 0 0" xyz="0 0 0" />
       </visual>

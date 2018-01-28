@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <launch>
 
   <arg name="model" default=""/>
   <arg name="gui" default="true" />
-  <arg name="rvizconfig" default="$(find arm_description)/rviz/arm_description_config.rviz" />
+  <arg name="rvizconfig" default="$(find gazebo_simulation)/rviz/arm_description_config.rviz" />
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
   <param name="use_gui" value="$(arg gui)"/>
