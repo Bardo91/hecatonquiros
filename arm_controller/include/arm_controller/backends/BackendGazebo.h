@@ -18,3 +18,21 @@
 //  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
+
+
+#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
+#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
+
+#include <arm_controller/backends/Backend.h>
+
+namespace hecatonquiros{
+    class BackendGazebo: public Backend{
+    public:
+        virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
+        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false);
+
+    private:
+        BackendGazebo(){}
+        virtual bool init(const Config &_config);
+    };
+}

@@ -18,3 +18,39 @@
 //  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
+
+
+#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDARDUINO_H_
+#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDARDUINO_H_
+
+#include <arm_controller/backends/Backend.h>
+#include <serial/Serial.h>
+
+namespace hecatonquiros{
+    class BackendArduino: public Backend{
+    public:
+        /// This method is not implemented in arduino backend, it sends false by default.
+        virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
+
+        /// This method move the joints of the arm to the desired angle.
+        /// \param _joints: vector containing the joints
+        /// \param _blocking: set blocking or not blocking operation
+        /// \return true if joints are send or set without errors, false if something failed.
+        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false);
+
+        /// Method for actuating to claws if implemented and attached
+        /// \param _action: 0 close, 1 stop, 2 open;
+        virtual bool claw(const int _action);
+    private:
+        BackendArduino(){}
+        // Initialize communication with the arduino with the given configuration.
+        // \param _config: Configuration file. Either port and baudrate or sharedSerial port must be filled
+        // \return true if communication is etablished or false if some error arises. 
+        virtual bool init(const Config &_config);
+
+        std::string     mPort;
+        int             mBaudRate;
+        serial::Serial  *mSerialPort; 
+        int             mArmId;
+    };
+}

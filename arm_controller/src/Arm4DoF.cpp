@@ -20,53 +20,40 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <arm_controller/Arm.h>
+#include <arm_controller/Arm4DoF.h>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <chrono>
 
 //---------------------------------------------------------------------------------------------------------------------
-Arm3DoF::Arm3DoF() {
-    home();
+Arm4DoF::Arm4DoF(const Backend::Config &_config): {
+    mBackend = Backend::create(_config);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Arm3DoF::Arm3DoF(std::string & _port, int _baudrate, int _id) {
-    mArduinoCom = new serial::Serial(_port, _baudrate, serial::Timeout::simpleTimeout(1000));
-    mArmId = _id;
-    home();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-Arm3DoF::Arm3DoF(serial::Serial * _serialPort, int _id) {
-    mArduinoCom = _serialPort;
-    mArmId = _id;
-    home();
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::home(){
+void Arm4DoF::home(){
   joints({mHome1, mHome2, mHome3});
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::joints(std::vector<float> _q) {
+void Arm4DoF::joints(std::vector<float> _q) {
     mArmjoints[0] = _q[0];
     mArmjoints[1] = _q[1];
     mArmjoints[2] = _q[2];
-    sendCurrentJoints(); // SEND joints to arduino
+
+    if(mBackend != nullptr){
+        mBackend->joints(mArmjoints);
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-std::vector<float> Arm3DoF::joints() const {
+std::vector<float> Arm4DoF::joints() const {
     return mArmjoints;
 }
 
-
-#include <opencv2/opencv.hpp>
 //---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::position(Eigen::Vector3f _position) {
+void Arm4DoF::position(Eigen::Vector3f _position) {
     mArmjoints[0] = atan2(_position[1], _position[0]);
  
     float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -105,7 +92,7 @@ void Arm3DoF::position(Eigen::Vector3f _position) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Eigen::Vector3f Arm3DoF::position() {
+Eigen::Vector3f Arm4DoF::position() {
     float mA0 = mArmjoints[0];
     float mA1 = mArmjoints[1];
     float mA2 = mArmjoints[2];
@@ -131,7 +118,7 @@ Eigen::Vector3f Arm3DoF::position() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm3DoF::checkIk(Eigen::Vector3f _position){
+bool Arm4DoF::checkIk(Eigen::Vector3f _position){
     std::vector<Eigen::Matrix4f> ts;
     std::vector<float> angles;
     return checkIk(_position, angles, ts);
@@ -139,19 +126,19 @@ bool Arm3DoF::checkIk(Eigen::Vector3f _position){
 
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
+bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
     std::vector<float> angles;
     return checkIk(_position, angles,_transformations);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
+bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
     std::vector<Eigen::Matrix4f> ts;
     return checkIk(_position,_angles, ts);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
     float theta0a = atan2(_position[1], _position[0]);
  
     float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -175,7 +162,7 @@ bool Arm3DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, st
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool Arm3DoF::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+bool Arm4DoF::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
     Eigen::Matrix4f t01, t12, t23;
 
     t01 <<	cos(_angles[0]),  -sin(_angles[0]),  0, 0,
@@ -211,11 +198,11 @@ bool Arm3DoF::directKinematic(const std::vector<float> &_angles, std::vector<Eig
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-Eigen::Matrix4f Arm3DoF::pose() const {
+Eigen::Matrix4f Arm4DoF::pose() const {
     return Eigen::Matrix4f();
 }
 //---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2) {
+void Arm4DoF::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2) {
     position();
     _t0 = mT01;
     _t1 = mT12;
@@ -223,56 +210,22 @@ void Arm3DoF::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Ei
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::sendCurrentJoints() {
-    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
-        std::string cmd;
-        std::stringstream order;
-        order << "a"<< mArmId << mArmjoints[0]*180.0/M_PI << "," << mArmjoints[1]*180.0/M_PI << "," << mArmjoints[2]*180.0/M_PI << "\r\n";
-        cmd = order.str();
-        mArduinoCom->write(cmd);
+void Arm4DoF::closeClaw(){
+    if(mBackend != nullptr){
+        mBackend->claw(0);
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::closeClaw(){
-    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
-        std::string cmd;
-        std::stringstream order;
-        order << "c"<< mArmId << "c\r\n";
-        cmd = order.str();
-        mArduinoCom->write(cmd);
+void Arm4DoF::openClaw(){
+    if(mBackend != nullptr){
+        mBackend->claw(2);
     }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::openClaw(){
-    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
-        std::string cmd;
-        std::stringstream order;
-        order << "c"<< mArmId << "o\r\n";
-        cmd = order.str();
-        mArduinoCom->write(cmd);
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::stopClaw(){
-    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
-        std::string cmd;
-        std::stringstream order;
-        order << "c"<< mArmId << "s\r\n";
-        cmd = order.str();
-        mArduinoCom->write(cmd);
-    }
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-void Arm3DoF::actuateWrist(float _actionWrist) {
-    if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
-        std::string cmd;
-        std::stringstream order;
-        order << "w"<< mArmId << _actionWrist << "\r\n";
-        cmd = order.str();
-        mArduinoCom->write(cmd);
+void Arm4DoF::stopClaw(){
+    if(mBackend != nullptr){
+        mBackend->claw(1);
     }
 }

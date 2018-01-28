@@ -18,3 +18,32 @@
 //  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
+
+
+#include <arm_controller/backends/Backend.h>
+#include <arm_controller/backends/BackendArduino.h>
+#include <arm_controller/backends/BackendGazebo.h>
+
+
+namespace hecatonquiros{
+    Backend * Backend::create(const Backend::Config &_config){
+        Backend *bd = nullptr;
+        switch(_config.type){
+        case Backend::Config::eType::Arduino:
+            bd = new BackendArduino();
+            break;
+        case Backend::Config::eType::Gazebo:
+            bd = new BackendGazebo();
+            break;
+        default:
+            return nullptr;
+        }
+
+        if(bd->init(_config)){
+            return bd;
+        }else{
+            return nullptr;
+        }
+    }
+
+}

@@ -18,3 +18,68 @@
 //  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
+
+
+#include <arm_controller/backends/BackendArduino.h>
+
+namespace hecatonquiros{
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendArduino::init(const Config &_config){
+        if(_config.sharedSerialPort == nullptr){
+            mPort = _config.port;
+            mBaudRate = _config.baudrate;
+            mSerialPort = new serial::Serial(mSerialPort, mBaudRate);
+        }else{
+            mSerialPort = _config.sharedSerialPort;
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendArduino::pose(const Eigen::Matrix4f &_pose, bool _blocking){
+        return false;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendArduino::joints(const std::vector<float> &_joints, bool _blocking){
+        if(mSerialPort != nullptr && mSerialPort->isOpen()){
+            std::stringstream cmd;
+            cmd << "a"<< mArmId;
+            for(unsigned i = 0; i < _joints.size(); i++){
+                if(i != _joints.size()-1){
+                    cmd << _joints[i]*180.0/M_PI << ",";
+                }else{
+                    cmd << _joints[i]*180.0/M_PI << "\r\n";
+                }
+            } 
+            mSerialPort->write(cmd.str());
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendArduino::claw(const int _action){
+        if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+            std::stringstream cmd;
+            switch(_action){
+            case 0:
+                cmd << "c"<< mArmId << "c\r\n";
+                break;
+            case 1:
+                cmd << "c"<< mArmId << "o\r\n";
+                break;
+            case 2:
+                cmd << "c"<< mArmId << "s\r\n";
+                break;
+            default:
+                return false;
+            }
+            mArduinoCom->write(cmd.str());
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
