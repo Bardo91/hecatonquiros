@@ -20,16 +20,16 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
+#include <serial/serial.h> 
 #include <arm_controller/backends/BackendArduino.h>
 
 namespace hecatonquiros{
-
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendArduino::init(const Config &_config){
         if(_config.sharedSerialPort == nullptr){
             mPort = _config.port;
             mBaudRate = _config.baudrate;
-            mSerialPort = new serial::Serial(mSerialPort, mBaudRate, serial::Timeout::simpleTimeout(1000));
+            mSerialPort = new serial::Serial(mPort, mBaudRate, serial::Timeout::simpleTimeout(1000));
         }else{
             mSerialPort = _config.sharedSerialPort;
         }
@@ -61,7 +61,7 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendArduino::claw(const int _action){
-        if(mArduinoCom != nullptr && mArduinoCom->isOpen()){
+        if(mSerialPort != nullptr && mSerialPort->isOpen()){
             std::stringstream cmd;
             switch(_action){
             case 0:
@@ -76,7 +76,7 @@ namespace hecatonquiros{
             default:
                 return false;
             }
-            mArduinoCom->write(cmd.str());
+            mSerialPort->write(cmd.str());
             return true;
         }else{
             return false;

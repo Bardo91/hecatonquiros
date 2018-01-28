@@ -23,12 +23,14 @@
 #ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDARDUINO_H_
 #define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDARDUINO_H_
 
-#include <arm_controller/backends/Backend.h>
-#include <serial/Serial.h>
+#include <arm_controller/backends/Backend.h>  
 
 namespace hecatonquiros{
     class BackendArduino: public Backend{
     public:
+        /// Default constructor
+        BackendArduino():Backend(){}
+
         /// This method is not implemented in arduino backend, it sends false by default.
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
 
@@ -42,7 +44,6 @@ namespace hecatonquiros{
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action);
     private:
-        BackendArduino(){}
         // Initialize communication with the arduino with the given configuration.
         // \param _config: Configuration file. Either port and baudrate or sharedSerial port must be filled
         // \return true if communication is etablished or false if some error arises. 
@@ -54,3 +55,5 @@ namespace hecatonquiros{
         int             mArmId;
     };
 }
+
+#endif

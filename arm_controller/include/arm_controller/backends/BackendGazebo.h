@@ -28,11 +28,24 @@
 namespace hecatonquiros{
     class BackendGazebo: public Backend{
     public:
+        /// Default constructor
+        BackendGazebo():Backend(){}
+
+        /// This method is not implemented in arduino backend, it sends false by default.
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
+
+        /// This method move the joints of the arm to the desired angle.
+        /// \param _joints: vector containing the joints
+        /// \param _blocking: set blocking or not blocking operation
+        /// \return true if joints are send or set without errors, false if something failed.
         virtual bool joints(const std::vector<float> &_joints, bool _blocking = false);
 
+        /// Method for actuating to claws if implemented and attached
+        /// \param _action: 0 close, 1 stop, 2 open;
+        virtual bool claw(const int _action);
     private:
-        BackendGazebo(){}
         virtual bool init(const Config &_config);
     };
 }
+
+#endif

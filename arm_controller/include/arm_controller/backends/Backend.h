@@ -47,7 +47,7 @@ namespace hecatonquiros{
             std::string topic = "";
         };
 
-        Backend* create(const Config &_config);
+        static Backend* create(const Config &_config);
 
         /// \brief abstract method for sending arm to a desired pose
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false) = 0;
@@ -58,7 +58,7 @@ namespace hecatonquiros{
         /// \brief abstract method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action) = 0;
-    private:
+    protected:
         Backend() {}  
         // \brief abstract method for initialization of the class
         virtual bool init(const Config &_config) = 0;

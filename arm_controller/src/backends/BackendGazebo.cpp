@@ -21,15 +21,20 @@
 
 #include <arm_controller/backends/BackendGazebo.h>
 
-namespace heactonquiros{
+namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool BackendGazebo::pose(const Eigen::Matrix4f &_pose, bool _blocking = false){
+    bool BackendGazebo::pose(const Eigen::Matrix4f &_pose, bool _blocking){
 
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool BackendGazebo::joints(const std::vector<float> &_joints, bool _blocking = false){
+    bool BackendGazebo::joints(const std::vector<float> &_joints, bool _blocking){
+
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool BackendGazebo::claw(const int _action){
 
     }
 
