@@ -73,10 +73,11 @@ namespace hecatonquiros{
         void openClaw();
         void stopClaw();
 
+        bool isInit() const;
     private:
         Backend *mBackend;
 
-        std::vector<float> mArmjoints = std::vector<float>(4);
+        std::vector<float> mArmjoints = std::vector<float>(3);
 
         Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23, mT34;
         Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;

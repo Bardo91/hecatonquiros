@@ -29,6 +29,7 @@ namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     Arm4DoF::Arm4DoF(const Backend::Config &_config) {
         mBackend = Backend::create(_config);
+        mArmId = _config.armId;
     }
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -228,5 +229,10 @@ namespace hecatonquiros{
         if(mBackend != nullptr){
             mBackend->claw(1);
         }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::isInit() const{
+        return mBackend != nullptr;
     }
 }
