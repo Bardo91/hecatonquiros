@@ -15,11 +15,11 @@ Arm rightArm;
 void setup() {
   Serial.begin(115200);
 
-  leftArm.setup(8,9,10,11,12, 7);
-  leftArm.offsets(75,110,85,105,107, 100);
+  leftArm.setup(8,9,10,11,12);
+  leftArm.offsets(75,110,85,105,98);
   
-  rightArm.setup(2,3,4,5,6, 13);
-  rightArm.offsets(65,105,85,85,98, 100);
+  rightArm.setup(2,3,4,5,6);
+  rightArm.offsets(65,105,85,85,96);
   
   leftArm.speed(20);
   rightArm.speed(20);
@@ -32,7 +32,6 @@ void setup() {
   leftArm.stopGripper();
   rightArm.stopGripper();
   
-  delay(2000);
 }
 
 void exec             (String _cmd);
