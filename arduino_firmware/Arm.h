@@ -8,14 +8,14 @@
 
 class Arm{
   public:
-    void setup(int _pin0, int _pin1, int _pin2, int _pin3, int _pin4, int _pin5);
+    void setup(int _pin0, int _pin1, int _pin2, int _pin3, int _pin4);
 
-    void offsets(float _o0, float _o1, float _o2, float _o3, float _o4, float _o5);
+    void offsets(float _o0, float _o1, float _o2, float _o3, float _o4);
 
     void speed(float _speed);
     float speed();
 
-    void joints(float _v0, float _v1, float _v2);
+    void joints(float _v0, float _v1, float _v2, float _v3);
 
     void wrist(float angle);
 
@@ -30,7 +30,6 @@ class Arm{
     float mOffset0=90, mOffset1=90, mOffset2=90, mOffset3=90, mOffset4=90;
     float mSpeed=10;
     int mFlagClose = 0;
-    int mSenFuerza = 0, mTresholdSF = 500, mPinSenFuerza = 7;
 
     unsigned long mTimeClose1, mTimeClose2, mTimeOpen1, mTimeOpen2 = 0;
     unsigned long mInterval = 700;
