@@ -24,9 +24,9 @@ void setup() {
   leftArm.speed(20);
   rightArm.speed(20);
 
-  leftArm.joints(0,0,90);
+  leftArm.joints(0,0,90,0);
   leftArm.wrist(0);
-  rightArm.joints(0,0,90);
+  rightArm.joints(0,0,90,0);
   rightArm.wrist(0);
 
   leftArm.stopGripper();
