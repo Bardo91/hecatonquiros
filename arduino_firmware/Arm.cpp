@@ -55,7 +55,7 @@ void Arm::openGripper(){
     //while(mTimeOpen1 > 1){
     mTimeOpen1 = millis();
     while(mTimeOpen1+mInterval > mTimeOpen2){
-      mServo4.write(0, 0);
+      mServo4.write(0, 255);
       mTimeOpen2 = millis();
       //mTimeOpen1--;
     }
@@ -66,18 +66,18 @@ void Arm::openGripper(){
 void Arm::closeGripper(){
   //mTimeClose1 = millis();
   while(mSenFuerza <= mTresholdSF){
-    mServo4.write(180, 0);
+    mServo4.write(180, 255);
     mSenFuerza = analogRead(mPinSenFuerza);
     //Serial.println(mSenFuerza);
   }
   //mTimeClose2 = millis();
   mSenFuerza = 0;
-  mServo4.write(mOffset4+5);
+  mServo4.write(mOffset4);
   mFlagClose = 1;
 }
 
 void Arm::stopGripper(){
-  mServo4.write(mOffset4, 40);
+  mServo4.write(mOffset4);
 }
 
 

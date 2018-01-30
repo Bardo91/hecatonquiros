@@ -16,10 +16,10 @@ void setup() {
   Serial.begin(115200);
 
   leftArm.setup(8,9,10,11,12, 7);
-  leftArm.offsets(75,110,85,105,107, 100);
+  leftArm.offsets(75,100,80,40,110, 100);
   
   rightArm.setup(2,3,4,5,6, 13);
-  rightArm.offsets(65,105,85,85,98, 100);
+  rightArm.offsets(75,90,85,90,95, 100);
   
   leftArm.speed(20);
   rightArm.speed(20);
@@ -113,7 +113,7 @@ void execArm(String _cmd, Arm *_arm){
 void execWrist(String _cmd, Arm *_arm){
     int AngleWrist;
     //Serial.println(_cmd);
-    AngleWrist = atoi(_cmd.substring(0).c_str());
+    AngleWrist = atoi(_cmd.c_str());
     //Serial.println(AngleWrist);
     _arm->wrist(AngleWrist);
 }
