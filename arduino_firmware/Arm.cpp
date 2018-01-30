@@ -70,7 +70,7 @@ void Arm::closeGripper(){
 }
 
 void Arm::stopGripper(){
-  mServo4.write(mOffset4, 40);
+  mServo4.write(mOffset4);
 }
 
 

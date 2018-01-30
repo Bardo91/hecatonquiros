@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<robot name="myfirst">
+
+
+ <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://arm_description/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+  </link>
+
+
+<link name="arm_0_top">
+    <visual>
+      <geometry>
+        <mesh filename="package://arm_description/meshes/arm_0_top.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+      <origin rpy="0 0 -1.57075" xyz="0 0 0"/>
+    </visual>
+
+  </link>
+  <joint name="arm_0_top_joint" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    <parent link="base_link"/>
+    <child link="arm_0_top"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.07"/>
+  </joint>
+
+<link name="arm_0_bottom">
+    <visual>
+      <geometry>
+        <mesh filename="package://arm_description/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+	<origin rpy="0 3.1415 3.1415" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+  <joint name="arm_0_bottom_joint" type="continuous">
+   <axis xyz="0 0 1"/>
+    <parent link="arm_0_top"/>
+    <child link="arm_0_bottom"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.335"/>
+  </joint>
+
+<link name="arm_1">
+    <visual>
+      <geometry>
+        <mesh filename="package://arm_description/meshes/arm_1.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+	<origin rpy="-3.1415 1.57075 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+<joint name="arm_1_joint" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    	<parent link="arm_0_bottom"/>
+   	<child link="arm_1"/>
+	<origin xyz="0 0 -1.62"/>
+</joint>
+
+
+<link name="arm_2">
+    <visual>
+      <geometry>
+        <mesh filename="package://arm_description/meshes/arm_2.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+	<origin rpy="0 0 0" xyz="0 0 0"/>
+    </visual>
+  </link>
+
+<joint name="arm_2_joint" type="revolute">
+	<axis xyz="0 1 0"/>
+    <  limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    	<parent link="arm_1"/>
+   	<child link="arm_2"/>
+	<origin xyz="0.98 0 0"/>
+</joint>
+
+
+<link name="arm_2_case">
+    <visual>
+      <geometry>
+        <mesh filename="package://arm_description/meshes/arm_2_case_bearing.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+	<origin rpy="3.1415 0 1.57075" xyz="-0.33 -0.438 0.12"/>
+    </visual>
+  </link>
+
+<joint name="arm_2_case_joint" type="continuous">
+        <axis xyz="1 0 0"/>
+    	<parent link="arm_2"/>
+   	<child link="arm_2_case"/>
+	<origin xyz="0.28 0 0"/>
+</joint>
+
+
+
+</robot>
