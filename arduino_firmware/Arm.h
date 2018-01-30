@@ -15,7 +15,7 @@ class Arm{
     void speed(float _speed);
     float speed();
 
-    void joints(float _v0, float _v1, float _v2);
+    void joints(float _v0, float _v1, float _v2, float _v3);
 
     void wrist(float angle);
 

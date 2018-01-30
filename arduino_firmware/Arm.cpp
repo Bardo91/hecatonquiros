@@ -35,10 +35,11 @@ float Arm::speed(){
   return mSpeed;
 }
 
-void Arm::joints(float _v0, float _v1, float _v2){
+void Arm::joints(float _v0, float _v1, float _v2, float _v3){
   mServo0.write(_v0 + mOffset0, mSpeed, false);
   mServo1.write(_v1 + mOffset1, mSpeed, false);
   mServo2.write(_v2 + mOffset2, mSpeed, false); 
+  mServo3.write(_v3 + mOffset3, mSpeed, false); 
 }
 
 void Arm::wrist(float _angle){

@@ -16,7 +16,7 @@ void setup() {
   Serial.begin(115200);
 
   leftArm.setup(8,9,10,11,12);
-  leftArm.offsets(75,110,85,105,98);
+  leftArm.offsets(75,110,85,105,110);
   
   rightArm.setup(2,3,4,5,6);
   rightArm.offsets(65,105,85,85,96);
@@ -96,17 +96,23 @@ void exec(String _cmd){
 }
 
 void execArm(String _cmd, Arm *_arm){
-  int signals[3];
+  int signals[4];
   //Serial.println(_cmd);
-  for(unsigned i = 0; i < 3; i++){
+  for(unsigned i = 0; i < 4; i++){
     int idx = _cmd.indexOf(',');
+    if( idx == -1 ){  // case for only 3 joints, we dont need wrist, so put it to 0
+       signals[3] = 0.0;
+    }
+    else{
     signals[i] = atoi(_cmd.substring(0,idx).c_str());
     _cmd = _cmd.substring(idx+1);  
+    }
   }
   //Serial.println(signals[0]);
   //Serial.println(signals[1]);
   //Serial.println(signals[2]);
-  _arm->joints(signals[0], signals[1], signals[2]);
+  
+  _arm->joints(signals[0], signals[1], signals[2], signals[3]);
 }
 
 void execWrist(String _cmd, Arm *_arm){
