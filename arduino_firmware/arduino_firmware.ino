@@ -16,14 +16,11 @@ void setup() {
   Serial.begin(115200);
 
   leftArm.setup(8,9,10,11,12);
-  leftArm.offsets(75,110,85,105,110);
-  leftArm.setup(8,9,10,11,12, 7);
-  leftArm.offsets(75,100,80,40,110, 100);
+  leftArm.offsets(75,100,80,40,110);
   
   rightArm.setup(2,3,4,5,6);
-  rightArm.offsets(65,105,85,85,96);
-  rightArm.setup(2,3,4,5,6, 13);
-  rightArm.offsets(75,90,85,90,95, 100);
+  rightArm.offsets(75,90,85,90,96);
+  
   
   leftArm.speed(20);
   rightArm.speed(20);
