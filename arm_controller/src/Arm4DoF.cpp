@@ -25,6 +25,8 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <cassert>
+
 namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     Arm4DoF::Arm4DoF(const Backend::Config &_config) {
@@ -39,10 +41,17 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<float> _q) {
+        assert(_q.size() == 3 || _q.size() == 4);
+
         mArmjoints[0] = _q[0];
         mArmjoints[1] = _q[1];
         mArmjoints[2] = _q[2];
-
+        if(_q.size() == 3){
+            mArmjoints[3] = 0;
+        }else{
+            mArmjoints[3] = _q[3];
+        }
+        
         if(mBackend != nullptr){
             mBackend->joints(mArmjoints);
         }
@@ -54,7 +63,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::position(Eigen::Vector3f _position) {
+    void Arm4DoF::position(Eigen::Vector3f _position, float _wirst) {
         mArmjoints[0] = atan2(_position[1], _position[0]);
     
         float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
@@ -88,7 +97,9 @@ namespace hecatonquiros{
         //    mArmjoints[1] = theta1b;
         //    mArmjoints[2] = theta2b;
         //}
-    
+
+        mArmjoints[3] = _wirst;
+        
         joints(mArmjoints); // send joints to arduino
     }
 
