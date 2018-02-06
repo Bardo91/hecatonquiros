@@ -15,24 +15,24 @@ Arm rightArm;
 void setup() {
   Serial.begin(115200);
 
-  leftArm.setup(8,9,10,11,12, 7);
-  leftArm.offsets(75,110,85,105,107, 100);
+  leftArm.setup(8,9,10,11,12);
+  leftArm.offsets(75,100,80,40,110);
   
-  rightArm.setup(2,3,4,5,6, 13);
-  rightArm.offsets(65,105,85,85,98, 100);
+  rightArm.setup(2,3,4,5,6);
+  rightArm.offsets(75,90,85,90,96);
+  
   
   leftArm.speed(20);
   rightArm.speed(20);
 
-  leftArm.joints(0,0,90);
+  leftArm.joints(0,0,90,0);
   leftArm.wrist(0);
-  rightArm.joints(0,0,90);
+  rightArm.joints(0,0,90,0);
   rightArm.wrist(0);
 
   leftArm.stopGripper();
   rightArm.stopGripper();
   
-  delay(2000);
 }
 
 void exec             (String _cmd);
@@ -97,23 +97,34 @@ void exec(String _cmd){
 }
 
 void execArm(String _cmd, Arm *_arm){
-  int signals[3];
-  //Serial.println(_cmd);
-  for(unsigned i = 0; i < 3; i++){
+  int signals[4] = {0, 0, 0, 0};
+  Serial.println(_cmd);
+  Serial.println("---");
+  for(unsigned i = 0; i < 4; i++){
     int idx = _cmd.indexOf(',');
+    if( idx == -1 ){  // case for only 3 joints, we dont need wrist, so put it to 0
+       signals[i] = atoi(_cmd.c_str());
+       break;
+    }
+    else{
     signals[i] = atoi(_cmd.substring(0,idx).c_str());
-    _cmd = _cmd.substring(idx+1);  
+    _cmd = _cmd.substring(idx+1);
+    Serial.println(_cmd);
+    }
   }
-  //Serial.println(signals[0]);
-  //Serial.println(signals[1]);
-  //Serial.println(signals[2]);
-  _arm->joints(signals[0], signals[1], signals[2]);
+  Serial.println("---");
+  Serial.println(signals[0]);
+  Serial.println(signals[1]);
+  Serial.println(signals[2]);
+  Serial.println(signals[3]);
+  
+  _arm->joints(signals[0], signals[1], signals[2], signals[3]);
 }
 
 void execWrist(String _cmd, Arm *_arm){
     int AngleWrist;
     //Serial.println(_cmd);
-    AngleWrist = atoi(_cmd.substring(0).c_str());
+    AngleWrist = atoi(_cmd.c_str());
     //Serial.println(AngleWrist);
     _arm->wrist(AngleWrist);
 }

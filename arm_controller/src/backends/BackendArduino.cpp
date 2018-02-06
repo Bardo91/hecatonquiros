@@ -22,6 +22,7 @@
 
 #include <serial/serial.h> 
 #include <arm_controller/backends/BackendArduino.h>
+#include <iostream>
 
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
@@ -30,9 +31,14 @@ namespace hecatonquiros{
             mPort = _config.port;
             mBaudRate = _config.baudrate;
             mSerialPort = new serial::Serial(mPort, mBaudRate, serial::Timeout::simpleTimeout(1000));
+            mArmId = _config.armId;
+            return true;
         }else{
             mSerialPort = _config.sharedSerialPort;
+            mArmId = _config.armId;
+            return true;
         }
+        return false;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
