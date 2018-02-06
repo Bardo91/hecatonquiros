@@ -20,6 +20,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
+#ifdef ENABLE_PCL
 
 #include <arm_controller/visualization/PositionerVis.h>
 #include <pcl/io/io.h>
@@ -89,3 +90,5 @@ namespace hecatonquiros{
 
 	}
 }
+
+#endif

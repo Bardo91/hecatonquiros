@@ -19,6 +19,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifdef ENABLE_PCL
 
 #include <arm_controller/visualization/ArmVis.h>
 #include <pcl/io/io.h>
@@ -67,3 +68,5 @@ namespace hecatonquiros{
 		mViewer->addPolygonMesh<pcl::PointXYZ>(pctbar3.makeShared(), mBarMesh3.polygons, "arm_bar3", 0);
 	}
 }
+
+#endif

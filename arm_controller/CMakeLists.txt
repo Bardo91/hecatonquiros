@@ -52,13 +52,11 @@ catkin_package(
 
 
 ## Load PCL
-find_package(PCL QUIET REQUIRED)
-if(${PCL_FOUND} AND ${VTK_FOUND} AND ${Boost_FOUND} AND ${FLANN_FOUND} STREQUAL "TRUE")
+find_package(PCL QUIET)
+if(${PCL_FOUND})
 	MESSAGE( STATUS "Adding properly PCL and its dependencies")
 	add_definitions(-DENABLE_PCL)
 	add_definitions(${PCL_DEFINITIONS})
-else()
-	MESSAGE( FATAL_ERROR "Couldnt Add PCL and/or it's dependencies")
 endif()
 
 ## Loading boost

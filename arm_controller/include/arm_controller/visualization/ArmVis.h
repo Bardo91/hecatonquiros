@@ -23,6 +23,7 @@
 #ifndef HECATONQUIROS_ARMCONTROLLER_VISUALIZATION_ARMVIS_H_
 #define HECATONQUIROS_ARMCONTROLLER_VISUALIZATION_ARMVIS_H_
 
+#ifdef ENABLE_PCL
 #include <Eigen/Eigen>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/PolygonMesh.h>
@@ -38,4 +39,5 @@ namespace hecatonquiros{
 		pcl::PolygonMesh mBarMesh1, mBarMesh2, mBarMesh3;
 	};
 }
+#endif
 #endif
