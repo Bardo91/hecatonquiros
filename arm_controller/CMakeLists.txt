@@ -96,7 +96,6 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${catkin_LIBRARIES})
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 
-
 ### DOC generation
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
