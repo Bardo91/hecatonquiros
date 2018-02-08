@@ -1,0 +1,98 @@
+RCS 指令协议
+
+Commands are in ASCII format:
+
+Character # (ASCII 35) is start of message.
+Next is the servo ID (0 to 253).
+Or 254 for broadcast:
+Broadcast can be used with these commands(Servo position reference frame commands).
+Next is the command (usually one letter), usually followed a number.
+Then there are possible parameters (usually one letter), also followed by numbers.
+Either <cr> (carriage return, ASCII 13), <nl> (new line, ASCII 10), or both will terminate the message.
+Anything still in buffer when start of message (#) is received can be discarded (ex: incomplete or interrupted messages).
+Escape character (ASCII 27) clears anything received so far.
+Letters always use uppercase letters.
+Space characters (ASCII 32) and tab characters (ASCII 9) are ignored anywhere in the message, even inside numeric values.
+ex:  #1 P 1500 S 100 T 2000 <cr>
+
+Responses will also be in ASCII format:
+
+Character * (ASCII 42) is start of message.
+Next is the servo ID (0 to 253).
+Then is the response and values.
+Both <cr> (carriage return, ASCII 13) and <nl> (new line, ASCII 10) are used to terminate the message.
+Responses always use uppercase letters.
+No spaces are included in response.
+ex: *1P1500<cr>
+
+RCS 指令
+
+Absolute position command:
+# ID P Value T Value <cr>
+# (ASCII 35) is start of message.
+ID 0-254.
+P command followed by the position(specified in the number of position). 
+Value of position 0~1023.
+Optional T parameter, followed by time(specified in the number of milliseconds).
+Value of time 0-65535.
+ex: # 1 P 511 T 1000 <cr>
+
+Enable torque output command:
+# ID Value <cr>
+# (ASCII 35) is start of message.
+ID 0-254.
+ID followed by the value L or H.
+value L disable torque output.
+value H enable torque output.
+ex: # 1H <cr>
+
+Query position QP command:
+# 1 QP  <cr> 
+If returns: *1P500  it is mean that the servo ID 1 current position is 500.
+
+Query Current Runing Speed QT command:
+# 1QT  <cr> 
+If returns: *T100  it is mean that the the servo ID 1 current runing speed is 100.
+
+Motion group G command:
+# G Value <cr>
+Value of motion group 0-254.
+ex: # G 1 <cr>
+Note: Motion group have stored in SCM-1 EPROM
+
+# G Value ~ Value <cr>
+Value of motion group 0-254.
+ex: # G 1 ~ 3 <cr> 
+It is mean that robot will to move motion gorup number 1,2 and 3.
+Note: Motion group have stored in SCM-1 EPROM
+
+
+# G Value , Value <cr>
+Value of motion group 0-254.
+ex: # G 1,3 <cr> 
+It is mean that robot will to move motion gorup number 1 and 3.
+Note: Motion group have stored in SCM-1 EPROM
+
+RCS 示例代码
+RCS command with Arduino code
+
+
+void setup(){  
+  Serial.begin(115200); //SCM-1 need to be set work at LSS mode
+
+void loop()
+{
+  
+   Serial.println("#1H"); //SCServo ID 1 enable torque output
+   delay(50); 
+   Serial.println("#1P900T1000"); //SCServo ID 1 move to position 900 with time 1000ms
+   delay(2000);  
+   Serial.println("#1P100T1000"); //SCServo ID 1 move to position 100 with time 1000ms
+   delay(2000); 
+   Serial.println("#G1"); //The instruct start of motion group with number of motion group
+   delay(5000);  
+   Serial.println("#G1~3"); //The instruct start of motion group with number 1,2,3  motion group
+   delay(10000);  
+   Serial.println("#G1,3"); //The instruct start of motion group with number 1and 3  motion group
+   delay(10000);  
+}
