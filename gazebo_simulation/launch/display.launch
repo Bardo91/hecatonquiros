@@ -2,15 +2,37 @@
 <launch>
 
   <arg name="model" default=""/>
+  <arg name="model2" default=""/>
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find gazebo_simulation)/rviz/arm_description_config.rviz" />
 
-  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
-  <param name="use_gui" value="$(arg gui)"/>
+<!--El rviz debe estar con el robot description, los dos fuera o los dos en el mismo grupo-->
+    <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+        <group ns="right_arm">
+          <param name="tf_prefix" value="" />
+          <!--param name="robot_description" command="$(find xacro)/xacro.py $(arg model1)" /-->
+          <param name="use_gui" value="$(arg gui)"/>
+          <node name="arm_dancing" pkg="arm_dancing" type="arm_dancing" output="screen"/>
+          <!--node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /-->
+          <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+          <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+       </group>
 
-  <!--<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
-  
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 
+
+        <group ns="left_arm">
+          <param name="tf_prefix" value="" />
+          <!--param name="robot_description" command="$(find xacro)/xacro.py $(arg model2)" /-->
+          <param name="use_gui" value="$(arg gui)"/>
+          <node name="arm_dancing" pkg="arm_dancing" type="arm_dancing" output="screen"/>
+          <!--node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /-->
+          <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+         <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+        </group>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
 </launch>
+
+
+
+
