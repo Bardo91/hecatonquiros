@@ -7,7 +7,6 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
-        - /RobotModel1/Status1
         - /TF1
       Splitter Ratio: 0.5
     Tree Height: 429
@@ -33,7 +32,7 @@ Panels:
 Visualization Manager:
   Class: ""
   Displays:
-    - Alpha: 1.0
+    - Alpha: 1
       Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
@@ -51,7 +50,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1.0
+    - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -61,32 +60,56 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        arm_0_bottom:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm_0_top:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm_1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm_2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm_2_case:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        left/arm_0_bottom:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left/arm_0_closing_case:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left/arm_0_top:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left/arm_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        left/arm_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right/arm_0_bottom:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right/arm_0_closing_case:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right/arm_0_top:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right/arm_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right/arm_2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -102,17 +125,27 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        arm_0_bottom:
-          Value: true
-        arm_0_top:
-          Value: true
-        arm_1:
-          Value: true
-        arm_2:
-          Value: true
-        arm_2_case:
-          Value: true
         base_link:
+          Value: true
+        left/arm_0_bottom:
+          Value: true
+        left/arm_0_closing_case:
+          Value: true
+        left/arm_0_top:
+          Value: true
+        left/arm_1:
+          Value: true
+        left/arm_2:
+          Value: true
+        right/arm_0_bottom:
+          Value: true
+        right/arm_0_closing_case:
+          Value: true
+        right/arm_0_top:
+          Value: true
+        right/arm_1:
+          Value: true
+        right/arm_2:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -121,11 +154,17 @@ Visualization Manager:
       Show Names: true
       Tree:
         base_link:
-          arm_0_top:
-            arm_0_bottom:
-              arm_1:
-                arm_2:
-                  arm_2_case:
+          left/arm_0_top:
+            left/arm_0_closing_case:
+              left/arm_0_bottom:
+                left/arm_1:
+                  left/arm_2:
+                    {}
+          right/arm_0_top:
+            right/arm_0_closing_case:
+              right/arm_0_bottom:
+                right/arm_1:
+                  right/arm_2:
                     {}
       Update Interval: 0
       Value: true
@@ -133,7 +172,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: right/arm_0_closing_case
     Frame Rate: 30
   Name: root
   Tools:
@@ -154,7 +193,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.48688984
+      Distance: 7.90743351
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -169,10 +208,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.695397019
+      Pitch: 0.445397377
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.513581991
+      Yaw: 1.20358169
     Saved: ~
 Window Geometry:
   Displays:

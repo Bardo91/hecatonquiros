@@ -37,11 +37,12 @@ namespace hecatonquiros{
 	
 	int cnt=1;
  	int joint;
-  	float pos_rad_0,pos_rad_1,pos_rad_2;
+  	
   	
 	
 	ros::NodeHandle n;
   	mtopic=_config.topic;
+	mGarmId=_config.GarmId;
  	joint_pub = n.advertise<sensor_msgs::JointState>(mtopic, 1000);
 	return true;
     }
@@ -58,17 +59,52 @@ namespace hecatonquiros{
  	 //{
     	
     	  	int cnt=0;
-	 	sensor_msgs::JointState j_msg; 
-		//std_msgs::String msg;
-		//std::stringstream ss;
-		//ss << "Introduce vector of radians: " ;
-		//msg.data = ss.str();
-		//ROS_INFO("[Talker]:%s ", msg.data.c_str());
-		//std::cin>>pos_rad_0>>pos_rad_1>>pos_rad_2;
-	
-	
+                sensor_msgs::JointState j_msg;
 
+
+                        if(mGarmId==0){
+                        j_msg.header.seq=cnt;
+                        j_msg.header.frame_id="0";
+                        j_msg.position.push_back (_joints[0]);
+                        j_msg.position.push_back (_joints[1]);
+                        j_msg.position.push_back (_joints[2]);
+                        j_msg.name.push_back ("arm_0_bottom_joint");
+                        j_msg.name.push_back ("arm_1_joint");
+                        j_msg.name.push_back ("arm_2_joint");
+                        j_msg.header.stamp = ros::Time::now();
+                        ROS_INFO("[Talker]:Publishing alone");
+                        }
+                        else if(mGarmId==1){
 			j_msg.header.seq=cnt;
+			j_msg.header.frame_id="0";
+			j_msg.position.push_back (_joints[0]);
+			j_msg.position.push_back (_joints[1]);
+			j_msg.position.push_back (_joints[2]);   
+                        j_msg.name.push_back ("right/arm_0_bottom_joint");
+                        j_msg.name.push_back ("right/arm_1_joint");
+                        j_msg.name.push_back ("right/arm_2_joint");
+			j_msg.header.stamp = ros::Time::now();		
+			ROS_INFO("[Talker]:Publishing right arm");
+			
+
+			}
+			else{
+			j_msg.header.seq=cnt;
+			j_msg.header.frame_id="0";
+			j_msg.position.push_back (_joints[0]);
+			j_msg.position.push_back (_joints[1]);
+			j_msg.position.push_back (_joints[2]);   
+                        j_msg.name.push_back ("left/arm_0_bottom_joint");
+                        j_msg.name.push_back ("left/arm_1_joint");
+                        j_msg.name.push_back ("left/arm_2_joint");
+			j_msg.header.stamp = ros::Time::now();		
+			ROS_INFO("[Talker]:Publishing left arm");
+			}
+
+			//normal publish
+
+		
+			/*j_msg.header.seq=cnt;
 			j_msg.header.frame_id="0";
 			j_msg.position.push_back (_joints[0]);
 			j_msg.position.push_back (_joints[1]);
@@ -77,7 +113,7 @@ namespace hecatonquiros{
 			j_msg.name.push_back ("arm_1_joint");
 			j_msg.name.push_back ("arm_2_joint");
 			j_msg.header.stamp = ros::Time::now();		
-			ROS_INFO("[Talker]:Publishing");
+			ROS_INFO("[Talker]:Publishing");*/
 	
 
 	
