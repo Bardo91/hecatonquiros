@@ -48,6 +48,7 @@ namespace hecatonquiros{
 
 	std::string mtopic;
 	ros::Publisher joint_pub; 
+	int 	    mGarmId;
     };
 }
 
