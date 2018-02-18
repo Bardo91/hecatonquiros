@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['arm',['Arm',['../class_arm.html',1,'']]],
-  ['armvis',['ArmVis',['../class_arm_vis.html',1,'']]]
+  ['arm4dof',['Arm4DoF',['../classhecatonquiros_1_1_arm4_do_f.html',1,'hecatonquiros']]]
 ];

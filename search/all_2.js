@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['home',['home',['../class_arm.html#ac38aae4d0245d0fbac87e5eec16a15d7',1,'Arm']]],
-  ['hecatonquiros',['HECATONQUIROS',['../index.html',1,'']]]
+  ['checkik',['checkIk',['../classhecatonquiros_1_1_arm4_do_f.html#a082cdb354af2c367fd7bff45e7b586fb',1,'hecatonquiros::Arm4DoF::checkIk(Eigen::Vector3f _position)'],['../classhecatonquiros_1_1_arm4_do_f.html#ab7d9510a3ebc73e30ad46b7387ccbf61',1,'hecatonquiros::Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector&lt; Eigen::Matrix4f &gt; &amp;_transformations)'],['../classhecatonquiros_1_1_arm4_do_f.html#aed136d20169caf07907460fea4786115',1,'hecatonquiros::Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector&lt; float &gt; &amp;_angles)'],['../classhecatonquiros_1_1_arm4_do_f.html#a0663c95c0917e135f7253da7515a9c46',1,'hecatonquiros::Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector&lt; float &gt; &amp;_angles, std::vector&lt; Eigen::Matrix4f &gt; &amp;_transformations)']]],
+  ['claw',['claw',['../classhecatonquiros_1_1_backend.html#a3f32c51943a0ea1df9254aa520161f86',1,'hecatonquiros::Backend::claw()'],['../classhecatonquiros_1_1_backend_arduino.html#a654062a60bac083f4a1b8dad532f4d10',1,'hecatonquiros::BackendArduino::claw()'],['../classhecatonquiros_1_1_backend_gazebo.html#a590f2c2dddb6499f62dd07fad7e72c0c',1,'hecatonquiros::BackendGazebo::claw()']]],
+  ['config',['Config',['../structhecatonquiros_1_1_backend_1_1_config.html',1,'hecatonquiros::Backend']]]
 ];
