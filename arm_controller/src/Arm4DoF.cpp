@@ -26,12 +26,18 @@
 #include <thread>
 #include <chrono>
 #include <cassert>
+#include <ros/package.h>
 
 namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     Arm4DoF::Arm4DoF(const Backend::Config &_config) {
         mBackend = Backend::create(_config);
         mArmId = _config.armId;
+
+        std::string modelPath = ros::package::getPath("gazebo_simulation") + "/urdf/arm_description.urdf";   // 666 HOW TO MAKE IT GENERIC WITHOUT ROS.
+        mRobotModelLoader = robot_model_loader::RobotModelLoader(modelPath);
+        mKinematicModel  = mRobotModelLoader.getModel();
+        mKinematicState = new robot_state::RobotState(mKinematicModel);
     }
 
     //---------------------------------------------------------------------------------------------------------------------

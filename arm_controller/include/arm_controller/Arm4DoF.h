@@ -25,6 +25,10 @@
 #include <Eigen/Eigen>
 #include <math.h>
 
+#include <moveit/robot_model_loader/robot_model_loader.h>
+#include <moveit/robot_model/robot_model.h>
+#include <moveit/robot_state/robot_state.h>
+
 namespace hecatonquiros{
     class Arm4DoF {
     public:
@@ -79,18 +83,15 @@ namespace hecatonquiros{
 
         std::vector<float> mArmjoints = std::vector<float>(4);
 
-        Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23, mT34;
-        Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
+        robot_model_loader::RobotModelLoader mRobotModelLoader;
+        robot_model::RobotModelPtr mKinematicModel;
+        robot_state::RobotStatePtr mKinematicState;
 
         float   mHome1 = 0*M_PI/180.0,
                 mHome2 = 0*M_PI/180.0,
                 mHome3 = 90*M_PI/180.0,
                 mHome4 = 90*M_PI/180.0,
                 mHome5 = 90*M_PI/180.0;
-
-        double mHumerus = 0.15;
-        double mRadius = 0.09;
-        double mBaseHeight = 0.08;
 
         int mArmId = 1;
     };
