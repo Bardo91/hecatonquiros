@@ -3,26 +3,40 @@
    <!-- BASE -->
    <link name="base_link">
       <visual>
-         <geometry>
-            <mesh filename="package://gazebo_simulation/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
-         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 0" />
       </visual>
    </link>
 
+
    <!-- Joint 0 -->
-   <link name="arm_0_top">
+    <link name="arm_0_top">
       <visual>
          <geometry>
             <mesh filename="package://gazebo_simulation/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
          </geometry>
-         <origin rpy="0 0 -1.57075" xyz="0 0 0" />
+          <origin rpy="0 0 -1.57075" xyz="0 0 0" />
       </visual>
    </link>
    <joint name="arm_0_top_joint" type="fixed">
+      <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
       <parent link="base_link" />
       <child link="arm_0_top" />
       <origin rpy="0 0 0" xyz="0 0 -0.07" />
    </joint>
+
+    <link name="arm_0_closing_case">
+       <visual>
+          <geometry>
+             <mesh filename="package://gazebo_simulation/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
+          </geometry>
+       </visual>
+    </link>
+    <joint name="arm_0_closing_case_joint" type="fixed">
+       <parent link="arm_0_top" />
+       <child link="arm_0_closing_case" />
+       <origin rpy="0 0 0" xyz="0 0 -0.07" />
+    </joint>
+
    <link name="arm_0_bottom">
       <visual>
          <geometry>
@@ -32,7 +46,7 @@
       </visual>
    </link>
    <joint name="arm_0_bottom_joint" type="continuous">
-      <parent link="arm_0_top" />
+      <parent link="arm_0_closing_case" />
       <child link="arm_0_bottom" />
       <origin rpy="0 ${pi/2} 0" xyz="0 0 -0.335" />
    </joint>
@@ -66,4 +80,5 @@
       <child link="arm_2" />
       <origin xyz="0 0 1.7" rpy="0 0 0"/>
    </joint>
+
 </robot>
