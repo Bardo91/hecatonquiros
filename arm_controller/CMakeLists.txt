@@ -43,7 +43,8 @@ find_package(catkin REQUIRED COMPONENTS
 			geometry_msgs
 			std_msgs
 			roscpp
-			moveit
+			moveit_core
+			moveit_ros_planning
 			)
 
 

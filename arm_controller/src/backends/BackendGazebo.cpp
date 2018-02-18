@@ -34,95 +34,38 @@
 namespace hecatonquiros{
 //---------------------------------------------------------------------------------------------------------------------
     bool BackendGazebo::init(const Config &_config){
-	
-	int cnt=1;
- 	int joint;
-  	
-  	
-	
-	ros::NodeHandle n;
-  	mtopic=_config.topic;
-	mGarmId=_config.GarmId;
- 	joint_pub = n.advertise<sensor_msgs::JointState>(mtopic, 1000);
-	return true;
+		if(!ros::isInitialized()){
+			ros::NodeHandle n;
+			mArmPrefix = _config.armPrefix;
+			mArmId = _config.armId;
+			mJointPublisher = n.advertise<sensor_msgs::JointState>(mArmPrefix, 1000);
+			return true;
+		}else{
+			return false;
+		}
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     bool BackendGazebo::pose(const Eigen::Matrix4f &_pose, bool _blocking){
-	return false;
-
+		return false;
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     bool BackendGazebo::joints(const std::vector<float> &_joints, bool _blocking){
-	//while (ros::ok())
- 	 //{
-    	
-    	  	int cnt=0;
-                sensor_msgs::JointState j_msg;
+		sensor_msgs::JointState j_msg;
 
-
-                        if(mGarmId==0){
-                        j_msg.header.seq=cnt;
-                        j_msg.header.frame_id="0";
-                        j_msg.position.push_back (_joints[0]);
-                        j_msg.position.push_back (_joints[1]);
-                        j_msg.position.push_back (_joints[2]);
-                        j_msg.name.push_back ("arm_0_bottom_joint");
-                        j_msg.name.push_back ("arm_1_joint");
-                        j_msg.name.push_back ("arm_2_joint");
-                        j_msg.header.stamp = ros::Time::now();
-                        ROS_INFO("[Talker]:Publishing alone");
-                        }
-                        else if(mGarmId==1){
-			j_msg.header.seq=cnt;
-			j_msg.header.frame_id="0";
-			j_msg.position.push_back (_joints[0]);
-			j_msg.position.push_back (_joints[1]);
-			j_msg.position.push_back (_joints[2]);   
-                        j_msg.name.push_back ("right/arm_0_bottom_joint");
-                        j_msg.name.push_back ("right/arm_1_joint");
-                        j_msg.name.push_back ("right/arm_2_joint");
-			j_msg.header.stamp = ros::Time::now();		
-			ROS_INFO("[Talker]:Publishing right arm");
-			
-
-			}
-			else{
-			j_msg.header.seq=cnt;
-			j_msg.header.frame_id="0";
-			j_msg.position.push_back (_joints[0]);
-			j_msg.position.push_back (_joints[1]);
-			j_msg.position.push_back (_joints[2]);   
-                        j_msg.name.push_back ("left/arm_0_bottom_joint");
-                        j_msg.name.push_back ("left/arm_1_joint");
-                        j_msg.name.push_back ("left/arm_2_joint");
-			j_msg.header.stamp = ros::Time::now();		
-			ROS_INFO("[Talker]:Publishing left arm");
-			}
-
-			//normal publish
-
+		j_msg.header.stamp = ros::Time::now();		
+		j_msg.header.seq=0;
+		j_msg.header.frame_id=mArmPrefix;
+		j_msg.position.push_back (_joints[0]);
+		j_msg.position.push_back (_joints[1]);
+		j_msg.position.push_back (_joints[2]);   
+		j_msg.name.push_back (mArmPrefix+"/arm_0_bottom_joint");
+		j_msg.name.push_back (mArmPrefix+"/arm_1_joint");
+		j_msg.name.push_back (mArmPrefix+"/arm_2_joint");
 		
-			/*j_msg.header.seq=cnt;
-			j_msg.header.frame_id="0";
-			j_msg.position.push_back (_joints[0]);
-			j_msg.position.push_back (_joints[1]);
-			j_msg.position.push_back (_joints[2]);   
-			j_msg.name.push_back ("arm_0_bottom_joint");
-			j_msg.name.push_back ("arm_1_joint");
-			j_msg.name.push_back ("arm_2_joint");
-			j_msg.header.stamp = ros::Time::now();		
-			ROS_INFO("[Talker]:Publishing");*/
-	
-
-	
-	    joint_pub.publish(j_msg);   
-	    cnt++;
-	    return true;
-	  //}
-		
-
+		mJointPublisher.publish(j_msg);   
+		return true;
     }
 
     //---------------------------------------------------------------------------------------------------------------------

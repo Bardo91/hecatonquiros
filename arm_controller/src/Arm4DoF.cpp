@@ -37,194 +37,87 @@ namespace hecatonquiros{
         std::string modelPath = ros::package::getPath("gazebo_simulation") + "/urdf/arm_description.urdf";   // 666 HOW TO MAKE IT GENERIC WITHOUT ROS.
         mRobotModelLoader = robot_model_loader::RobotModelLoader(modelPath);
         mKinematicModel  = mRobotModelLoader.getModel();
-        mKinematicState = new robot_state::RobotState(mKinematicModel);
+        mKinematicState = robot_state::RobotStatePtr(new robot_state::RobotState(mKinematicModel));
+        mJointsGroup = mKinematicModel->getJointModelGroup("");
+        mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
-    joints({mHome1, mHome2, mHome3});
+        joints({mHome1, mHome2, mHome3, mHome4, mHome5});
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::joints(std::vector<float> _q) {
-        assert(_q.size() == 3 || _q.size() == 4);
+    void Arm4DoF::joints(std::vector<double> _q) {
+        assert(_q.size() == mArmJoints.size());
 
-        mArmjoints[0] = _q[0];
-        mArmjoints[1] = _q[1];
-        mArmjoints[2] = _q[2];
-        if(_q.size() == 3){
-            mArmjoints[3] = 0;
-        }else{
-            mArmjoints[3] = _q[3];
+        for(unsigned i = 0; i < _q.size(); i++){
+            mArmJoints[i] = _q[i];
         }
-        
+        mKinematicState->setJointGroupPositions(mJointsGroup, mArmJoints);
         if(mBackend != nullptr){
-            mBackend->joints(mArmjoints);
+            mBackend->joints(std::vector<float>(mArmJoints.begin(), mArmJoints.end()));
         }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    std::vector<float> Arm4DoF::joints() const {
-        return mArmjoints;
+    std::vector<double> Arm4DoF::joints() {
+        mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
+        return mArmJoints;
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::position(Eigen::Vector3f _position, float _wirst) {
-        mArmjoints[0] = atan2(_position[1], _position[0]);
-    
-        float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
-        float x = _position[2] - mBaseHeight;
-    
-        float D = (x*x+y*y-mHumerus*mHumerus-mRadius*mRadius)/(2*mHumerus*mRadius);
-        float auxD = 1 - D*D;
-        if(auxD < 0){
-            auxD = 0;
-            //std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
-        }
-    
-        float theta2a = atan2(sqrt(auxD), D);
-        float theta2b = atan2(-sqrt(auxD), D);
-    
-        float k1a = mHumerus + mRadius*cos(theta2a);
-        float k2a = mRadius*sin(theta2a);
-        float theta1a = atan2(y,x)-atan2(k2a,k1a);
-    
-        float k1b = mHumerus + mRadius*cos(theta2b);
-        float k2b = mRadius*sin(theta2b);
-        float theta1b = atan2(y,x)-atan2(k2b,k1b);
-    
-        float angleDistA = abs(theta1a - mArmjoints[1]) + abs(theta2a - mArmjoints[2]);
-        float angleDistB = abs(theta1b - mArmjoints[1]) + abs(theta2b - mArmjoints[2]);
-    
-        //if(angleDistA < angleDistB){
-            mArmjoints[1] = theta1a;
-            mArmjoints[2] = theta2a;
-        //}else{
-        //    mArmjoints[1] = theta1b;
-        //    mArmjoints[2] = theta2b;
-        //}
+    void Arm4DoF::position(Eigen::Matrix4f _position, float _wirst) {
+        joints(mArmJoints); // send joints to arduino
+    }
 
-        mArmjoints[3] = _wirst;
+    //---------------------------------------------------------------------------------------------------------------------
+    Eigen::Matrix4f Arm4DoF::position() {
         
-        joints(mArmjoints); // send joints to arduino
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    Eigen::Vector3f Arm4DoF::position() {
-        float mA0 = mArmjoints[0];
-        float mA1 = mArmjoints[1];
-        float mA2 = mArmjoints[2];
-
-        mT01 <<	cos(mA0),   0,  sin(mA0),  0,
-                sin(mA0),   0,  -cos(mA0), 0,
-                0,          1,  0,         mBaseHeight,
-                0,          0,  0,         1;
-
-        mT12 <<	cos(M_PI/2 + mA1),  -sin(M_PI/2 + mA1),  0,  mHumerus * cos(M_PI/2 + mA1),
-                sin(M_PI/2 + mA1),  cos(M_PI/2 + mA1),  0,  mHumerus * sin(M_PI/2 + mA1),
-                0,                  0,                  1,  0,
-                0,                  0,                  0,  1;
-
-        mT23 <<	cos(mA2),  -sin(mA2),  0,   mRadius * cos(mA2),
-                sin(mA2),  cos(mA2),   0,   mRadius * sin(mA2),
-                0,         0,          1,   0,
-                0,         0,          0,   1;
-
-        mFinalT = mT01*mT12*mT23;
-
-        return mFinalT.block<3,1>(0,3);
-    }
-
-    //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::checkIk(Eigen::Vector3f _position){
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _position){
         std::vector<Eigen::Matrix4f> ts;
-        std::vector<float> angles;
+        std::vector<double> angles;
         return checkIk(_position, angles, ts);
     }
 
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations){
-        std::vector<float> angles;
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _position, std::vector<Eigen::Matrix4f> &_transformations){
+        std::vector<double> angles;
         return checkIk(_position, angles,_transformations);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _position, std::vector<double> &_angles){
         std::vector<Eigen::Matrix4f> ts;
         return checkIk(_position,_angles, ts);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
-        float theta0a = atan2(_position[1], _position[0]);
-    
-        float y = sqrt(_position[0]*_position[0] + _position[1]*_position[1]);
-        float x = _position[2] - mBaseHeight;
-    
-        float D = (x*x+y*y-mHumerus*mHumerus-mRadius*mRadius)/(2*mHumerus*mRadius);
-        float auxD = 1 - D*D;
-        if(auxD < 0){ // NON REACHABLE POINT
-            //std::cout << "1-D^2 < 0, unrecheable point, fitting to 0\n";
-            return false;
-        }else{  // REACHABLE POINT
-            float theta2a = atan2(sqrt(auxD), D);
-
-            float k1a = mHumerus + mRadius*cos(theta2a);
-            float k2a = mRadius*sin(theta2a);
-            float theta1a = atan2(y,x)-atan2(k2a,k1a);
-            _angles = {theta0a, theta1a, theta2a};
-
-            return directKinematic(_angles, _transformations);
-        } 
-    }
-
-    //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
-        Eigen::Matrix4f t01, t12, t23;
-
-        t01 <<	cos(_angles[0]),  -sin(_angles[0]),  0, 0,
-                sin(_angles[0]),  cos(_angles[0]), 0, 0,
-                0,          0,  1,         mBaseHeight,
-                0,          0,  0,         1;
-
-        t12 <<	cos(-M_PI/2 + _angles[1]), 0, sin(-M_PI/2 + _angles[1]), mHumerus * cos(-M_PI/2 + _angles[1]),
-                0,1,0,0,
-                -sin(-M_PI/2 + _angles[1]), 0, cos(-M_PI/2 + _angles[1]),  -mHumerus * sin(-M_PI/2 + _angles[1]),
-                0,                  0,                  0,  1;
-
-        t23 <<	cos(_angles[2]),  0, sin(_angles[2]),   mRadius * cos(_angles[2]),
-                0,1,0,0,
-                -sin(_angles[2]), 0,  cos(_angles[2]),    -mRadius * sin(_angles[2]),
-                0,         0,          0,   1;
-
-
-        _transformations.push_back(t01);
-        _transformations.push_back(t12);
-        _transformations.push_back(t23);
-
-        if( (_angles[0]>=(-90*M_PI/180) && _angles[0]<=(90*M_PI/180)) && 
-            (_angles[1]>=(-90*M_PI/180) && _angles[1]<=(90*M_PI/180)) && 
-            (_angles[2]>=(-90*M_PI/180) && _angles[2]<=(90*M_PI/180)) ){
-            // Perfectly reachable point
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _position, std::vector<double> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+        Eigen::Affine3f affine3f(_position);
+        bool foundIk = mKinematicState->setFromIK(mJointsGroup, affine3f.cast<double>() , 10, 0.1);
+        if(foundIk){
+            mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
+            _angles = mArmJoints;
             return true;
-        }
-        else{   
-            // Exceeding some joint max angle
+        }else{
             return false;
         }
+
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    Eigen::Matrix4f Arm4DoF::pose() const {
-        return Eigen::Matrix4f();
+    bool Arm4DoF::directKinematic(const std::vector<double> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
+        return false;
     }
+
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2) {
-        position();
-        _t0 = mT01;
-        _t1 = mT12;
-        _t2 = mT23;
+        
     }
 
     //---------------------------------------------------------------------------------------------------------------------

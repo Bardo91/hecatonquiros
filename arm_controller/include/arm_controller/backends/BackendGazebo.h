@@ -46,9 +46,9 @@ namespace hecatonquiros{
     private:
         virtual bool init(const Config &_config);
 
-	std::string mtopic;
-	ros::Publisher joint_pub; 
-	int 	    mGarmId;
+        std::string mArmPrefix;
+        ros::Publisher mJointPublisher; 
+        int 	    mArmId;
     };
 }
 

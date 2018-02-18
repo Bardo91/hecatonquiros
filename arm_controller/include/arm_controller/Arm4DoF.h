@@ -38,37 +38,28 @@ namespace hecatonquiros{
         /// Send robot to home.
         void home();
 
-        /// set longitudes
-        void barsSize(float _base, float _bar1, float _bar2){
-            mBaseHeight = _base;
-            mHumerus = _bar1;
-            mRadius = _bar2;
-        }
-
         /// Joints in radians
-        void joints(std::vector<float>);
-        std::vector<float> joints() const;
+        void joints(std::vector<double>);
+        std::vector<double> joints();
 
         /// Position in cartesian coordinates (meters)
-        void position(Eigen::Vector3f _position, float _wirst = 0);
-        Eigen::Vector3f position();
-
-        Eigen::Matrix4f pose() const;
+        void position(Eigen::Matrix4f _position, float _wirst = 0);
+        Eigen::Matrix4f position();
 
         /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position);
+        bool checkIk(Eigen::Matrix4f _position);
 
         /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations);
+        bool checkIk(Eigen::Matrix4f _position, std::vector<Eigen::Matrix4f> &_transformations);
 
         /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
+        bool checkIk(Eigen::Matrix4f _position, std::vector<double> &_angles);
 
         /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
+        bool checkIk(Eigen::Matrix4f _position, std::vector<double> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
 
         /// Compute DK and check if valid
-        bool directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
+        bool directKinematic(const std::vector<double> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
 
         //void lastTransformations(Eigen::Matrix4f &_t01, Eigen::Matrix4f &_t12, Eigen::Matrix4f &_t23, Eigen::Matrix4f &_t34);
         void lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2);
@@ -81,11 +72,12 @@ namespace hecatonquiros{
     private:
         Backend *mBackend;
 
-        std::vector<float> mArmjoints = std::vector<float>(4);
+        std::vector<double> mArmJoints;
 
         robot_model_loader::RobotModelLoader mRobotModelLoader;
         robot_model::RobotModelPtr mKinematicModel;
         robot_state::RobotStatePtr mKinematicState;
+        robot_state::JointModelGroup *mJointsGroup;
 
         float   mHome1 = 0*M_PI/180.0,
                 mHome2 = 0*M_PI/180.0,
