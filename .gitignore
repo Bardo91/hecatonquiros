@@ -5,3 +5,5 @@
 *build*
 /cad_models/arm_3_dog/serial_model/OldVersions
 /cad_models/tools/gripper/serial_model/OldVersions
+/cad_models/tools/gripper/serial_model_5DoF/OldVersions
+/cad_models/arm_4_dof/serial_model/OldVersions
