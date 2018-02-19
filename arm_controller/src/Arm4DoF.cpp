@@ -34,9 +34,9 @@ namespace hecatonquiros{
         mBackend = Backend::create(_config);
         mArmId = _config.armId;
 
-        std::string modelPath = ros::package::getPath("gazebo_simulation") + "/urdf/arm_description.urdf";   // 666 HOW TO MAKE IT GENERIC WITHOUT ROS.
-        mRobotModelLoader = robot_model_loader::RobotModelLoader(modelPath);
-        mKinematicModel  = mRobotModelLoader.getModel();
+        std::string modelPath = "/robot_description";   // 666 HOW TO MAKE IT GENERIC WITHOUT ROS.
+        mRobotModelLoader = new robot_model_loader::RobotModelLoader(modelPath);
+        mKinematicModel  = mRobotModelLoader->getModel();
         mKinematicState = robot_state::RobotStatePtr(new robot_state::RobotState(mKinematicModel));
         mJointsGroup = mKinematicModel->getJointModelGroup("");
         mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);

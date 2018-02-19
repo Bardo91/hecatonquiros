@@ -1,0 +1,6 @@
+controller_list:
+  - name: fake_arm4dof_controller
+    joints:
+      - arm_0_bottom_joint
+      - arm_1_joint
+      - arm_2_joint

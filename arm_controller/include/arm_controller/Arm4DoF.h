@@ -74,7 +74,7 @@ namespace hecatonquiros{
 
         std::vector<double> mArmJoints;
 
-        robot_model_loader::RobotModelLoader mRobotModelLoader;
+        robot_model_loader::RobotModelLoader *mRobotModelLoader;
         robot_model::RobotModelPtr mKinematicModel;
         robot_state::RobotStatePtr mKinematicState;
         robot_state::JointModelGroup *mJointsGroup;
