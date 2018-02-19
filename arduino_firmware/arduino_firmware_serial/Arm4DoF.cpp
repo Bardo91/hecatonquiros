@@ -25,65 +25,63 @@
 #include <Arduino.h> 
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::setup(int _id){
+void Arm4DoF::setup(int _id){
   mId = _id;
-  if(!Serial2){
-    Serial2.begin(1000000)
-  }
-  mServosInterface.pSerial(&Serial2)
-  mServosInterface.EnableTorque(_id*10 + 1, 1); // ENABLE Joint 0
-  mServosInterface.EnableTorque(_id*10 + 2, 1); // ENABLE Joint 1
-  mServosInterface.EnableTorque(_id*10 + 3, 1); // ENABLE Joint 2
-  mServosInterface.EnableTorque(_id*10 + 4, 1); // ENABLE joint wirst
-  mServosInterface.EnableTorque(_id*10 + 5, 1); // ENABLE Joint gripper
-  
+  Serial1.begin(1000000);
+  mServosInterface.pSerial = &Serial1;
+  delay(500);
+
+  mServosInterface.EnableTorque(mId*10 + 1, 1); // ENABLE Joint 0
+  mServosInterface.EnableTorque(mId*10 + 2, 1); // ENABLE Joint 1
+  mServosInterface.EnableTorque(mId*10 + 3, 1); // ENABLE Joint 2
+  mServosInterface.EnableTorque(mId*10 + 4, 1); // ENABLE joint wirst
+  mServosInterface.EnableTorque(mId*10 + 5, 1); // ENABLE Joint gripper
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::offsets(float _o0, float _o1, float _o2, float _o3, float _o4){
+void Arm4DoF::offsets(float _o0, float _o1, float _o2, float _o3){
   mOffset0 = _o0;
   mOffset1 = _o1;
   mOffset2 = _o2;
   mOffset3 = _o3;
-  mOffset4 = _o4;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::speed(float _speed){
+void Arm4DoF::speed(float _speed){
   mSpeed = _speed;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-float Arm::speed(){
+float Arm4DoF::speed(){
   return mSpeed;
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::joints(float _v0, float _v1, float _v2, float _v3){
-  mServosInterface.WritePos(_id*10 + 1, mapAngleToVal(-90,90,_val), mSpeed); <<--- Comprobar angulos max y min
-  mServosInterface.WritePos(_id*10 + 2, mapAngleToVal(-90,90,_val), mSpeed);
-  mServosInterface.WritePos(_id*10 + 3, mapAngleToVal(-90,90,_val), mSpeed);
-  mServosInterface.WritePos(_id*10 + 4, mapAngleToVal(-90,90,_val), mSpeed);
-  delay or sync???
+void Arm4DoF::joints(float _v0, float _v1, float _v2, float _v3){  
+  mServosInterface.WritePos(mId*10 + 1, mapAngleToVal(-95,100,_v0), mSpeed); // <<--- Comprobar angulos max y min
+  mServosInterface.WritePos(mId*10 + 2, mapAngleToVal(-90,90,_v1), mSpeed);
+  mServosInterface.WritePos(mId*10 + 3, mapAngleToVal(-90,90,_v2), mSpeed);
+  mServosInterface.WritePos(mId*10 + 4, mapAngleToVal(-90,90,_v3), mSpeed);
+  delay(1000);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::wrist(float _angle){
-  mServosInterface.WritePos(_id*10 + 4, mapAngleToVal(-180,180,_val), mSpeed); <<--- Comprobar angulos max y min
+void Arm4DoF::wrist(float _angle){
+  mServosInterface.WritePos(mId*10 + 4, mapAngleToVal(-180,180,_angle), mSpeed); // <<--- Comprobar angulos max y min
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::openGripper(){
-  mServosInterface.WritePos(_id*10 + 5, 0, mSpeed);
+void Arm4DoF::openGripper(){
+  mServosInterface.WritePos(mId*10 + 5, 0, mSpeed);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-void Arm::closeGripper(){
-  mServosInterface.WritePos(_id*10 + 5, 1023, mSpeed);
+void Arm4DoF::closeGripper(){
+  mServosInterface.WritePos(mId*10 + 5, 1023, mSpeed);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
-int mapAngleToVal(float _minAngle, float _maxAngle, float _angle){
+int Arm4DoF::mapAngleToVal(float _minAngle, float _maxAngle, float _angle){
   return (_angle-_minAngle)/(_maxAngle-_minAngle)*(1023-0);
 }
 

@@ -34,8 +34,7 @@ class Arm4DoF{
     /// \param _o1: offset of second servo
     /// \param _o2: offset of third servo
     /// \param _o3: offset of fourth servo
-    /// \param _o4: offset of fith servo
-    void offsets(float _o0, float _o1, float _o2, float _o3, float _o4);
+    void offsets(float _o0, float _o1, float _o2, float _o3);
 
     /// Set servo speed
     /// \param _speed: desired speed for servos.
@@ -68,7 +67,8 @@ class Arm4DoF{
     
   private:
     SCServo mServosInterface;
-    float mOffset0=90, mOffset1=90, mOffset2=90, mOffset3=90, mOffset4=90;
+    int mId = 0;
+    float mOffset0=90, mOffset1=90, mOffset2=90, mOffset3=90;
     float mSpeed=4000;
     int mFlagClose = 0;
 
