@@ -34,11 +34,11 @@
 namespace hecatonquiros{
 //---------------------------------------------------------------------------------------------------------------------
     bool BackendGazebo::init(const Config &_config){
-		if(!ros::isInitialized()){
+		if(ros::isInitialized()){
 			ros::NodeHandle n;
 			mArmPrefix = _config.armPrefix;
 			mArmId = _config.armId;
-			mJointPublisher = n.advertise<sensor_msgs::JointState>(mArmPrefix, 1000);
+			mJointPublisher = n.advertise<sensor_msgs::JointState>(mArmPrefix+"/joint_states", 1000);
 			return true;
 		}else{
 			return false;
@@ -60,9 +60,9 @@ namespace hecatonquiros{
 		j_msg.position.push_back (_joints[0]);
 		j_msg.position.push_back (_joints[1]);
 		j_msg.position.push_back (_joints[2]);   
-		j_msg.name.push_back (mArmPrefix+"/arm_0_bottom_joint");
-		j_msg.name.push_back (mArmPrefix+"/arm_1_joint");
-		j_msg.name.push_back (mArmPrefix+"/arm_2_joint");
+		j_msg.name.push_back (mArmPrefix+"arm_0_bottom_joint");
+		j_msg.name.push_back (mArmPrefix+"arm_1_joint");
+		j_msg.name.push_back (mArmPrefix+"arm_2_joint");
 		
 		mJointPublisher.publish(j_msg);   
 		return true;

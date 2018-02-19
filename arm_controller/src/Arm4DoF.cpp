@@ -38,7 +38,9 @@ namespace hecatonquiros{
         mRobotModelLoader = new robot_model_loader::RobotModelLoader(modelPath);
         mKinematicModel  = mRobotModelLoader->getModel();
         mKinematicState = robot_state::RobotStatePtr(new robot_state::RobotState(mKinematicModel));
-        mJointsGroup = mKinematicModel->getJointModelGroup("");
+        mJointsGroup = mKinematicModel->getJointModelGroup("arm4dof");
+        mJointNames = mJointsGroup->getVariableNames();
+        
         mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
     }
 
@@ -49,9 +51,9 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<double> _q) {
-        assert(_q.size() == mArmJoints.size());
+        assert(_q.size() >= mArmJoints.size());
 
-        for(unsigned i = 0; i < _q.size(); i++){
+        for(unsigned i = 0; i < mArmJoints.size(); i++){
             mArmJoints[i] = _q[i];
         }
         mKinematicState->setJointGroupPositions(mJointsGroup, mArmJoints);
@@ -68,12 +70,16 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::position(Eigen::Matrix4f _position, float _wirst) {
-        joints(mArmJoints); // send joints to arduino
+        if(checkIk(_position)){
+            joints(mArmJoints); // send joints to arduino
+        }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::position() {
-        
+        Eigen::Affine3d endState = mKinematicState->getGlobalLinkTransform("arm_2");
+        std::cout << endState.matrix() <<std::endl;
+        return endState.cast<float>().matrix();
     }
 
     //---------------------------------------------------------------------------------------------------------------------

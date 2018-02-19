@@ -78,7 +78,7 @@ namespace hecatonquiros{
         robot_model::RobotModelPtr mKinematicModel;
         robot_state::RobotStatePtr mKinematicState;
         robot_state::JointModelGroup *mJointsGroup;
-
+        std::vector<std::string> mJointNames;
         float   mHome1 = 0*M_PI/180.0,
                 mHome2 = 0*M_PI/180.0,
                 mHome3 = 90*M_PI/180.0,

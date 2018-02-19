@@ -22,7 +22,7 @@
         <joint name="arm_2_joint" value="1.588" />
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="tool_link" parent_link="arm_2" group="arm4dof" parent_group="arm4dof" />
+    <!--end_effector name="tool_link" parent_link="arm_2" group="end_effector" /-->
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="base_link" type="fixed" parent_frame="base_link" child_link="base_link" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->

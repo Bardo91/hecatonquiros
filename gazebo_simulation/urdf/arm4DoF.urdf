@@ -18,7 +18,6 @@
       </visual>
    </link>
    <joint name="arm_0_top_joint" type="fixed">
-      <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
       <parent link="base_link" />
       <child link="arm_0_top" />
       <origin rpy="0 0 0" xyz="0 0 -0.07" />
