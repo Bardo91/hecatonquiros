@@ -24,36 +24,21 @@
 #include "Arm4DoF.h"
 
 Positioner tool(A0, A1, A2, A3, A4);
-Arm leftArm;
-Arm rightArm;
+Arm4DoF leftArm;
+Arm4DoF rightArm;
 
 void setup() {
   Serial.begin(115200);
 
-  leftArm.setup(8,9,10,11,12);
-  leftArm.offsets(75,100,80,40,110);
-  
-  rightArm.setup(2,3,4,5,6);
-  rightArm.offsets(75,90,85,90,96);
-  
-  
-  leftArm.speed(20);
-  rightArm.speed(20);
-
-  leftArm.joints(0,0,90,0);
-  leftArm.wrist(0);
-  rightArm.joints(0,0,90,0);
-  rightArm.wrist(0);
-
-  leftArm.stopGripper();
-  rightArm.stopGripper();
+  leftArm.setup(1);
+  leftArm.offsets(90,90,90,90);
   
 }
 
 void exec             (String _cmd);
-void execArm          (String _cmd, Arm *_arm);
-void execWrist        (String _cmd, Arm *_arm);
-void execClaw         (char _cmd, Arm *_arm);
+void execArm          (String _cmd, Arm4DoF *_arm);
+void execWrist        (String _cmd, Arm4DoF *_arm);
+void execClaw         (char _cmd, Arm4DoF *_arm);
 void execPositioner   (String _cmd);
 
 String command;
@@ -85,8 +70,10 @@ void exec(String _cmd){
   if(_cmd[0] == 'a'){
     //Serial.println("command of type arm");
     if(_cmd[1] == '1'){
+      //Serial.println("Left arm");
       execArm(_cmd.substring(2), &leftArm);
     }else if(_cmd[1] == '2'){
+      //Serial.println("Right arm");
       execArm(_cmd.substring(2), &rightArm);
     }
   }else if(_cmd[0] == 'p'){
@@ -111,7 +98,7 @@ void exec(String _cmd){
   }
 }
 
-void execArm(String _cmd, Arm *_arm){
+void execArm(String _cmd, Arm4DoF *_arm){
   int signals[4] = {0, 0, 0, 0};
   for(unsigned i = 0; i < 4; i++){
     int idx = _cmd.indexOf(',');
@@ -124,11 +111,11 @@ void execArm(String _cmd, Arm *_arm){
     _cmd = _cmd.substring(idx+1);
     }
   }
-  
+    
   _arm->joints(signals[0], signals[1], signals[2], signals[3]);
 }
 
-void execWrist(String _cmd, Arm *_arm){
+void execWrist(String _cmd, Arm4DoF *_arm){
     int AngleWrist;
     //Serial.println(_cmd);
     AngleWrist = atoi(_cmd.c_str());
@@ -136,16 +123,14 @@ void execWrist(String _cmd, Arm *_arm){
     _arm->wrist(AngleWrist);
 }
 
-void execClaw(char _cmd, Arm *_arm){
+void execClaw(char _cmd, Arm4DoF *_arm){
   //Serial.println(_cmd);
   if(_cmd == 'o'){
     _arm->openGripper();
     //Serial.println("Open claw");
   }else if(_cmd == 'c'){
     _arm->closeGripper();
-    //Serial.println("Close claw");
-  }else if(_cmd == 's'){
-    _arm->stopGripper();    
+    //Serial.println("Close claw"); 
   }else{
     // Do nothing
   }
