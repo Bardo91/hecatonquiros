@@ -26,7 +26,7 @@
 #include <thread>
 #include <chrono>
 #include <cassert>
-#include <ros/package.h>
+#include <ros/ros.h>
 
 namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
@@ -34,47 +34,50 @@ namespace hecatonquiros{
         std::string mArmPrefix = "";
         ros::NodeHandle n;
         ros::Publisher mJointPublisher = n.advertise<sensor_msgs::JointState>(mArmPrefix+"/joint_states", 1000);
+        std::cout << "Loading SRDF" <<std::endl;
+        TiXmlDocument docSrdf("/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/gazebo_simulation/config/arm4DoF.srdf");
+        docSrdf.LoadFile();
+        std::cout << "Loading URDF" <<std::endl;
+        TiXmlDocument docUrdf("/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/gazebo_simulation/urdf/arm4DoF.urdf");
+        docUrdf.LoadFile();
+        std::cout << "LOADED FILES" <<std::endl;
+        rdf_loader::RDFLoader rdf_loader(&docUrdf, &docSrdf);
+        srdf::ModelSharedPtr srdf = rdf_loader.getSRDF();
+        urdf::ModelInterfaceSharedPtr urdf_model = rdf_loader.getURDF();
 
-        robot_model_loader::RobotModelLoader robot_model_loader("/robot_description");
-        robot_model::RobotModelPtr kinematic_model = robot_model_loader.getModel();
-        ROS_INFO("Model frame: %s", kinematic_model->getModelFrame().c_str());
+        std::cout <<srdf <<std::endl;
+        std::cout <<urdf_model <<std::endl;
 
-        // Using the :moveit_core:`RobotModel`, we can construct a
-        // :moveit_core:`RobotState` that maintains the configuration
-        // of the robot. We will set all joints in the state to their
-        // default values. We can then get a
-        // :moveit_core:`JointModelGroup`, which represents the robot
-        // model for a particular group, e.g. the "right_arm" of the PR2
-        // robot.
-        robot_state::RobotStatePtr kinematic_state(new robot_state::RobotState(kinematic_model));
-        kinematic_state->setToDefaultValues();
-        const robot_state::JointModelGroup *joint_model_group = kinematic_model->getJointModelGroup("arm4dof");
+        robot_model_.reset(new robot_model::RobotModel(urdf_model, srdf));
 
-        const std::vector<std::string> &joint_names = joint_model_group->getVariableNames();
+        robot_model_->printModelInfo(std::cout);
+        
+        joint_model_group_ = robot_model_->getJointModelGroup("arm4dof");
+
+        const std::vector<std::string> jm_names = joint_model_group_->getVariableNames();
+
+        robot_state_.reset(new robot_state::RobotState(robot_model_));
+        robot_state_->setToDefaultValues();
+
+        int a;
 
         while(ros::ok()){
-            // Get Joint Values
-            // ^^^^^^^^^^^^^^^^
-            // We can retreive the current set of joint values stored in the state for the right arm.
             std::vector<double> joint_values;
-            // Joint Limits
-            // ^^^^^^^^^^^^
-            // setJointGroupPositions() does not enforce joint limits by itself, but a call to enforceBounds() will do it.
-            /* Set one joint in the right arm outside its joint limit */
-            kinematic_state->setToRandomPositions(joint_model_group);
-            kinematic_state->copyJointGroupPositions(joint_model_group, joint_values);
-            for (std::size_t i = 0; i < joint_names.size(); ++i)
-            {
-                ROS_INFO("Joint %s: %f", joint_names[i].c_str(), joint_values[i]);
+            robot_state_->setToRandomPositions(joint_model_group_);
+            robot_state_->update ();
+            robot_state_->updateLinkTransforms ();
+            robot_state_->update ();
+
+            robot_state_->copyJointGroupPositions(joint_model_group_, joint_values);
+            for (std::size_t i = 0; i < jm_names.size(); ++i) {
+                ROS_INFO("Joint %s: %f", jm_names[i].c_str(), joint_values[i]);
             }
-            ROS_INFO_STREAM("Current state is " << (kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
+            ROS_INFO_STREAM("Current state is " << (robot_state_->satisfiesBounds() ? "valid" : "not valid"));
 
             /* Enforce the joint limits for this state and check again*/
-            kinematic_state->enforceBounds();
-            ROS_INFO_STREAM("Current state is " << (kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
-
-            kinematic_state->copyJointGroupPositions(joint_model_group, joint_values);
-            const Eigen::Affine3d &end_effector_state = kinematic_state->getGlobalLinkTransform("arm_2");
+            robot_state_->enforceBounds();
+            ROS_INFO_STREAM("Current state is " << (robot_state_->satisfiesBounds() ? "valid" : "not valid"));
+            const Eigen::Affine3d &end_effector_state = robot_state_->getGlobalLinkTransform("arm_2");
 
             /* Print end-effector pose. Remember that this is in the model frame */
             ROS_INFO_STREAM("Translation: " << end_effector_state.translation());
@@ -98,38 +101,20 @@ namespace hecatonquiros{
                 std::this_thread::sleep_for(std::chrono::milliseconds(30));
                 counter++;
             }
-            
-            // Forward Kinematics
-            // ^^^^^^^^^^^^^^^^^^
-            // Now, we can compute forward kinematics for a set of random joint
-            // values. Note that we would like to find the pose of the
-            // "r_wrist_roll_link" which is the most distal link in the
-            
-            // Inverse Kinematics
-            // ^^^^^^^^^^^^^^^^^^
-            // We can now solve inverse kinematics (IK) for the right arm of the
-            // PR2 robot. To solve IK, we will need the following:
-            // * The desired pose of the end-effector (by default, this is the last link in the "right_arm" chain):
-            // end_effector_state that we computed in the step above.
-            // * The number of attempts to be made at solving IK: 5
-            // * The timeout for each attempt: 0.1 s
-            bool found_ik = kinematic_state->setFromIK(joint_model_group, end_effector_state, 10, 0.1);
+            bool found_ik = robot_state_->setFromIK(joint_model_group_, end_effector_state, 10, 0.1);
             // Now, we can print out the IK solution (if found):
-            if (found_ik)
-            {
+            if (found_ik) {
                 std::cout << "Inverse kinematic" << std::endl;
-            kinematic_state->copyJointGroupPositions(joint_model_group, joint_values);
-            for (std::size_t i = 0; i < joint_names.size(); ++i)
-            {
-                ROS_INFO("Joint %s: %f", joint_names[i].c_str(), joint_values[i]);
+                robot_state_->copyJointGroupPositions(joint_model_group_, joint_values);
+                for (std::size_t i = 0; i < jm_names.size(); ++i) {
+                    ROS_INFO("Joint %s: %f", jm_names[i].c_str(), joint_values[i]);
+                }
+            } else {
+                ROS_INFO("Did not find IK solution");
             }
-            }
-            else
-            {
-            ROS_INFO("Did not find IK solution");
-            }
-                std::cout << "-------------------------------------" << std::endl;
+            std::cout << "-------------------------------------" << std::endl;
         }
+
         //mBackend = Backend::create(_config);
         //mArmId = _config.armId;
 
@@ -165,7 +150,7 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<double> _q) {
-        assert(_q.size() >= mArmJoints.size());
+        /*assert(_q.size() >= mArmJoints.size());
 
         for(unsigned i = 0; i < mArmJoints.size(); i++){
             mArmJoints[i] = _q[i];
@@ -173,13 +158,13 @@ namespace hecatonquiros{
         mKinematicState->setJointGroupPositions(mJointsGroup, mArmJoints);
         if(mBackend != nullptr){
             mBackend->joints(std::vector<float>(mArmJoints.begin(), mArmJoints.end()));
-        }
+        }*/
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     std::vector<double> Arm4DoF::joints() {
-        mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
-        return mArmJoints;
+        /*mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
+        return mArmJoints;*/
     }
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -218,7 +203,7 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::checkIk(Eigen::Matrix4f _position, std::vector<double> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
-        Eigen::Affine3f affine3f(_position);
+        /*Eigen::Affine3f affine3f(_position);
         bool foundIk = mKinematicState->setFromIK(mJointsGroup, affine3f.cast<double>() , 10, 0.1);
         if(foundIk){
             mKinematicState->copyJointGroupPositions(mJointsGroup, mArmJoints);
@@ -227,7 +212,7 @@ namespace hecatonquiros{
         }else{
             return false;
         }
-
+*/
     }
 
     //---------------------------------------------------------------------------------------------------------------------
