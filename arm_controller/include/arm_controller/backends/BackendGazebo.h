@@ -24,7 +24,7 @@
 #define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
 
 #include <arm_controller/backends/Backend.h>
-
+#include "ros/ros.h"
 namespace hecatonquiros{
     class BackendGazebo: public Backend{
     public:
@@ -45,6 +45,10 @@ namespace hecatonquiros{
         virtual bool claw(const int _action);
     private:
         virtual bool init(const Config &_config);
+
+	std::string mtopic; 
+	ros::Publisher joint_pub; 
+	int marmId;
     };
 }
 

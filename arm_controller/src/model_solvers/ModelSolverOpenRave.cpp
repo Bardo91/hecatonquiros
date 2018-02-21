@@ -19,53 +19,5 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+#include <arm_controller/model_solvers/ModelSolverOpenRave.h>
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKEND_H_
-#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKEND_H_
-
-#include <string>
-#include <Eigen/Eigen>
-
-namespace serial{class Serial;} // Forward declaration neede for config structure
-
-namespace hecatonquiros{
-    class Backend{
-    public:
-        struct Config{
-            /// Type of backend
-            enum class eType {Arduino, Gazebo};
-            eType type;
-
-            /// Config for Arduino
-            std::string     port = "";
-            int             baudrate = -1;
-            serial::Serial *sharedSerialPort = nullptr;
-            int             armId;
-
-
-            /// Config for gazebo
-            std::string topic = "";
-	    
-
-        };
-
-        static Backend* create(const Config &_config);
-
-        /// \brief abstract method for sending arm to a desired pose
-        virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false) = 0;
-
-        /// \brief abstract method for moving joints of the arm to the desired angle
-        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false) = 0;
-
-        /// \brief abstract method for actuating to claws if implemented and attached
-        /// \param _action: 0 close, 1 stop, 2 open;
-        virtual bool claw(const int _action) = 0;
-    protected:
-        Backend() {}  
-        // \brief abstract method for initialization of the class
-        virtual bool init(const Config &_config) = 0;
-
-    };
-}
-
-#endif

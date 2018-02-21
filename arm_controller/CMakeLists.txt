@@ -50,7 +50,6 @@ catkin_package(
 	INCLUDE_DIRS ./include
 )
 
-
 ## Load PCL
 find_package(PCL QUIET)
 if(${PCL_FOUND})
@@ -93,7 +92,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${catkin_LIBRARIES})
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
-
 
 ### DOC generation
 find_package(Doxygen)

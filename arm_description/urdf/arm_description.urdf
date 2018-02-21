@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="arm4DoF">
+   <!-- BASE -->
+   <link name="base_link">
+      <visual>
+         <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+   </link>
+
+   <!--///////////////////////////////////LEFT ARM//////////////////////////////////-->
+
+
+   <!-- Joint 0 -->
+    <link name="left/arm_0_top">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+          <origin rpy="0 0 -1.57075" xyz="0 0 0" />
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.07" />
+            <geometry>
+              <box size="1 1 0.67"/>
+            </geometry>
+       </collision>
+   </link>
+   <joint name="left/arm_0_top_joint" type="fixed">
+      <parent link="base_link" />
+      <child link="left/arm_0_top" />
+      <origin rpy="0 0 0" xyz="0 1 0" />
+   </joint>
+
+
+    <link name="left/arm_0_closing_case">
+       <visual>
+          <geometry>
+             <mesh filename="package://arm_description/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
+          </geometry>
+       </visual>
+    </link>
+    <joint name="left/arm_0_closing_case_joint" type="fixed">
+       <parent link="left/arm_0_top" />
+       <child link="left/arm_0_closing_case" />
+       <origin rpy="0 0 0" xyz="0 0 -0.07" />
+    </joint>
+
+   <link name="left/arm_0_bottom">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+         <origin rpy="0 3.1415 3.1415" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/arm_0_bottom_joint" type="continuous">
+      <parent link="left/arm_0_closing_case" />
+      <child link="left/arm_0_bottom" />
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 -0.335" />
+   </joint>
+
+   <!-- Joint 1 -->
+   <link name="left/arm_1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_1.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0.1 0 0.9" />
+            <geometry>
+              <box size="0.73 0.3 1.0"/>
+            </geometry>
+       </collision>
+   </link>
+   <joint name="left/arm_1_joint" type="continuous">
+      <parent link="left/arm_0_bottom" />
+      <child link="left/arm_1" />
+      <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+   </joint>
+
+   <!-- Joint 2-->
+   <link name="left/arm_2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_2.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.82" />
+            <geometry>
+              <box size="0.9 0.3 1.3"/>
+            </geometry>
+       </collision>
+   </link>
+   <joint name="left/arm_2_joint" type="continuous">
+      <parent link="left/arm_1" />
+      <child link="left/arm_2" />
+      <origin xyz="0 0 1.7" rpy="0 0 0"/>
+   </joint>
+
+
+<!--//////////////////////////////////////////RIGHT ARM///////////////////////////////////////////////-->
+
+    <!-- Joint 0-->
+    <link name="right/arm_0_top">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+          <origin rpy="0 0 -1.57075" xyz="0 0 0" />
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.07" />
+            <geometry>
+              <box size="1 1 0.67"/>
+            </geometry>
+       </collision>
+    </link>
+    <joint name="right/arm_0_top_joint" type="fixed">
+       <parent link="base_link" />
+       <child link="right/arm_0_top" />
+       <origin rpy="0 0 0" xyz="0 -1 0" />
+    </joint>
+
+    <link name="right/arm_0_closing_case">
+       <visual>
+          <geometry>
+             <mesh filename="package://arm_description/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
+          </geometry>
+       </visual>
+    </link>
+    <joint name="right/arm_0_closing_case_joint" type="fixed">
+       <parent link="right/arm_0_top" />
+       <child link="right/arm_0_closing_case" />
+       <origin rpy="0 0 0" xyz="0 0 -0.07" />
+    </joint>
+
+    <link name="right/arm_0_bottom">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+         <origin rpy="0 3.1415 3.1415" xyz="0 0 0" />
+      </visual>
+    </link>
+    <joint name="right/arm_0_bottom_joint" type="continuous">
+      <parent link="right/arm_0_closing_case" />
+      <child link="right/arm_0_bottom" />
+      <origin rpy="0 ${pi/2} 0" xyz="0 0 -0.335" />
+    </joint>
+
+    <!-- Joint 1 -->
+    <link name="right/arm_1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_1.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0.1 0 0.9" />
+            <geometry>
+              <box size="0.73 0.3 1.0"/>
+            </geometry>
+       </collision>
+    </link>
+    <joint name="right/arm_1_joint" type="continuous">
+      <parent link="right/arm_0_bottom" />
+      <child link="right/arm_1" />
+      <origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+    </joint>
+
+    <!-- Joint 2-->
+    <link name="right/arm_2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/arm_2.stl" scale="0.01 0.01 0.01" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.82" />
+            <geometry>
+              <box size="0.9 0.3 1.3"/>
+            </geometry>
+       </collision>
+    </link>
+    <joint name="right/arm_2_joint" type="continuous">
+      <parent link="right/arm_1" />
+      <child link="right/arm_2" />
+      <origin xyz="0 0 1.7" rpy="0 0 0"/>
+    </joint>
+
+
+
+
+</robot>
