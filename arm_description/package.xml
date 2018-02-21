@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>gazebo_simulation</name>
+  <name>arm_description</name>
   <version>0.0.0</version>
   <description>The arm_description package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="luis@todo.todo">luis</maintainer>
+  <maintainer email="luismarzor@gmail.com">Luis Marzo</maintainer>
   <maintainer email="prs@us.es">Pablo R.S.</maintainer>
 
 
