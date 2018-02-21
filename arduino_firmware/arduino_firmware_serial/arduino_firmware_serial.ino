@@ -32,6 +32,10 @@ void setup() {
 
   leftArm.setup(1);
   leftArm.offsets(90,90,90,90);
+
+  rightArm.setup(2);
+  rightArm.offsets(90,90,90,90);
+  
   
 }
 
