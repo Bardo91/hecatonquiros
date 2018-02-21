@@ -103,20 +103,23 @@ void exec(String _cmd){
 }
 
 void execArm(String _cmd, Arm4DoF *_arm){
-  int signals[4] = {0, 0, 0, 0};
-  for(unsigned i = 0; i < 4; i++){
+  float signals[6];
+  int numberJoints = 0;
+  for(unsigned i = 0; i < 6; i++){
     int idx = _cmd.indexOf(',');
     if( idx == -1 ){  // case for only 3 joints, we dont need wrist, so put it to 0
        signals[i] = atoi(_cmd.c_str());
+        numberJoints++;
        break;
     }
     else{
-    signals[i] = atoi(_cmd.substring(0,idx).c_str());
-    _cmd = _cmd.substring(idx+1);
+      signals[i] = atoi(_cmd.substring(0,idx).c_str());
+      _cmd = _cmd.substring(idx+1);
+      numberJoints++;
     }
   }
-    
-  _arm->joints(signals[0], signals[1], signals[2], signals[3]);
+   Serial.println(numberJoints); 
+  _arm->joints(signals, numberJoints);
 }
 
 void execWrist(String _cmd, Arm4DoF *_arm){
