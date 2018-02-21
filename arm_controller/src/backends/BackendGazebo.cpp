@@ -61,7 +61,8 @@ namespace hecatonquiros{
 	//while (ros::ok())
  	 //{
     	
-    	  	int cnt=0;
+    	  	int left_cnt=0;
+		int right_cnt=0;
                 sensor_msgs::JointState left_j_msg;
 		sensor_msgs::JointState right_j_msg;
 
