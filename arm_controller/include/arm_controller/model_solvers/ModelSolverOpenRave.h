@@ -25,21 +25,38 @@
 
 #include <arm_controller/model_solvers/ModelSolver.h>
 
+#ifdef HAS_OPENRAVE
+    #include <openrave-core.h>
+#endif
+
 namespace hecatonquiros{
     class ModelSolverOpenRave: public ModelSolver{
     public:
+        bool init();
+
         /// Set joints of robot
         /// \param _joints: desired joints
         void joints(const std::vector<float> &_joints);
         
         /// Get current joints of robot
         std::vector<float> joints() const;
+        
+        /// Get transforms of joints
+        void jointsTransform(std::vector<Eigen::Matrix4f> &_transforms);
+
+        /// Get transforms of specific joint
+        Eigen::Matrix4f jointTransform(int _idx);
 
         /// Check if exists IK for a given pose
         /// \param _pose: desired pose
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true);
+
+    private:
+        #ifdef HAS_OPENRAVE
+
+        #endif
     };
 
 }
