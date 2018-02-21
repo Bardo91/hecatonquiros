@@ -59,8 +59,8 @@ float Arm4DoF::speed(){
 //--------------------------------------------------------------------------------------------------------------------
 void Arm4DoF::joints(float _v0, float _v1, float _v2, float _v3){  
   mServosInterface.WritePos(mId*10 + 1, mapAngleToVal(-95,100,_v0), mSpeed); // <<--- Comprobar angulos max y min
-  mServosInterface.WritePos(mId*10 + 2, mapAngleToVal(-90,90,_v1), mSpeed);
-  mServosInterface.WritePos(mId*10 + 3, mapAngleToVal(-90,90,_v2), mSpeed);
+  mServosInterface.WritePos(mId*10 + 2, mapAngleToVal(-110,100,_v1), mSpeed);
+  mServosInterface.WritePos(mId*10 + 3, mapAngleToVal(-100,110,_v2), mSpeed);
   mServosInterface.WritePos(mId*10 + 4, mapAngleToVal(-90,90,_v3), mSpeed);
   delay(1000);
 }
