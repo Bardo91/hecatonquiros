@@ -44,8 +44,9 @@ namespace hecatonquiros{
 
 
             /// Config for gazebo
-            std::string topic = "";
-	    int		    GarmId;
+            std::string left_topic = "";
+	    std::string right_topic = "";
+	    int	        GarmId;
         };
 
         static Backend* create(const Config &_config);

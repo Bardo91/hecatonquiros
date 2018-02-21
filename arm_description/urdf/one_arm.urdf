@@ -12,10 +12,17 @@
     <link name="arm_0_top">
       <visual>
          <geometry>
-            <mesh filename="package://gazebo_simulation/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://arm_description/meshes/arm_0_top.stl" scale="0.01 0.01 0.01" />
          </geometry>
           <origin rpy="0 0 -1.57075" xyz="0 0 0" />
       </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.07" />
+            <geometry>
+              <box size="1 1 0.67"/>
+            </geometry>
+       </collision>
+       <selfCollide>true</selfCollide>
    </link>
    <joint name="arm_0_top_joint" type="fixed">
       <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
@@ -27,7 +34,7 @@
     <link name="arm_0_closing_case">
        <visual>
           <geometry>
-             <mesh filename="package://gazebo_simulation/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
+             <mesh filename="package://arm_description/meshes/arm_0_closing_case.stl" scale="0.01 0.01 0.01" />
           </geometry>
        </visual>
     </link>
@@ -40,7 +47,7 @@
    <link name="arm_0_bottom">
       <visual>
          <geometry>
-            <mesh filename="package://gazebo_simulation/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://arm_description/meshes/arm_0_bottom.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 3.1415 3.1415" xyz="0 0 0" />
       </visual>
@@ -55,10 +62,17 @@
    <link name="arm_1">
       <visual>
          <geometry>
-            <mesh filename="package://gazebo_simulation/meshes/arm_1.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://arm_description/meshes/arm_1.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 0 0" xyz="0 0 0" />
       </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0.1 0 0.9" />
+            <geometry>
+              <box size="0.73 0.3 1.0"/>
+            </geometry>
+       </collision>
+       <selfCollide>true</selfCollide>
    </link>
    <joint name="arm_1_joint" type="continuous">
       <parent link="arm_0_bottom" />
@@ -70,10 +84,17 @@
    <link name="arm_2">
       <visual>
          <geometry>
-            <mesh filename="package://gazebo_simulation/meshes/arm_2.stl" scale="0.01 0.01 0.01" />
+            <mesh filename="package://arm_description/meshes/arm_2.stl" scale="0.01 0.01 0.01" />
          </geometry>
          <origin rpy="0 0 0" xyz="0 0 0" />
       </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.82" />
+            <geometry>
+              <box size="0.86 0.3 1.2"/>
+            </geometry>
+       </collision>
+       <selfCollide>true</selfCollide>
    </link>
    <joint name="arm_2_joint" type="continuous">
       <parent link="arm_1" />
