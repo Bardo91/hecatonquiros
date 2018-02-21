@@ -19,7 +19,12 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+
+#ifndef HECATONQUIROS_ARMCONTROLLER_ARM4DOF_H_
+#define HECATONQUIROS_ARMCONTROLLER_ARM4DOF_H_
+
 #include <arm_controller/backends/Backend.h>
+#include <arm_controller/model_solvers/ModelSolver.h>
 
 #include <string>
 #include <Eigen/Eigen>
@@ -36,9 +41,9 @@ namespace hecatonquiros{
 
         /// set longitudes
         void barsSize(float _base, float _bar1, float _bar2){
-            mBaseHeight = _base;
-            mHumerus = _bar1;
-            mRadius = _bar2;
+            //mBaseHeight = _base;
+            //mHumerus = _bar1;
+            //mRadius = _bar2;
         }
 
         /// Joints in radians
@@ -50,16 +55,7 @@ namespace hecatonquiros{
         Eigen::Vector3f position();
 
         Eigen::Matrix4f pose() const;
-
-        /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position);
-
-        /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position, std::vector<Eigen::Matrix4f> &_transformations);
-
-        /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
-
+        
         /// Position in cartesian coordinates (meters)
         bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
 
@@ -76,22 +72,16 @@ namespace hecatonquiros{
         bool isInit() const;
     private:
         Backend *mBackend;
-
-        std::vector<float> mArmjoints = std::vector<float>(4);
-
-        Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23, mT34;
-        Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
-
+        ModelSolver *mModelSolver;
+        
         float   mHome1 = 0*M_PI/180.0,
                 mHome2 = 0*M_PI/180.0,
                 mHome3 = 90*M_PI/180.0,
                 mHome4 = 90*M_PI/180.0,
                 mHome5 = 90*M_PI/180.0;
 
-        double mHumerus = 0.15;
-        double mRadius = 0.09;
-        double mBaseHeight = 0.08;
-
         int mArmId = 1;
     };
 }
+
+#endif
