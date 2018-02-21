@@ -31,10 +31,10 @@ namespace hecatonquiros{
     public:
         /// Set joints of robot
         /// \param _joints: desired joints
-        virtual void joints(const std::vector<double> &_joints) = 0;
+        virtual void joints(const std::vector<float> &_joints) = 0;
         
         /// Get current joints of robot
-        virtual std::vector<double> joints() const = 0;
+        virtual std::vector<float> joints() const = 0;
 
         /// Get transforms of joints
         virtual void jointsTransform(std::vector<Eigen::Matrix4f> &_transforms) = 0;
@@ -46,7 +46,7 @@ namespace hecatonquiros{
         /// \param _pose: desired pose
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<double> &_joints, bool _forceOri = true) = 0;
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true) = 0;
     };
 
 }

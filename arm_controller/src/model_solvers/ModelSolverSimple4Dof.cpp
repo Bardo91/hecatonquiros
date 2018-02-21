@@ -23,13 +23,13 @@
 
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
-    void ModelSolverSimple4Dof::joints(const std::vector<double> &_joints){
+    void ModelSolverSimple4Dof::joints(const std::vector<float> &_joints){
         mJoints = _joints;
         mUpdatedTransforms = false;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    std::vector<double> ModelSolverSimple4Dof::joints() const{
+    std::vector<float> ModelSolverSimple4Dof::joints() const{
         return mJoints;
     }
 
@@ -57,7 +57,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverSimple4Dof::checkIk(const Eigen::Matrix4f &_pose, std::vector<double> &_joints, bool _forceOri){
+    bool ModelSolverSimple4Dof::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
         _joints.resize(mJoints.size());
 
         Eigen::Vector3f position = _pose.block<3,1>(0,3);

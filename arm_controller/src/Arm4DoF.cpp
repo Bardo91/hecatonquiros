@@ -21,6 +21,7 @@
 
 
 #include <arm_controller/Arm4DoF.h>
+#include <arm_controller/model_solvers/ModelSolverSimple4Dof.h>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -32,63 +33,62 @@ namespace hecatonquiros{
     Arm4DoF::Arm4DoF(const Backend::Config &_config) {
         mBackend = Backend::create(_config);
         mArmId = _config.armId;
+        mModelSolver = new ModelSolverSimple4Dof();
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
-        
+        mModelSolver->joints({mHome1, mHome2, mHome3, mHome4});
+        mBackend->joints({mHome1, mHome2, mHome3, mHome4});
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<float> _q) {
-        // assert(_q.size() == 3 || _q.size() == 4);
-
-        // mArmjoints[0] = _q[0];
-        // mArmjoints[1] = _q[1];
-        // mArmjoints[2] = _q[2];
-        // if(_q.size() == 3){
-        //     mArmjoints[3] = 0;
-        // }else{
-        //     mArmjoints[3] = _q[3];
-        // }
+        assert(_q.size() == 3 || _q.size() == 4);
         
-        // if(mBackend != nullptr){
-        //     mBackend->joints(mArmjoints);
-        // }
+        mModelSolver->joints(_q);
+        
+        if(mBackend != nullptr){
+            mBackend->joints(_q);
+        }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     std::vector<float> Arm4DoF::joints() const {
-        return {0,0,0};
+        return mModelSolver->joints();
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::position(Eigen::Vector3f _position, float _wirst) {
-        
-        
+        Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+        pose.block<3,1>(0,3) = _position;
+        std::vector<float> angles;
+        if(mModelSolver->checkIk(pose, angles, false)){
+            angles[3] = _wirst; //
+            mBackend->joints(angles);
+        }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Vector3f Arm4DoF::position() {
-        
+        std::vector<Eigen::Matrix4f> transforms;
+        mModelSolver->jointsTransform(transforms);
+        return transforms.back().block<3,1>(0,3);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
-        return false;
-    }
-
-    //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations){
-        return false;
+    bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
+        Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+        pose.block<3,1>(0,3) = _position;
+        std::vector<float> angles;
+        return mModelSolver->checkIk(pose, angles, false);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::pose() const {
-        return Eigen::Matrix4f();
-    }
-    //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2) {
+        std::vector<Eigen::Matrix4f> transforms;
+        mModelSolver->jointsTransform(transforms);
+        return transforms.back();
     }
 
     //---------------------------------------------------------------------------------------------------------------------

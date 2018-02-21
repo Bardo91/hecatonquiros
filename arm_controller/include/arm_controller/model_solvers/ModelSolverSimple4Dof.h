@@ -30,10 +30,10 @@ namespace hecatonquiros{
     public:
         /// Set joints of robot
         /// \param _joints: desired joints
-        void joints(const std::vector<double> &_joints);
+        void joints(const std::vector<float> &_joints);
         
         /// Get current joints of robot
-        std::vector<double> joints() const;
+        std::vector<float> joints() const;
         
         /// Get transforms of joints
         void jointsTransform(std::vector<Eigen::Matrix4f> &_transforms);
@@ -45,21 +45,21 @@ namespace hecatonquiros{
         /// \param _pose: desired pose
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        bool checkIk(const Eigen::Matrix4f &_pose, std::vector<double> &_joints, bool _forceOri = true);
+        bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true);
 
     private:
         void updateTransforms();
 
     private:
-        std::vector<double> mJoints = std::vector<double>(4);
+        std::vector<float> mJoints = std::vector<float>(4);
         bool mUpdatedTransforms = false;
 
         std::vector<Eigen::Matrix<float,4,4,Eigen::DontAlign>> mJointsTransform;
         Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
 
-        double mHumerus = 0.15;
-        double mRadius = 0.09;
-        double mBaseHeight = 0.08;
+        float mHumerus = 0.15;
+        float mRadius = 0.09;
+        float mBaseHeight = 0.08;
 
 
     };

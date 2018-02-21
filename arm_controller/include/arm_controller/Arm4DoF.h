@@ -57,13 +57,7 @@ namespace hecatonquiros{
         Eigen::Matrix4f pose() const;
         
         /// Position in cartesian coordinates (meters)
-        bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
-
-        /// Compute DK and check if valid
-        bool directKinematic(const std::vector<float> &_angles, std::vector<Eigen::Matrix4f> &_transformations);
-
-        //void lastTransformations(Eigen::Matrix4f &_t01, Eigen::Matrix4f &_t12, Eigen::Matrix4f &_t23, Eigen::Matrix4f &_t34);
-        void lastTransformations(Eigen::Matrix4f &_t0, Eigen::Matrix4f &_t1, Eigen::Matrix4f &_t2);
+        bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
 
         void closeClaw();
         void openClaw();

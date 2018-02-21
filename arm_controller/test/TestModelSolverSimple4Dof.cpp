@@ -25,7 +25,7 @@
 int main(int _argc, char **_argv) {
 	hecatonquiros::ModelSolverSimple4Dof model;
 
-	std::vector<double> joints = model.joints();
+	std::vector<float> joints = model.joints();
 	for(auto &j: joints){
 		std::cout << j << ", ";
 	}
@@ -44,4 +44,21 @@ int main(int _argc, char **_argv) {
 		std::cout <<t << "\n...................\n";
 	}
 
+	Eigen::Matrix4f targetT = transforms.back();
+	std::cout << model.checkIk(targetT, joints) << std::endl;
+
+	targetT(0,3) = 0.2;
+	targetT(1,3) = 0;
+	targetT(2,3) = 0.2;
+	std::cout << model.checkIk(targetT, joints) << std::endl;
+
+	targetT(0,3) = 0.1;
+	targetT(1,3) = 0.1;
+	targetT(2,3) = 0.2;
+	std::cout << model.checkIk(targetT, joints) << std::endl;
+
+	targetT(0,3) = 0.5;
+	targetT(1,3) = 0;
+	targetT(2,3) = 0.5;
+	std::cout << model.checkIk(targetT, joints) << std::endl;
 }
