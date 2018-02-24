@@ -1,51 +1,20 @@
-<source lang="xml"> <KinBody name="TestKinBody">
 
- <Body name="Body1" type="dynamic">
-   
-   <Translation>0 0 0</Translation>
-   <RotationAxis>1 0 0 90</RotationAxis>
-   
-   <Mass type="mimicgeom">
-     <density>1000</density>
-   </Mass>
-   
-   <Geom type="box">
-     <Extents>1 1 1</Extents>
-     <Translation>1 0 0</Translation>
-     <RotationAxis>0 1 0 45</RotationAxis>
-   </Geom>
-   <Geom type="box">
-     <Extents>2 1 2</Extents>
-     <Translation>0 1 0</Translation>
-     <RotationMat>1 0 0 0 1 0 0 0 1</RotationMat>
-     <transparency>0.4</transparency>
-   </Geom>
- </Body>
- 
- <Body name="Body2" type="dynamic">
-   <Mass type="mimicgeom">
-     <total>0.40605</total>
-     <inertia>2 0 0 0 3 0 0 0 5</inertia>
-     <com>0.008842 -0.000018 0.07367</com>
-   </Mass>
-   <Geom type="sphere">
-     <Render>models/objects/coffeepot.iv</Render>
-     <Translation>0 -1.5 0</Translation>
-     <Radius>1.5</Radius>
-   </Geom>
-   <Geom type="trimesh">
-     <Render>models/objects/cup.iv 0.01</Render>
-     <collision>models/objects/cup.iv 0.01</collision>
-     <Translation>1.5 -2 0</Translation>
-   </Geom>
- </Body>
- 
- <Joint name="j1" type="hinge">
-   <Body>Body1</Body>
-   <Body>Body2</Body>
-   <Anchor>0 0 0</Anchor>
-   <Axis>0 1 0</Axis>
-   <Weight>1.0</Weight>
-   <maxtorque>10</maxtorque>
- </Joint>
-</KinBody> </source>
+<KinBody name ="arm4dof">
+  <Body name="attachment" type="dynamic">
+    <Translation>0.0  0.0  0.0</Translation>
+    <Geom type="cylinder">
+      <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_0_attachment.stl</render>
+      <diffuseColor>0.8 0.0 0.0</diffuseColor>
+    </Geom>
+  </Body>
+
+  <Body name="arm_0_top" type="dynamic">
+    <Translation>0.0  0.0  0.0</Translation>
+    <Geom type="cylinder">
+      <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_0_top.stl</render>
+      <diffuseColor>0.0 0.0 0.0</diffuseColor>
+      <Translation>0 0 0.8</Translation>
+    </Geom>
+  </Body>
+  
+</KinBody>
