@@ -2,16 +2,23 @@
 """
 from openravepy import *
 import time
+import IPython
+
 env = Environment() # create openrave environment
 env.SetViewer('qtcoin') # attach viewer (optional)
-env.Load('../config/dual_arm_manipulator_5dof.env') # load a simple scene
-robot = env.GetRobots()[0] # get the first robot
+env.Load('../config/dual_arm_manipulator_5dof.env.xml') # load a simple scene
+robot1 = env.GetRobots()[0] # get the first robot
+robot2 = env.GetRobots()[1] # get the first robot
 
 with env: # lock the environment since robot will be used
-    raveLogInfo("Robot "+robot.GetName()+" has "+repr(robot.GetDOF())+" joints with values:\n"+repr(robot.GetDOFValues()))
-    robot.SetDOFValues([0.5],[0]) # set joint 0 to value 0.5
-    T = robot.GetLinks()[1].GetTransform() # get the transform of link 1
-    raveLogInfo("The transformation of link 1 is:\n"+repr(T))
+    viewer = env.GetViewer()
+    viewer.SetBkgndColor([.8, .85, .9])  # RGB tuple
 
-    while True:
-        time.sleep(2)
+    
+robot1.SetDOFValues([0.5,1,1],[0,1,2]) # set joint 0 to value 0.5
+robot2.SetDOFValues([-0.5,1,1],[0,1,2]) # set joint 0 to value 0.5
+
+raveLogInfo("Robot "+robot1.GetName()+" has "+repr(robot1.GetDOF())+" joints with values:\n"+repr(robot1.GetDOFValues()))
+raveLogInfo("Robot "+robot2.GetName()+" has "+repr(robot2.GetDOF())+" joints with values:\n"+repr(robot2.GetDOFValues()))
+
+IPython.embed()
