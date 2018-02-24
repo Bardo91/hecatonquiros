@@ -51,6 +51,9 @@ class Arm4DoF{
     /// \param _v3: desired angle for joint 3
     void joints(float _v0, float _v1, float _v2, float _v3);
 
+    /// Move N joints
+    void joints(float *_joints, int _nJoints);
+
     /// Set wirst angle
     /// \param _angle: desired angle for wirst
     void wrist(float _angle);
@@ -69,7 +72,7 @@ class Arm4DoF{
     SCServo mServosInterface;
     int mId = 0;
     float mOffset0=90, mOffset1=90, mOffset2=90, mOffset3=90;
-    float mSpeed=4000;
+    float mSpeed=1000;
     int mFlagClose = 0;
 
     unsigned long mTimeClose1, mTimeClose2, mTimeOpen1, mTimeOpen2 = 0;
