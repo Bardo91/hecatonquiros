@@ -1,33 +1,23 @@
 <KinBody name ="arm4dof">
-  <!-- Attachment point -->
-  <Body name="attachment" type="dynamic">
-    <Translation>0.0  0.0  0.0</Translation>
-    <Geom type="cylinder">
-      <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_0_attachment.stl</render>
-      <diffuseColor>0.8 0.0 0.0</diffuseColor>
-    </Geom>
-  </Body>
   <Body name="arm_0_top" type="dynamic">
-    <Translation>0.0  0.0  0.0</Translation>
-    <Geom type="cylinder">
+    <Translation>0 0.03 0</Translation>
+    <Geom type="trimesh">
       <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_0_top.stl</render>
       <diffuseColor>0.8 0.0 0.0</diffuseColor>
-      <rotationaxis>0 1 0 90</rotationaxis>
-      <Translation>0 0.03 0</Translation>
     </Geom>
   </Body>
   
   <!-- Joint 0 -->
   <Body name="arm_0_bottom" type="dynamic">
-    <Translation>0.0  0.0  0.0</Translation>
-    <Geom type="cylinder">
+    <offsetfrom>arm_0_top</offsetfrom>
+    <Translation>0 0.0 -0.0125</Translation>
+    <Geom type="trimesh">
       <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_0_bottom.stl</render>
       <diffuseColor>0.8 0.0 0.0</diffuseColor>
-      <rotationaxis>0 1 0 90</rotationaxis>
-      <Translation>0 0.042 0</Translation>
     </Geom>
   </Body>
   <joint name="arm_0_joint" type="hinge">
+    <offsetfrom>arm_0_bottom</offsetfrom>
     <body>arm_0_top</body>
     <body>arm_0_bottom</body>
     <limitsdeg>-90 90</limitsdeg>
@@ -36,37 +26,38 @@
 
   <!-- Joint 1 -->
   <Body name="arm_1" type="dynamic">
-    <Translation>0.0  0.0  0.0</Translation>
+    <offsetfrom>arm_0_bottom</offsetfrom>
+    <Translation>-0.03 0.0 -0.02</Translation>
+    <rotationaxis>0 1 0  90</rotationaxis>
     <Geom type="box">
       <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_1.stl</render>
       <diffuseColor>0.8 0.0 0.0</diffuseColor>
-      <Translation>0 0.06 -0.0315</Translation>
-      <rotationaxis>0 0 1 90</rotationaxis>
     </Geom>
   </Body>
-
   <joint name="arm_1_joint" type="hinge">
+    <offsetfrom>arm_1</offsetfrom>
     <body>arm_0_bottom</body>
     <body>arm_1</body>
     <limitsdeg>-90 90</limitsdeg>
-    <initial>0</initial>
+    <Axis>0 1 0</Axis>
   </joint>
 
-  <!-- Joint 1 -->
+  <!-- Joint 2 -->
   <Body name="arm_2" type="dynamic">
-    <Translation>0.0  0.0  0.0</Translation>
+    <offsetfrom>arm_1</offsetfrom>
+    <rotationaxis>0 0 1 90</rotationaxis>
+    <rotationaxis>0 1 0 90</rotationaxis>
+    <Translation>0.29 0.015 0.06</Translation>
     <Geom type="box">
       <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/cad_models/arm_4_dof/serial_model/stl/arm_2_microservo.stl</render>
       <diffuseColor>0.8 0.0 0.0</diffuseColor>
-      <Translation>0.01 0.355 -0.028</Translation>
-      <rotationaxis>1 0 0 -90</rotationaxis>
     </Geom>
   </Body>
-
   <joint name="arm_2_joint" type="hinge">
+    <offsetfrom>arm_2</offsetfrom>
     <body>arm_1</body>
     <body>arm_2</body>
+    <Axis>0 1 0</Axis>
     <limitsdeg>-90 90</limitsdeg>
-    <initial>0</initial>
   </joint>
 </KinBody>
