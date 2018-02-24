@@ -1,0 +1,11 @@
+	
+<Robot>
+    <kinbody name="arm" file="arm_4dof.kinbody.xml">
+        <kinbody name="gripper" file="gripper_2dof.kinbody.xml"/>
+        <Joint name="dummy" type="hinge" enable="False">
+            <body>arm_2</body>
+            <body>attacher</body>
+            <limits>0 0</limits>
+        </Joint>
+    </kinbody>
+</Robot>

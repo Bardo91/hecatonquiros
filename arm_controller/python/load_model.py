@@ -13,7 +13,6 @@ robot2 = env.GetRobots()[1] # get the first robot
 with env: # lock the environment since robot will be used
     viewer = env.GetViewer()
     viewer.SetBkgndColor([.8, .85, .9])  # RGB tuple
-
     
 robot1.SetDOFValues([0.5,1,1],[0,1,2]) # set joint 0 to value 0.5
 robot2.SetDOFValues([-0.5,1,1],[0,1,2]) # set joint 0 to value 0.5
