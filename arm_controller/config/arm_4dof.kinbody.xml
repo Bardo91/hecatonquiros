@@ -6,7 +6,6 @@
       <diffuseColor>0.8 0.0 0.0</diffuseColor>
     </Geom>
   </Body>
-  
   <!-- Joint 0 -->
   <Body name="arm_0_bottom" type="dynamic">
     <offsetfrom>arm_0_top</offsetfrom>
@@ -23,7 +22,6 @@
     <limitsdeg>-90 90</limitsdeg>
     <initial>0</initial>
   </joint>
-
   <!-- Joint 1 -->
   <Body name="arm_1" type="dynamic">
     <offsetfrom>arm_0_bottom</offsetfrom>
@@ -41,7 +39,6 @@
     <limitsdeg>-90 90</limitsdeg>
     <Axis>1 0 0</Axis>
   </joint>
-
   <!-- Joint 2 -->
   <Body name="arm_2" type="dynamic">
     <offsetfrom>arm_1</offsetfrom>
@@ -55,6 +52,22 @@
     <offsetfrom>arm_2</offsetfrom>
     <body>arm_1</body>
     <body>arm_2</body>
+    <Axis>1 0 0</Axis>
+    <limitsdeg>-90 90</limitsdeg>
+  </joint>
+  <!-- Joint 3 wirst-->
+  <Body name="effector_connector" type="dynamic">
+    <offsetfrom>arm_2</offsetfrom>
+    <Translation>0 0.0 0.065</Translation>
+    <Geom type="trimesh">
+      <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/end_effector_connector.stl</render>
+      <diffuseColor>0.8 0.0 0.0</diffuseColor>
+    </Geom>
+  </Body>
+  <joint name="effector_connector_joint" type="hinge">
+    <offsetfrom>effector_connector</offsetfrom>
+    <body>arm_2</body>
+    <body>effector_connector</body>
     <Axis>1 0 0</Axis>
     <limitsdeg>-90 90</limitsdeg>
   </joint>
