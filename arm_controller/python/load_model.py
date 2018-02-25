@@ -52,11 +52,16 @@ ikmodel = databases.inversekinematics.InverseKinematicsModel(robot1,iktype=IkPar
 if not ikmodel.load():
     ikmodel.autogenerate()
 
+print("Generated IKMODEL")
+
 with robot1: # lock environment and save robot1 state
-    robot1.SetDOFValues([2.58, 0.547, 1.5, -0.7],[0,1,2,3]) # set the first 4 dof values
+    robot1.SetDOFValues([0,0,numpy.pi/2],[0,1,2]) # set the first 4 dof values
     Tee = manip.GetEndEffectorTransform() # get end effector
+    print(Tee)
     ikparam = IkParameterization(Tee[0:3,3],ikmodel.iktype) # build up the translation3d ik query
     sols = manip.FindIKSolutions(ikparam, IkFilterOptions.IgnoreSelfCollisions) # get all solutions
+
+print("FOUND SOLUTIONS")
 
 h = env.plot3(Tee[0:3,3],10) # plot one point
 with robot1: # save robot1 state
@@ -64,7 +69,7 @@ with robot1: # save robot1 state
     for sol in sols: # go through every solution
         robot1.SetDOFValues(sol,manip.GetArmIndices()) # set the current solution
         env.UpdatePublishedBodies() # allow viewer to update new robot1
-        time.sleep(10.0/len(sols))
+        time.sleep(100.0/len(sols))
 
 raveLogInfo('restored dof values: '+repr(robot1.GetDOFValues())) # robot1 state is restored to original
 
