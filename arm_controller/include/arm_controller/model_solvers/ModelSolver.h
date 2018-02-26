@@ -29,6 +29,16 @@
 namespace hecatonquiros{
     class ModelSolver{
     public:
+        /// Configuration class for Model solvers
+        struct Config{
+            enum class eType {Simple4DoF, OpenRave};
+            eType type;
+            std::string robotName;
+            std::string manipulatorName;
+        };
+
+        static ModelSolver* create(const Config &_config);
+
         /// Set joints of robot
         /// \param _joints: desired joints
         virtual void joints(const std::vector<float> &_joints) = 0;
