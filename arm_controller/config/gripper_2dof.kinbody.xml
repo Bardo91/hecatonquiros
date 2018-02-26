@@ -1,0 +1,25 @@
+<KinBody name ="gripper_2dof">
+    <Body name="attacher" type="dynamic">
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/core_structure.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <!-- Joint 0 -->
+    <Body name="wirst" type="dynamic">
+        <offsetfrom>attacher</offsetfrom>
+        <Translation>0.1235 0 0.</Translation>
+        <rotationaxis>0 1 0  90</rotationaxis>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/base_gripper.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="wirst_joint" type="hinge">
+        <offsetfrom>wirst</offsetfrom>
+        <body>attacher</body>
+        <body>wirst</body>
+        <limitsdeg>-90 90</limitsdeg>
+        <initial>0</initial>
+    </joint>
+</KinBody>

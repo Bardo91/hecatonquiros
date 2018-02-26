@@ -6,7 +6,7 @@
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project(arm_controller)
-set(PROJECT_VERSION 0.1)
+set(PROJECT_VERSION 0.2.1)
 
 # Clasify sources according to folder structure.
 # This creates a nice layout for the project in visual studio
@@ -45,20 +45,22 @@ find_package(catkin REQUIRED COMPONENTS
 			roscpp
 			)
 
+## Check if OpenRAVE is installed and use it
+find_package(OpenRAVE)
+if(${OpenRAVE_FOUND})
+	add_definitions(-DHAS_OPENRAVE)
+endif(${OpenRAVE_FOUND})
 
 catkin_package(
 	INCLUDE_DIRS ./include
 )
 
-
 ## Load PCL
-find_package(PCL QUIET REQUIRED)
-if(${PCL_FOUND} AND ${VTK_FOUND} AND ${Boost_FOUND} AND ${FLANN_FOUND} STREQUAL "TRUE")
+find_package(PCL QUIET)
+if(${PCL_FOUND})
 	MESSAGE( STATUS "Adding properly PCL and its dependencies")
 	add_definitions(-DENABLE_PCL)
 	add_definitions(${PCL_DEFINITIONS})
-else()
-	MESSAGE( FATAL_ERROR "Couldnt Add PCL and/or it's dependencies")
 endif()
 
 ## Loading boost
@@ -95,6 +97,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${catkin_LIBRARIES})
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+
+
+if(${OpenRAVE_FOUND})
+	target_include_directories(${PROJECT_NAME} PUBLIC ${OpenRAVE_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenRAVE_CORE_LIBRARIES})
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXX_FLAGS}")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${OpenRAVE_LINK_FLAGS}")
+endif(${OpenRAVE_FOUND})
 
 ### DOC generation
 find_package(Doxygen)
