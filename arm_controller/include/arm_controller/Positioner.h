@@ -58,7 +58,7 @@ private:
 	bool			mRun = true;
 
 	float mJ0, mJ1, mJ2, mJ3, mJ4;
-	Eigen::Matrix4f mT01, mT12, mT23, mT34, mT4f;
+	Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23, mT34, mT4f;
 	Potentiometer mP0, mP1, mP2, mP3, mP4;
 
 	const float cL01 = 0.066f; //0.068f;

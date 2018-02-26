@@ -1,0 +1,293 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(中华人民共和国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\SCServoDebug.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.chs\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SERVOPG_DIALOG DIALOGEX 0, 0, 400, 292
+STYLE DS_SETFONT | WS_CHILD
+FONT 10, "Tahoma", 400, 0, 0x0
+BEGIN
+    GROUPBOX        "File",IDC_STATIC,149,0,142,31
+    PUSHBUTTON      "SAVE",IDC_BTN_SAVE,158,12,35,13
+    PUSHBUTTON      "OPEN",IDC_BTN_OPEN,203,12,35,13
+    PUSHBUTTON      "RESET",IDC_BTN_RESET,248,12,35,13
+    PUSHBUTTON      "WRITE",IDC_BTN_WRITE,54,12,35,13
+    PUSHBUTTON      "READ",IDC_BTN_READ,8,12,35,13
+    EDITTEXT        IDC_EDIT_COMMAD,296,4,104,288,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | ES_WANTRETURN
+    GROUPBOX        "R/W",IDC_STATIC,0,0,144,31
+    CONTROL         "UnLock",IDC_CHECK_UNLOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,100,15,39,10
+    CONTROL         "",IDC_LIST_MEM,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,0,35,190,257
+    EDITTEXT        IDC_EDIT_SET,198,275,51,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "Set",IDC_BTN_SET,256,276,35,13
+END
+
+IDD_TEST_DIALOG DIALOGEX 0, 0, 400, 293
+STYLE DS_SETFONT | DS_3DLOOK | WS_CHILD | WS_SYSMENU
+FONT 10, "Tahoma", 400, 0, 0x0
+BEGIN
+    GROUPBOX        "Upgrade",IDC_STATIC,0,240,400,53
+    CONTROL         "",IDC_PROGRESS_UPG,"msctls_progress32",0x0,7,259,386,12
+    PUSHBUTTON      "OPEN",IDC_BTN_UPGOPEN,310,274,34,14
+    PUSHBUTTON      "WRITE",IDC_BTN_UPGWRITE,356,274,34,14
+    LTEXT           "ID:",IDC_STATIC,44,15,11,8
+    EDITTEXT        IDC_EDIT_ID,64,14,52,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Firmware:",IDC_STATIC,20,53,35,8
+    GROUPBOX        "Version",IDC_STATIC,0,1,201,80
+    PUSHBUTTON      "Read",IDC_BTN_READ,139,49,34,14
+    GROUPBOX        "Transfer Test",IDC_STATIC,211,1,185,209
+    EDITTEXT        IDC_EDIT_FIRMWARE,64,50,52,12,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT_TRAN_INFO,218,35,171,152,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY
+    PUSHBUTTON      "Test",IDC_BTN_TRANTEST,308,191,34,14
+    PUSHBUTTON      "Clear",IDC_BTN_TRANCLR,347,191,34,14
+    LTEXT           "Transfer:1234567890Byte",IDC_STATIC_TRANCOUNT,220,25,86,8
+    EDITTEXT        IDC_EDIT_TRANTOUT,358,11,33,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "TimeOut",IDC_STATIC,325,13,29,8
+    LTEXT           "ID:",IDC_STATIC,219,13,11,8
+    EDITTEXT        IDC_EDIT_TRANID,233,11,33,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IDTRANN,280,11,33,12,ES_AUTOHSCROLL
+    LTEXT           "---",IDC_STATIC,268,13,10,8
+    CONTROL         151,IDC_STATIC,"Static",SS_BITMAP,30,97,147,108
+    GROUPBOX        "About",IDC_STATIC,0,87,201,123
+END
+
+IDD_SERVOMAIN_DIALOG DIALOGEX 0, 0, 523, 321
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "SCServo Debug V1.6"
+FONT 10, "Tahoma", 400, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_SERVO_TAB,"SysTabControl32",TCS_BUTTONS | TCS_FIXEDWIDTH,114,7,402,309
+    CONTROL         "",IDC_LIST_ID,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,14,146,87,167
+    GROUPBOX        "Serial Communication",IDC_STATIC,7,7,101,64
+    GROUPBOX        "Robot Servo Node",IDC_STATIC,7,77,101,239
+    LTEXT           "Com:",IDC_STATIC,16,22,19,8
+    LTEXT           "Baud:",IDC_STATIC,15,38,20,8
+    COMBOBOX        IDC_COMBO_BAUD,48,36,48,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Open",IDC_BTN_COMOPEN,57,53,38,14
+    PUSHBUTTON      "Search",IDC_BTN_SEARCH,16,89,38,14
+    PUSHBUTTON      "Clear",IDC_BTN_CLEAN,62,89,38,14
+    EDITTEXT        IDC_EDIT_PINGINFO,14,111,87,29,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY
+    COMBOBOX        IDC_COMBO_COM,48,21,48,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_ROBOT_DIALOG DIALOGEX 0, 0, 400, 292
+STYLE DS_SETFONT | DS_3DLOOK | WS_CHILD | WS_SYSMENU
+FONT 10, "Tahoma", 400, 0, 0x0
+BEGIN
+    CONTROL         "Write",IDC_RADIO_WRITE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,13,201,34,10
+    CONTROL         "Sync Write",IDC_RADIO_SYSWRITE,"Button",BS_AUTORADIOBUTTON,51,201,51,10
+    CONTROL         "Reg Write",IDC_RADIO_REGWITE,"Button",BS_AUTORADIOBUTTON,106,201,49,10
+    LTEXT           "ID:",IDC_STATIC,19,176,11,8
+    EDITTEXT        IDC_EDIT_ID,33,173,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Position",IDC_CHECK_CURPOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,349,9,41,10
+    CONTROL         "Load",IDC_CHECK_TROQUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,349,27,31,10
+    CONTROL         "Speed",IDC_CHECK_SPEED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,349,45,37,10
+    CONTROL         "GoalPos",IDC_CHECK_VIRPOS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,349,63,42,10
+    LTEXT           "Period:",IDC_STATIC,251,169,24,8
+    CONTROL         "",IDC_SLIDER_POS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,16,220,188,14
+    LTEXT           "Goal",IDC_STATIC,111,242,15,8
+    GROUPBOX        "Servo Operation",IDC_STATIC,0,153,221,139
+    LTEXT           "Load:",IDC_STATIC,332,224,19,8
+    LTEXT           "Time",IDC_STATIC,24,242,18,8
+    LTEXT           "Position:",IDC_STATIC,243,242,29,8
+    LTEXT           "Tmp:",IDC_STATIC,332,206,19,8
+    LTEXT           "Voltage:",IDC_STATIC,243,224,28,8
+    LTEXT           "Speed:",IDC_STATIC,332,242,22,8
+    GROUPBOX        "Status Monitor",IDC_STATIC,227,192,171,100
+    LTEXT           "25Deg",IDC_STATIC_TEMP,357,206,28,8
+    LTEXT           "7.4V",IDC_STATIC_VOL,275,224,28,8
+    LTEXT           "-1023",IDC_STATIC_LOAD,357,224,28,8
+    LTEXT           "4096",IDC_STATIC_POS,275,242,28,8
+    LTEXT           "-1023",IDC_STATIC_SPEED,357,242,20,8
+    CONTROL         "Torque Out",IDC_CHECK_TORQUEEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,135,174,53,10
+    GROUPBOX        "Drawing Set",IDC_STATIC,227,153,173,34
+    PUSHBUTTON      "Draw",IDC_BTN_DRAW,340,165,27,14
+    EDITTEXT        IDC_EDIT_CYCLE,279,166,31,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_IDN,82,173,33,14,ES_AUTOHSCROLL
+    LTEXT           "---",IDC_STATIC,69,176,10,8
+    PUSHBUTTON      "Action",IDC_BTN_ACTION,165,200,29,14
+    LTEXT           "GoalPos:",IDC_STATIC,243,206,30,8
+    LTEXT           "-2047",IDC_STATIC_VIRPOS,275,206,28,8
+    CONTROL         "",IDC_PIC_DRAW,"Static",SS_WHITEFRAME,0,0,340,152
+    LTEXT           "Zoomx",IDC_STATIC,358,127,23,8
+    EDITTEXT        IDC_EDIT_T,51,240,33,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_GOALPOS,134,240,33,14,ES_AUTOHSCROLL | ES_NUMBER
+    PUSHBUTTON      "Set",IDC_BTN_POS_SET,165,267,29,14
+    CONTROL         "",IDC_SLIDER_ZOOMX,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,341,135,58,10
+    LTEXT           "horizontal ",IDC_STATIC,355,108,35,8
+    CONTROL         "",IDC_SLIDER_HORIZ,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,342,116,58,10
+    LTEXT           "Speed",IDC_STATIC,24,269,22,8
+    EDITTEXT        IDC_EDIT_V,51,267,33,14,ES_AUTOHSCROLL
+    LTEXT           "Current:",IDC_STATIC,243,260,28,8
+    LTEXT           "4096",IDC_STATIC_CURRENT,275,260,28,8
+    CONTROL         "Current",IDC_CHECK_CURRENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,349,81,41,10
+    LTEXT           "Moving:",IDC_STATIC,243,276,27,8
+    LTEXT           "0",IDC_STATIC_MOVING,275,276,28,8
+    LTEXT           "Error:",IDC_STATIC,334,260,20,8
+    LTEXT           "0xff",IDC_STATIC_ERROR,357,260,28,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,6,0,0
+ PRODUCTVERSION 1,6,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileVersion", "1, 6, 0, 0"
+            VALUE "InternalName", "SCServoDebug"
+            VALUE "LegalCopyright", "Copy right FEETECH 2016"
+            VALUE "OriginalFilename", "SCServoDebug.exe"
+            VALUE "ProductName", "SCServoDebug"
+            VALUE "ProductVersion", "1, 6, 0, 0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SERVOPG_DIALOG, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 290
+    END
+
+    IDD_SERVOMAIN_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 516
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 316
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP_LOGO         BITMAP                  "bmp\\PT.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_FT32                ICON                    "res\\FD.ico"
+#endif    // 中文(中华人民共和国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE 4, 2
+#pragma code_page(936)
+#endif //_WIN32
+#include "res\SCServoDebug.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.chs\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

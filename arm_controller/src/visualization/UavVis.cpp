@@ -19,6 +19,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
+#ifdef ENABLE_PCL
 
 #include <arm_controller/visualization/UavVis.h>
 #include <pcl/io/io.h>
@@ -50,3 +51,5 @@ namespace hecatonquiros{
 		
 	}
 }
+
+#endif
