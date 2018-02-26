@@ -45,6 +45,8 @@ namespace hecatonquiros{
 
             /// Config for gazebo
             std::string topic = "";
+	    
+
         };
 
         static Backend* create(const Config &_config);

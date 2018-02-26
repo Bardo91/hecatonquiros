@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="model" default=""/>
+  <arg name="model2" default=""/>
+  <arg name="gui" default="true" />
+  <arg name="rvizconfig" default="$(find arm_description)/rviz/arm_description_config.rviz" />
+  <node name="arm_dancing" pkg="arm_dancing" type="arm_dancing" output="screen"/>
+
+    <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+        <group ns="right_arm">
+          <param name="tf_prefix" value="" />
+          <param name="use_gui" value="$(arg gui)"/>
+          <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+       </group>
+
+
+
+        <group ns="left_arm">
+          <param name="tf_prefix" value="" />
+          <param name="use_gui" value="$(arg gui)"/>
+          <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+        </group>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+</launch>
+
+

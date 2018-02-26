@@ -35,7 +35,8 @@ void Arm4DoF::setup(int _id){
   mServosInterface.EnableTorque(mId*10 + 2, 1); // ENABLE Joint 1
   mServosInterface.EnableTorque(mId*10 + 3, 1); // ENABLE Joint 2
   mServosInterface.EnableTorque(mId*10 + 4, 1); // ENABLE joint wirst
-  mServosInterface.EnableTorque(mId*10 + 5, 1); // ENABLE Joint gripper
+  mServosInterface.EnableTorque(mId*10 + 5, 1); // ENABLE Joint gripper1
+  mServosInterface.EnableTorque(mId*10 + 6, 1); // ENABLE Joint gripper2
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -59,10 +60,18 @@ float Arm4DoF::speed(){
 //--------------------------------------------------------------------------------------------------------------------
 void Arm4DoF::joints(float _v0, float _v1, float _v2, float _v3){  
   mServosInterface.WritePos(mId*10 + 1, mapAngleToVal(-95,100,_v0), mSpeed); // <<--- Comprobar angulos max y min
-  mServosInterface.WritePos(mId*10 + 2, mapAngleToVal(-90,90,_v1), mSpeed);
-  mServosInterface.WritePos(mId*10 + 3, mapAngleToVal(-90,90,_v2), mSpeed);
+  mServosInterface.WritePos(mId*10 + 2, mapAngleToVal(-110,100,_v1), mSpeed);
+  mServosInterface.WritePos(mId*10 + 3, mapAngleToVal(-100,110,_v2), mSpeed);
   mServosInterface.WritePos(mId*10 + 4, mapAngleToVal(-90,90,_v3), mSpeed);
-  delay(1000);
+}
+
+//--------------------------------------------------------------------------------------------------------------------
+void Arm4DoF::joints(float *_joints, int _nJoints){  
+  mServosInterface.WritePos(mId*10 + 1, mapAngleToVal(-95,100,_joints[0]), mSpeed); // <<--- Comprobar angulos max y min
+  mServosInterface.WritePos(mId*10 + 2, mapAngleToVal(-110,100,_joints[1]), mSpeed);
+  mServosInterface.WritePos(mId*10 + 3, mapAngleToVal(-100,110,_joints[2]), mSpeed);
+  if(_nJoints>=4) mServosInterface.WritePos(mId*10 + 4, mapAngleToVal(-90,90,_joints[3]), mSpeed);
+  if(_nJoints>=5) mServosInterface.WritePos(mId*10 + 5, mapAngleToVal(-90,90,_joints[4]), mSpeed);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -72,12 +81,12 @@ void Arm4DoF::wrist(float _angle){
 
 //--------------------------------------------------------------------------------------------------------------------
 void Arm4DoF::openGripper(){
-  mServosInterface.WritePos(mId*10 + 5, 0, mSpeed);
+  mServosInterface.WritePos(mId*10 + 6, 1023, 200);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
 void Arm4DoF::closeGripper(){
-  mServosInterface.WritePos(mId*10 + 5, 1023, mSpeed);
+  mServosInterface.WritePos(mId*10 + 6, 0, 200);
 }
 
 //--------------------------------------------------------------------------------------------------------------------
