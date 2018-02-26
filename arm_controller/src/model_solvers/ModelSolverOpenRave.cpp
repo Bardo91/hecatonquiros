@@ -121,7 +121,48 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
+        EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+        OpenRAVE::ModuleBasePtr pikfast = OpenRAVE::RaveCreateModule(mEnvironment,"ikfast");
+        mEnvironment->Add(pikfast,true,"");
 
+        std::vector<OpenRAVE::RobotBasePtr> robots;
+        auto robot = mEnvironment->GetRobot("arm_1");
+
+        std::stringstream ssin,ssout;
+        ssin << "LoadIKFastSolver " << robot->GetName() << " " << (int)IKP_Translation3D;
+
+        // get the active manipulator
+        OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator("manipulator");
+
+        // Request solver
+        if( !pikfast->SendCommand(ssout,ssin) ) {
+            RAVELOG_ERROR("failed to load iksolver\n");
+            return false;
+        }
+
+        Eigen::Quaternionf q(_pose.block<3,3>(0,0));
+
+        Transform trans;
+        trans.rot.x = q.x();
+        trans.rot.y = q.y();
+        trans.rot.z = q.z();
+        trans.rot.w = q.w();
+        trans.trans.x = _pose(0,3);
+        trans.trans.y = _pose(1,3);
+        trans.trans.z = _pose(2,3);
+
+        std::vector<dReal> vsolution;
+        if( pmanip->FindIKSolution(OpenRAVE::IkParameterization(trans),vsolution,IKFO_CheckEnvCollisions) ) {
+            std::stringstream ss; ss << "solution is: ";
+            for(size_t i = 0; i < vsolution.size(); ++i) {
+                ss << vsolution[i] << " ";
+            }
+            ss << std::endl;
+            std::cout << ss.str();
+        }
+        else {
+            // could fail due to collisions, etc
+        }
     }
 
 
