@@ -23,15 +23,15 @@
 #include <arm_controller/model_solvers/ModelSolverSimple4Dof.h>
 
 namespace hecatonquiros{
-        ModelSolver* ModelSolver::create(const ModelSolver::Config &_config){
-            switch(){
-            case Config::eType::Simple4DoF:
-                return ModelSolverSimple4Dof();
-            case Config::eType::OpenRave:
-                return ModelSolverOpenRave();
-            default:
-                return nullptr;
-            }
+    ModelSolver* ModelSolver::create(const ModelSolver::Config &_config){
+        switch(_config.type){
+        case Config::eType::Simple4DoF:
+            return new ModelSolverSimple4Dof();
+        case Config::eType::OpenRave:
+            return new ModelSolverOpenRave();
+        default:
+            return nullptr;
         }
-    };
+    }
+
 }

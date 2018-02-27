@@ -129,16 +129,23 @@ namespace hecatonquiros{
         auto robot = mEnvironment->GetRobot("arm_1");
 
         std::stringstream ssin,ssout;
-        ssin << "LoadIKFastSolver " << robot->GetName() << " " << (int)IKP_Translation3D;
+        ssin << "LoadIKFastSolver " << robot->GetName() << " " << "Translation3D";
 
         // get the active manipulator
         OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator("manipulator");
 
         // Request solver
-        if( !pikfast->SendCommand(ssout,ssin) ) {
-            RAVELOG_ERROR("failed to load iksolver\n");
+        try{
+            if( !pikfast->SendCommand(ssout,ssin) ) {
+                RAVELOG_ERROR("failed to load iksolver\n");
+                return false;
+            }
+        }catch(openrave_exception &_e){
+            std::cout <<_e.what() << std::endl;
             return false;
         }
+
+        std::cout << "Getting ready for computing IK" << std::endl;
 
         Eigen::Quaternionf q(_pose.block<3,3>(0,0));
 
