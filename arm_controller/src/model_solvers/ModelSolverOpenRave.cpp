@@ -26,14 +26,14 @@ using namespace OpenRAVE;
 namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverOpenRave::init(){
+    bool ModelSolverOpenRave::init(const ModelSolver::Config &_config){
         if(initSingleton()){
             #ifdef HAS_OPENRAVE
+                mConfig = _config;
                 // lock the environment to prevent changes
                 EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-                std::string robotName = "/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/config/arm_gripper_5dof.robot.xml";
-                auto robot = mEnvironment->ReadRobotXMLFile(robotName);
-                robot->SetName("arm_1"); // 666 TODO customize names
+                auto robot = mEnvironment->ReadRobotXMLFile(mConfig.robotFile);
+                robot->SetName(mConfig.robotName);
                 mEnvironment->Add(robot);
                 return true;
             #endif
@@ -47,7 +47,7 @@ namespace hecatonquiros{
     void ModelSolverOpenRave::joints(const std::vector<float> &_joints){
         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
         std::vector<OpenRAVE::RobotBasePtr> robots;
-        auto robot = mEnvironment->GetRobot("arm_1");
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
         std::vector<dReal> joints;
         for(auto &j:_joints){
@@ -61,7 +61,7 @@ namespace hecatonquiros{
     std::vector<float> ModelSolverOpenRave::joints() const{
         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
         std::vector<OpenRAVE::RobotBasePtr> robots;
-        auto robot = mEnvironment->GetRobot("arm_1");
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
         std::vector< dReal > values;
         robot->GetDOFValues(values);
@@ -79,7 +79,7 @@ namespace hecatonquiros{
     void ModelSolverOpenRave::jointsTransform(std::vector<Eigen::Matrix4f> &_transforms){
         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
         std::vector<OpenRAVE::RobotBasePtr> robots;
-        auto robot = mEnvironment->GetRobot("arm_1");
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
         std::vector<OpenRAVE::Transform> or_transforms;
         robot->GetBodyTransformations(or_transforms);
@@ -102,7 +102,7 @@ namespace hecatonquiros{
     Eigen::Matrix4f ModelSolverOpenRave::jointTransform(int _idx){
         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
         std::vector<OpenRAVE::RobotBasePtr> robots;
-        auto robot = mEnvironment->GetRobot("arm_1");
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
         std::vector<OpenRAVE::Transform> or_transforms;
         robot->GetBodyTransformations(or_transforms);	
@@ -125,12 +125,12 @@ namespace hecatonquiros{
         mEnvironment->Add(pikfast,true,"");
 
         std::vector<OpenRAVE::RobotBasePtr> robots;
-        auto robot = mEnvironment->GetRobot("arm_1");
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
         std::stringstream ssin,ssout;
         ssin << "LoadIKFastSolver " << robot->GetName() << " " << "Translation3D";
         // get the active manipulator
-        OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator("manipulator");
+        OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator(mConfig.manipulatorName);
 
         // Request solver
         try{
@@ -181,12 +181,12 @@ namespace hecatonquiros{
         mEnvironment->Add(pikfast,true,"");
 
         std::vector<OpenRAVE::RobotBasePtr> robots;
-        auto robot = mEnvironment->GetRobot("arm_1");
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
         std::stringstream ssin,ssout;
         ssin << "LoadIKFastSolver " << robot->GetName() << " " << "Translation3D";
         // get the active manipulator
-        OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator("manipulator");
+        OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator(mConfig.manipulatorName);
 
         // Request solver
         try{

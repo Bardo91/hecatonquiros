@@ -30,28 +30,31 @@ namespace hecatonquiros{
     public:
         /// Set joints of robot
         /// \param _joints: desired joints
-        void joints(const std::vector<float> &_joints);
+        virtual void joints(const std::vector<float> &_joints);
         
         /// Get current joints of robot
-        std::vector<float> joints() const;
+        virtual std::vector<float> joints() const;
         
         /// Get transforms of joints
-        void jointsTransform(std::vector<Eigen::Matrix4f> &_transforms);
+        virtual void jointsTransform(std::vector<Eigen::Matrix4f> &_transforms);
 
         /// Get transforms of specific joint
-        Eigen::Matrix4f jointTransform(int _idx);
+        virtual Eigen::Matrix4f jointTransform(int _idx);
 
         /// Check if exists IK for a given pose
         /// \param _pose: desired pose
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true);
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true);
 
         /// Check if exists IK for a given pose
         /// \param _pose: desired pose
         /// \param _joints: list of possible solutions joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true){ return false;}
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true){ return false;}
+
+    protected:
+        virtual bool init(const ModelSolver::Config &_config) { return false;}
 
     private:
         void updateTransforms();

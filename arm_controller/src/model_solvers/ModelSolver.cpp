@@ -24,12 +24,17 @@
 
 namespace hecatonquiros{
     ModelSolver* ModelSolver::create(const ModelSolver::Config &_config){
+        ModelSolver *ms = nullptr;
         switch(_config.type){
         case Config::eType::Simple4DoF:
-            return new ModelSolverSimple4Dof();
+            ms = new ModelSolverSimple4Dof();
         case Config::eType::OpenRave:
-            return new ModelSolverOpenRave();
-        default:
+            ms = new ModelSolverOpenRave();
+        }
+
+        if(ms->init(_config)){
+            return ms;
+        }else{
             return nullptr;
         }
     }
