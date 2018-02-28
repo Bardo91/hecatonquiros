@@ -33,7 +33,7 @@ namespace hecatonquiros{
     public:
         struct Config{
             /// Type of backend
-            enum class eType {Arduino, Gazebo};
+            enum class eType {Arduino, Gazebo, Dummy};
             eType type;
 
             /// Config for Arduino
@@ -65,6 +65,14 @@ namespace hecatonquiros{
         // \brief abstract method for initialization of the class
         virtual bool init(const Config &_config) = 0;
 
+    };
+
+    class BackendDummy: public Backend{
+        virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false){return true;}
+        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false){return true;}
+        virtual bool claw(const int _action){return true;}
+    private:
+        virtual bool init(const Config &_config){return true;}
     };
 }
 

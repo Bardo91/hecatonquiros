@@ -34,7 +34,7 @@ namespace hecatonquiros{
     class Arm4DoF {
     public:
         /// Constructor 
-        Arm4DoF(const Backend::Config &_config);
+        Arm4DoF(const ModelSolver::Config &_modelConfig, const Backend::Config &_backendConfig);
 
         /// Send robot to home.
         void home();

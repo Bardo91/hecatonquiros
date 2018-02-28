@@ -30,10 +30,10 @@
 
 namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
-    Arm4DoF::Arm4DoF(const Backend::Config &_config) {
-        mBackend = Backend::create(_config);
-        mArmId = _config.armId;
-        mModelSolver = new ModelSolverSimple4Dof();
+    Arm4DoF::Arm4DoF(const ModelSolver::Config &_modelConfig, const Backend::Config &_backendConfig) {
+        mBackend = Backend::create(_backendConfig);
+        mArmId = _backendConfig.armId;
+        mModelSolver = ModelSolver::create(_modelConfig);
     }
 
     //---------------------------------------------------------------------------------------------------------------------

@@ -45,6 +45,11 @@ find_package(catkin REQUIRED COMPONENTS
 			roscpp
 			)
 
+## Check if OpenRAVE is installed and use it
+find_package(OpenRAVE)
+if(${OpenRAVE_FOUND})
+	add_definitions(-DHAS_OPENRAVE)
+endif(${OpenRAVE_FOUND})
 
 catkin_package(
 	INCLUDE_DIRS ./include
@@ -92,6 +97,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${catkin_LIBRARIES})
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+
+
+if(${OpenRAVE_FOUND})
+	target_include_directories(${PROJECT_NAME} PUBLIC ${OpenRAVE_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenRAVE_CORE_LIBRARIES})
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXX_FLAGS}")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${OpenRAVE_LINK_FLAGS}")
+endif(${OpenRAVE_FOUND})
 
 ### DOC generation
 find_package(Doxygen)

@@ -35,6 +35,9 @@ namespace hecatonquiros{
         case Backend::Config::eType::Gazebo:
             bd = new BackendGazebo();
             break;
+        case Backend::Config::eType::Dummy:
+            bd = new BackendDummy();
+            break;
         default:
             return nullptr;
         }

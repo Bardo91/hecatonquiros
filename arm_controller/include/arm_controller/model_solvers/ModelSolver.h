@@ -29,6 +29,19 @@
 namespace hecatonquiros{
     class ModelSolver{
     public:
+        /// Configuration class for Model solvers
+        struct Config{
+            enum class eType {Simple4DoF, OpenRave};
+            eType type;
+            std::string robotName;
+            std::string manipulatorName;
+            std::string robotFile;
+            std::vector<float> offset = {0,0,0};
+            bool visualizer = false;
+        };
+
+        static ModelSolver* create(const Config &_config);
+
         /// Set joints of robot
         /// \param _joints: desired joints
         virtual void joints(const std::vector<float> &_joints) = 0;
@@ -47,6 +60,19 @@ namespace hecatonquiros{
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true) = 0;
+
+
+        /// Check if exists IK for a given pose
+        /// \param _pose: desired pose
+        /// \param _joints: list of possible solutions joints for given pose
+        /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true) = 0;
+
+    protected:
+        ModelSolver(){};
+        virtual bool init(const ModelSolver::Config &_config) = 0;
+
+        Config mConfig;
     };
 
 }
