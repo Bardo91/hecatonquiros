@@ -184,15 +184,18 @@ namespace hecatonquiros{
 
                 OpenRAVE::RaveInitialize(true);
                 mEnvironment = OpenRAVE::RaveCreateEnvironment();
-                {
-                    EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-                    mEnvironment->SetDebugLevel(OpenRAVE::Level_Debug);
-                    // mViewer.reset();
-                    // mViewer = OpenRAVE::RaveCreateViewer(mEnvironment, "qtcoin");
-                    // if(!!mViewer){
-                    //     mEnvironment->Add(mViewer);          
-                    // }
-                }
+                mViewerThread = std::thread([&] {
+                    {
+                        EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+                        mEnvironment->SetDebugLevel(OpenRAVE::Level_Debug);
+                        mViewer.reset();
+                        mViewer = OpenRAVE::RaveCreateViewer(mEnvironment, "qtcoin");
+                        if(!!mViewer){
+                            mEnvironment->Add(mViewer);          
+                        }
+                    }
+                    mViewer->main(true);
+                });
             }
             return true;
         #else
@@ -204,4 +207,5 @@ namespace hecatonquiros{
     ModelSolverOpenRave             *ModelSolverOpenRave::mInstance     = nullptr;
     OpenRAVE::EnvironmentBasePtr    ModelSolverOpenRave::mEnvironment  = nullptr;
     OpenRAVE::ViewerBasePtr         ModelSolverOpenRave::mViewer       = nullptr;
+    std::thread                     ModelSolverOpenRave::mViewerThread;
 }

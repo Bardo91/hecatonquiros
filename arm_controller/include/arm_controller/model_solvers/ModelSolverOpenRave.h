@@ -62,6 +62,7 @@ namespace hecatonquiros{
         #ifdef HAS_OPENRAVE
             static OpenRAVE::EnvironmentBasePtr mEnvironment;
             static OpenRAVE::ViewerBasePtr      mViewer;
+            static std::thread                  mViewerThread;
         #endif
 
     private:

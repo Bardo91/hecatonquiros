@@ -58,6 +58,8 @@ with robot1: # lock environment and save robot1 state
     robot1.SetDOFValues([0,0,numpy.pi/2],[0,1,2]) # set the first 4 dof values
     Tee = manip.GetEndEffectorTransform() # get end effector
     print(Tee)
+    Tee[0][3] = Tee[0][3] +0.1
+    Tee[2][3] = Tee[2][3] -0.1
     ikparam = IkParameterization(Tee[0:3,3],ikmodel.iktype) # build up the translation3d ik query
     sols = manip.FindIKSolutions(ikparam, IkFilterOptions.IgnoreSelfCollisions) # get all solutions
 
