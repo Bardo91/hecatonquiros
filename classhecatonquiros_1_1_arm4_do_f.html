@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">hecatonquiros
-   &#160;<span id="projectnumber">0.2.1</span>
+   &#160;<span id="projectnumber">0.3.0</span>
    </div>
    <div id="projectbrief">HECATONQUIROS. Multi-arm open source and hardware project for general purpose.</div>
   </td>
@@ -98,10 +98,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a66f06062850a7d7b0d27665f6b3570ea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66f06062850a7d7b0d27665f6b3570ea"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a66f06062850a7d7b0d27665f6b3570ea">Arm4DoF</a> (const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;_config)</td></tr>
-<tr class="memdesc:a66f06062850a7d7b0d27665f6b3570ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br /></td></tr>
-<tr class="separator:a66f06062850a7d7b0d27665f6b3570ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6aec5fd069dec2ed7b321da7845507d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6aec5fd069dec2ed7b321da7845507d2"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a6aec5fd069dec2ed7b321da7845507d2">Arm4DoF</a> (const <a class="el" href="structhecatonquiros_1_1_model_solver_1_1_config.html">ModelSolver::Config</a> &amp;_modelConfig, const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;_backendConfig)</td></tr>
+<tr class="memdesc:a6aec5fd069dec2ed7b321da7845507d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br /></td></tr>
+<tr class="separator:a6aec5fd069dec2ed7b321da7845507d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02fedc4218da99c464b3f867dc7891b4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02fedc4218da99c464b3f867dc7891b4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a02fedc4218da99c464b3f867dc7891b4">home</a> ()</td></tr>
 <tr class="memdesc:a02fedc4218da99c464b3f867dc7891b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send robot to home. <br /></td></tr>
@@ -127,29 +127,10 @@ Eigen::Vector3f&#160;</td><td class="memItemRight" valign="bottom"><b>position</
 <tr class="memitem:a430b8c417eabba0e400be62c0bd26e9a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a430b8c417eabba0e400be62c0bd26e9a"></a>
 Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><b>pose</b> () const </td></tr>
 <tr class="separator:a430b8c417eabba0e400be62c0bd26e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a082cdb354af2c367fd7bff45e7b586fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a082cdb354af2c367fd7bff45e7b586fb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a082cdb354af2c367fd7bff45e7b586fb">checkIk</a> (Eigen::Vector3f _position)</td></tr>
-<tr class="memdesc:a082cdb354af2c367fd7bff45e7b586fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position in cartesian coordinates (meters) <br /></td></tr>
-<tr class="separator:a082cdb354af2c367fd7bff45e7b586fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7d9510a3ebc73e30ad46b7387ccbf61"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab7d9510a3ebc73e30ad46b7387ccbf61"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#ab7d9510a3ebc73e30ad46b7387ccbf61">checkIk</a> (Eigen::Vector3f _position, std::vector&lt; Eigen::Matrix4f &gt; &amp;_transformations)</td></tr>
-<tr class="memdesc:ab7d9510a3ebc73e30ad46b7387ccbf61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position in cartesian coordinates (meters) <br /></td></tr>
-<tr class="separator:ab7d9510a3ebc73e30ad46b7387ccbf61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed136d20169caf07907460fea4786115"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed136d20169caf07907460fea4786115"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#aed136d20169caf07907460fea4786115">checkIk</a> (Eigen::Vector3f _position, std::vector&lt; float &gt; &amp;_angles)</td></tr>
 <tr class="memdesc:aed136d20169caf07907460fea4786115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position in cartesian coordinates (meters) <br /></td></tr>
 <tr class="separator:aed136d20169caf07907460fea4786115"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0663c95c0917e135f7253da7515a9c46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0663c95c0917e135f7253da7515a9c46"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a0663c95c0917e135f7253da7515a9c46">checkIk</a> (Eigen::Vector3f _position, std::vector&lt; float &gt; &amp;_angles, std::vector&lt; Eigen::Matrix4f &gt; &amp;_transformations)</td></tr>
-<tr class="memdesc:a0663c95c0917e135f7253da7515a9c46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position in cartesian coordinates (meters) <br /></td></tr>
-<tr class="separator:a0663c95c0917e135f7253da7515a9c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c7d661a8ae88f6a4691b2bb23e2022b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6c7d661a8ae88f6a4691b2bb23e2022b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a6c7d661a8ae88f6a4691b2bb23e2022b">directKinematic</a> (const std::vector&lt; float &gt; &amp;_angles, std::vector&lt; Eigen::Matrix4f &gt; &amp;_transformations)</td></tr>
-<tr class="memdesc:a6c7d661a8ae88f6a4691b2bb23e2022b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DK and check if valid. <br /></td></tr>
-<tr class="separator:a6c7d661a8ae88f6a4691b2bb23e2022b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abccef03f892b5b1d9d54e162db97927d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abccef03f892b5b1d9d54e162db97927d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lastTransformations</b> (Eigen::Matrix4f &amp;_t0, Eigen::Matrix4f &amp;_t1, Eigen::Matrix4f &amp;_t2)</td></tr>
-<tr class="separator:abccef03f892b5b1d9d54e162db97927d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f4dcaffe1c53880acdcb0c8dfb909e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3f4dcaffe1c53880acdcb0c8dfb909e6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>closeClaw</b> ()</td></tr>
 <tr class="separator:a3f4dcaffe1c53880acdcb0c8dfb909e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,7 +145,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInit</b> () const <
 <tr class="separator:afcc8e013a6fef06cf6bcf283da647683"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bardo91/programming/hecatonquiros/arm_controller/include/arm_controller/<a class="el" href="_arm4_do_f_8h_source.html">Arm4DoF.h</a></li>
+<li>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/include/arm_controller/<a class="el" href="_arm4_do_f_8h_source.html">Arm4DoF.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

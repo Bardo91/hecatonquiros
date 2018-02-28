@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['joints',['joints',['../classhecatonquiros_1_1_arm4_do_f.html#ac64adf1220a83562fab27616b712c7bc',1,'hecatonquiros::Arm4DoF::joints()'],['../classhecatonquiros_1_1_backend.html#a305ab28b6ec93f391a564b5ac36bdba9',1,'hecatonquiros::Backend::joints()'],['../classhecatonquiros_1_1_backend_arduino.html#a1c0ed6810a6d36878d300a96920a7c89',1,'hecatonquiros::BackendArduino::joints()'],['../classhecatonquiros_1_1_backend_gazebo.html#a2738b1c181ac7b6e224db3514fb1a723',1,'hecatonquiros::BackendGazebo::joints()']]]
+  ['pose',['pose',['../classhecatonquiros_1_1_backend.html#a090d166eeb9bb480ac4a94bf1cfb769a',1,'hecatonquiros::Backend::pose()'],['../classhecatonquiros_1_1_backend_arduino.html#ae701c2b1a7efc7d4ea781c1cf21a0796',1,'hecatonquiros::BackendArduino::pose()'],['../classhecatonquiros_1_1_backend_gazebo.html#a0997dcf0fe2d908e5f62902392f4c61b',1,'hecatonquiros::BackendGazebo::pose()']]],
+  ['position',['position',['../classhecatonquiros_1_1_arm4_do_f.html#a116d21230105008fea8d5331d538135f',1,'hecatonquiros::Arm4DoF']]]
 ];
