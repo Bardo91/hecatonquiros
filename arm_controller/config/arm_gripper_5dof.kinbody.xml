@@ -132,6 +132,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="holdbar_1_joint" type="hinge" enable="False">
+        <offsetfrom>holdbar_1</offsetfrom>
+        <body>wirst_2</body>
+        <body>holdbar_1</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- bar_11a -->
     <Body name="bar_11a" type="dynamic">
@@ -142,6 +148,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_11a_joint" type="hinge" enable="False">
+        <offsetfrom>bar_11a</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_11a</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- bar_11b -->
     <Body name="bar_11b" type="dynamic">
@@ -152,6 +164,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_11b_joint" type="hinge" enable="False">
+        <offsetfrom>bar_11b</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_11b</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
     
     <!-- bar_12a -->
     <Body name="bar_12a" type="dynamic">
@@ -162,6 +180,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_12a_joint" type="hinge" enable="False">
+        <offsetfrom>bar_12a</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_12a</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
     
     <!-- bar_12b -->
     <Body name="bar_12b" type="dynamic">
@@ -172,6 +196,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_12b_joint" type="hinge" enable="False">
+        <offsetfrom>bar_12b</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_12b</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- minibar_1 -->
     <Body name="minibar_1" type="dynamic">
@@ -183,6 +213,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="minibar_1_joint" type="hinge" enable="False">
+        <offsetfrom>minibar_1</offsetfrom>
+        <body>wirst_2</body>
+        <body>minibar_1</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- gripper_1 -->
     <Body name="gripper_1" type="dynamic">
@@ -193,6 +229,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="gripper_1_joint" type="hinge" enable="False">
+        <offsetfrom>gripper_1</offsetfrom>
+        <body>wirst_2</body>
+        <body>gripper_1</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
     
     <!-- holdBar_2 -->
     <Body name="holdbar_2" type="dynamic">
@@ -205,6 +247,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="holdbar_2_joint" type="hinge" enable="False">
+        <offsetfrom>holdbar_2</offsetfrom>
+        <body>wirst_2</body>
+        <body>holdbar_2</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- bar_21a -->
     <Body name="bar_21a" type="dynamic">
@@ -215,6 +263,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_21a_joint" type="hinge" enable="False">
+        <offsetfrom>bar_21a</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_21a</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- bar_21b -->
     <Body name="bar_21b" type="dynamic">
@@ -225,6 +279,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_21b_joint" type="hinge" enable="False">
+        <offsetfrom>bar_21b</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_21b</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
     
     <!-- bar_22a -->
     <Body name="bar_22a" type="dynamic">
@@ -235,6 +295,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_22a_joint" type="hinge" enable="False">
+        <offsetfrom>bar_22a</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_22a</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
     
     <!-- bar_22b -->
     <Body name="bar_22b" type="dynamic">
@@ -245,6 +311,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="bar_22b_joint" type="hinge" enable="False">
+        <offsetfrom>bar_22b</offsetfrom>
+        <body>wirst_2</body>
+        <body>bar_22b</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- minibar_2 -->
     <Body name="minibar_2" type="dynamic">
@@ -256,6 +328,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="minibar_2_joint" type="hinge" enable="False">
+        <offsetfrom>minibar_2</offsetfrom>
+        <body>wirst_2</body>
+        <body>minibar_2</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- gripper_2 -->
     <Body name="gripper_2" type="dynamic">
@@ -266,6 +344,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="gripper_2_joint" type="hinge" enable="False">
+        <offsetfrom>gripper_2</offsetfrom>
+        <body>wirst_2</body>
+        <body>gripper_2</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
     <!-- screw -->
     <Body name="screw" type="dynamic">
@@ -276,6 +360,12 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="screw_joint" type="hinge" enable="False">
+        <offsetfrom>screw</offsetfrom>
+        <body>wirst_2</body>
+        <body>screw</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
 
 
     <!-- screw_nut -->
