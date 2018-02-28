@@ -151,8 +151,18 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
+            std::string stringType;
+            OpenRAVE::IkParameterizationType intType;
+            if(_forceOri){
+                stringType = "TranslationDirection5D";
+                intType = IKP_TranslationDirection5D;
+            }else{
+                stringType = "Translation3D";
+                intType = IKP_Translation3D;
+            }
+
             std::stringstream ssin,ssout;
-            ssin << "LoadIKFastSolver " << robot->GetName() << " " << "Translation3D";
+            ssin << "LoadIKFastSolver " << robot->GetName() << " " << stringType;
             // get the active manipulator
             OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator(mConfig.manipulatorName);
 
@@ -183,7 +193,7 @@ namespace hecatonquiros{
             std::cout << trans << std::endl;
 
             std::vector<dReal> vsolution;
-            if( pmanip->FindIKSolution(OpenRAVE::IkParameterization(trans, IKP_Translation3D),vsolution,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolution(OpenRAVE::IkParameterization(trans, intType),vsolution,IKFO_IgnoreSelfCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {

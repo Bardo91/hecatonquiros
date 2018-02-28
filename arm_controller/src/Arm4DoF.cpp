@@ -79,10 +79,15 @@ namespace hecatonquiros{
     bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
         Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
         pose.block<3,1>(0,3) = _position;
-        std::vector<float> angles;
-        return mModelSolver->checkIk(pose, angles, false);
+        return mModelSolver->checkIk(pose, _angles, false);
     }
 
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri){
+        return mModelSolver->checkIk(_pose, _angles, _forceOri);
+    }
+    
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::pose() const {
         std::vector<Eigen::Matrix4f> transforms;

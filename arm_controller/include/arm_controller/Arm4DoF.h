@@ -59,6 +59,9 @@ namespace hecatonquiros{
         /// Position in cartesian coordinates (meters)
         bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
 
+        /// Pose in cartesian coordinates (meters)
+        bool checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri);
+
         void closeClaw();
         void openClaw();
         void stopClaw();
