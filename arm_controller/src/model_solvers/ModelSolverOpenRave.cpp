@@ -190,10 +190,16 @@ namespace hecatonquiros{
             trans.trans.y = _pose(1,3);
             trans.trans.z = _pose(2,3);
 
-            std::cout << trans << std::endl;
+            OpenRAVE::IkParameterization ikParam;
+            if(_forceOri){
+                std::cout << "not supported force ori by now" << std::endl;
+                return false;
+            }else{
+                ikParam  = OpenRAVE::IkParameterization(trans, intType);
+            }
 
             std::vector<dReal> vsolution;
-            if( pmanip->FindIKSolution(OpenRAVE::IkParameterization(trans, intType),vsolution,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
