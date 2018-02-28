@@ -36,6 +36,7 @@ namespace hecatonquiros{
             std::string robotName;
             std::string manipulatorName;
             std::string robotFile;
+            std::vector<float> offset;
         };
 
         static ModelSolver* create(const Config &_config);
