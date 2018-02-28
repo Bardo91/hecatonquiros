@@ -47,6 +47,12 @@ namespace hecatonquiros{
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true);
 
+        /// Check if exists IK for a given pose
+        /// \param _pose: desired pose
+        /// \param _joints: list of possible solutions joints for given pose
+        /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
+        bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true){ return false;}
+
     private:
         void updateTransforms();
 
