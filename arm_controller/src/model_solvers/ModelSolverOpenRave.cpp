@@ -86,7 +86,7 @@ namespace hecatonquiros{
 
 
         for(unsigned k = 0; k < or_transforms.size(); k++){
-            Eigen::Matrix4f T;
+            Eigen::Matrix4f T = Eigen::Matrix4f::Identity();;
 
             Eigen::Quaternionf q(or_transforms[k].rot.w, or_transforms[k].rot.x, or_transforms[k].rot.y, or_transforms[k].rot.z);   
             T.block<3,3>(0,0) = q.matrix();
@@ -107,7 +107,7 @@ namespace hecatonquiros{
         std::vector<OpenRAVE::Transform> or_transforms;
         robot->GetBodyTransformations(or_transforms);	
     
-        Eigen::Matrix4f T;
+        Eigen::Matrix4f T = Eigen::Matrix4f::Identity();;
 
         Eigen::Quaternionf q(or_transforms[_idx].rot.w, or_transforms[_idx].rot.x, or_transforms[_idx].rot.y, or_transforms[_idx].rot.z);   
         T.block<3,3>(0,0) = q.matrix();
@@ -130,7 +130,6 @@ namespace hecatonquiros{
 
         std::stringstream ssin,ssout;
         ssin << "LoadIKFastSolver " << robot->GetName() << " " << "Translation3D";
-
         // get the active manipulator
         OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator("manipulator");
 
@@ -158,17 +157,21 @@ namespace hecatonquiros{
         trans.trans.y = _pose(1,3);
         trans.trans.z = _pose(2,3);
 
+        std::cout << trans << std::endl;
+
         std::vector<dReal> vsolution;
-        if( pmanip->FindIKSolution(OpenRAVE::IkParameterization(trans),vsolution,IKFO_CheckEnvCollisions) ) {
-            std::stringstream ss; ss << "solution is: ";
+        if( pmanip->FindIKSolution(OpenRAVE::IkParameterization(trans),vsolution,IKFO_IgnoreSelfCollisions) ) {
+            std::cout << "FOUND SOLUTION" << std::endl;
+            _joints.resize(vsolution.size());
             for(size_t i = 0; i < vsolution.size(); ++i) {
-                ss << vsolution[i] << " ";
+                _joints[i] = vsolution[i];
             }
-            ss << std::endl;
-            std::cout << ss.str();
+            return true;
         }
         else {
+            std::cout << "NOT FOUND SOLUTION" << std::endl;
             // could fail due to collisions, etc
+            return false;
         }
     }
 
