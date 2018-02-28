@@ -66,6 +66,7 @@ namespace hecatonquiros{
         if(mModelSolver->checkIk(pose, angles, false)){
             angles[3] = _wirst; //
             mBackend->joints(angles);
+            mModelSolver->joints(angles);
         }
     }
 
