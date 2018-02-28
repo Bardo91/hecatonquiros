@@ -65,7 +65,7 @@ namespace hecatonquiros{
 
     private:
         // Singleton interface
-        static bool initSingleton();
+        static bool initSingleton(bool _enableVis);
         static ModelSolverOpenRave *mInstance;
         #ifdef HAS_OPENRAVE
             static OpenRAVE::EnvironmentBasePtr mEnvironment;

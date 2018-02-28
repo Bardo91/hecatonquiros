@@ -27,7 +27,7 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool ModelSolverOpenRave::init(const ModelSolver::Config &_config){
-        if(initSingleton()){
+        if(initSingleton(_config.visualizer)){
             #ifdef HAS_OPENRAVE
                 mConfig = _config;
                 // lock the environment to prevent changes
@@ -266,25 +266,29 @@ namespace hecatonquiros{
 
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverOpenRave::initSingleton(){
+    bool ModelSolverOpenRave::initSingleton(bool _enableVis){
         #ifdef HAS_OPENRAVE
             if(mInstance == nullptr){
                 mInstance = new ModelSolverOpenRave();
 
                 OpenRAVE::RaveInitialize(true);
                 mEnvironment = OpenRAVE::RaveCreateEnvironment();
-                mViewerThread = std::thread([&] {
+                mViewerThread = std::thread([&](bool _enableVis) {
                     {
                         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
                         mEnvironment->SetDebugLevel(OpenRAVE::Level_Debug);
-                        mViewer.reset();
-                        mViewer = OpenRAVE::RaveCreateViewer(mEnvironment, "qtcoin");
-                        if(!!mViewer){
-                            mEnvironment->Add(mViewer);          
+                        if(_enableVis){
+                            mViewer.reset();
+                            mViewer = OpenRAVE::RaveCreateViewer(mEnvironment, "qtcoin");
+                            if(!!mViewer){
+                                mEnvironment->Add(mViewer);
+                            }
                         }
                     }
-                    mViewer->main(true);
-                });
+                    if(_enableVis){
+                        mViewer->main(true);
+                    }
+                }, _enableVis);
             }
             return true;
         #else

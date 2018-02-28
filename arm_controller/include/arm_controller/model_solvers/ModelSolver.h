@@ -37,6 +37,7 @@ namespace hecatonquiros{
             std::string manipulatorName;
             std::string robotFile;
             std::vector<float> offset = {0,0,0};
+            bool visualizer = false;
         };
 
         static ModelSolver* create(const Config &_config);
