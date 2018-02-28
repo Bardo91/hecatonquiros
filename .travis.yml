@@ -1,0 +1,44 @@
+language: cpp
+
+sudo: required
+
+dist: trusty
+
+cache:
+  apt: true
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      env: BUILD_TYPE=Debug CODECOV=ON COMPILER=GCC
+    - os: linux
+      compiler: gcc
+      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=GCC
+    - os: linux
+      compiler: clang
+      env: BUILD_TYPE=Debug CODECOV=OFF COMPILER=CLANG
+    - os: linux
+      compiler: clang
+      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=CLANG
+    - os: osx
+      osx_image: xcode9.3beta
+      compiler: clang
+      env: BUILD_TYPE=Debug CODECOV=OFF COMPILER=CLANG
+    - os: osx
+      osx_image: xcode9.3beta
+      compiler: clang
+      env: BUILD_TYPE=Release CODECOV=OFF COMPILER=CLANG
+
+install:
+  - 'ci/install.sh'
+
+script:
+  - 'ci/script.sh'
+
+after_success:
+  - if [ $CODECOV = ON ]; then bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"; fi
+
+after_failure: 
+  - cat build/Testing/Temporary/LastTest.log
+  - cat build/Testing/Temporary/LastTestsFailed.log
