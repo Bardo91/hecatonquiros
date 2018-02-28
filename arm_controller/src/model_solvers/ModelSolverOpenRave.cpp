@@ -52,11 +52,13 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
-            std::vector<dReal> joints;
-            for(auto &j:_joints){
-                joints.push_back(j);
+            std::vector<dReal> joints(_joints.size());
+            std::vector<int> indices(_joints.size());
+            for(unsigned i = 0; i < _joints.size(); i++){
+                joints[i] = _joints[i];
+                indices[i] = i;
             }
-            robot->SetDOFValues(joints); 
+            robot->SetDOFValues(joints, 1, indices); 
         #else
             std::cout << "OpenRAVE not installed, cannot use ModelSolverOpenRAVE" << std::endl;
         #endif 
