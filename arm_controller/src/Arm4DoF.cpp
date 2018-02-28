@@ -44,8 +44,6 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<float> _q) {
-        assert(_q.size() == 3 || _q.size() == 4);
-        
         mModelSolver->joints(_q);
         
         if(mBackend != nullptr){
