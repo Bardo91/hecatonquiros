@@ -109,7 +109,7 @@
     <!--end_effector-->
     <Body name="end_effector" type="dynamic">
         <offsetfrom>wirst_2</offsetfrom>
-        <Translation>0 0 0.16</Translation>
+        <Translation>0 0 0.1235</Translation>
         <geom type="box">
             <extents>0.005 0.005 0.005</extents>
         </geom>
