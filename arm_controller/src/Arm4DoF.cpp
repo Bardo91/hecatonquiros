@@ -39,7 +39,12 @@ namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
         mModelSolver->joints({mHome1, mHome2, mHome3, mHome4});
-        mBackend->joints({mHome1, mHome2, mHome3, mHome4});
+        std::vector<float> joints;
+        joints = mModelSolver->joints();
+        mBackend->joints(joints);
+
+        std::vector<Eigen::Matrix4f> transforms;
+        mModelSolver->jointsTransform(transforms);
     }
 
     //---------------------------------------------------------------------------------------------------------------------

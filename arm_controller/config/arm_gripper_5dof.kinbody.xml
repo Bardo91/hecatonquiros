@@ -110,6 +110,7 @@
     <Body name="end_effector" type="dynamic">
         <offsetfrom>wirst_2</offsetfrom>
         <Translation>0 0 0.1235</Translation>
+        <rotationaxis>0 0 1  90</rotationaxis>
         <geom type="box">
             <extents>0.005 0.005 0.005</extents>
         </geom>

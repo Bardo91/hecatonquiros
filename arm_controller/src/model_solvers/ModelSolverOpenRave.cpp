@@ -181,21 +181,26 @@ namespace hecatonquiros{
 
             Eigen::Quaternionf q(_pose.block<3,3>(0,0));
 
-            Transform trans;
-            trans.rot.x = q.x();
-            trans.rot.y = q.y();
-            trans.rot.z = q.z();
-            trans.rot.w = q.w();
-            trans.trans.x = _pose(0,3);
-            trans.trans.y = _pose(1,3);
-            trans.trans.z = _pose(2,3);
+            Transform transform;
+            transform.rot.x = q.x();
+            transform.rot.y = q.y();
+            transform.rot.z = q.z();
+            transform.rot.w = q.w();
+            transform.trans.x = _pose(0,3);
+            transform.trans.y = _pose(1,3);
+            transform.trans.z = _pose(2,3);
 
             OpenRAVE::IkParameterization ikParam;
             if(_forceOri){
-                std::cout << "not supported force ori by now" << std::endl;
-                return false;
+                OpenRAVE::Transform t = pmanip->GetTransform();
+                OpenRAVE::RAY ray;
+                ray.pos = transform.trans;
+                ray.dir = {_pose(0,2), _pose(1,2), _pose(2,2)};
+                ikParam.SetTranslationDirection5D(ray);
+                //std::cout << "not supported force ori by now" << std::endl;
+                //return false;
             }else{
-                ikParam  = OpenRAVE::IkParameterization(trans, intType);
+                ikParam  = OpenRAVE::IkParameterization(transform, intType);
             }
 
             std::vector<dReal> vsolution;
