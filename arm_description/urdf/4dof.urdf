@@ -200,19 +200,64 @@
       <origin xyz="0 0 0.041" rpy="0 0 ${-pi/2}"/>
    </joint>
 
-   <link name="left/ScrewActuatorGripper">
+
+<link name="left/microservo_FT">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/microservo_FT.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.0061 -0.032 0.008" />
+      </visual>
+   </link>
+   <joint name="left/microservo_FT_joint" type="fixed">
+      <parent link="left/base_gripper" />
+      <child link="left/microservo_FT" />
+      <origin xyz="0 0 0.057" rpy="${pi/2} 0 ${pi/2}"/>
+   </joint>
+
+<link name="left/ScrewActuatorGripper">
       <visual>
          <geometry>
             <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripper.stl" />
          </geometry>
-         <origin rpy="0 0 0" xyz="0 0 0" />
+         <origin rpy="0 0 0" xyz="0.001 0 -0.0045" />
       </visual>
    </link>
    <joint name="left/ScrewActuatorGripper_joint" type="fixed">
-      <parent link="left/base_gripper" />
+      <parent link="left/microservo_FT" />
       <child link="left/ScrewActuatorGripper" />
-      <origin xyz="0 0 0.055" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
    </joint>
+
+<link name="left/base_gripper_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/base_gripper_case.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi}" xyz="-0.0145 0.02 0.004" />
+      </visual>
+   </link>
+   <joint name="left/base_gripper_case_joint" type="fixed">
+      <parent link="left/ScrewActuatorGripper" />
+      <child link="left/base_gripper_case" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+   <link name="left/ScrewActuatorGripperCenter">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripperCenter.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="-0.01 0.01 0.018" />
+      </visual>
+   </link>
+   <joint name="left/ScrewActuatorGripperCenter_joint" type="fixed">
+      <parent link="left/ScrewActuatorGripper" />
+      <child link="left/ScrewActuatorGripperCenter" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+
 
 <link name="left/holdBar_left">
       <visual>
@@ -222,7 +267,7 @@
          <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.017 0.02" />
       </visual>
    </link>
-   <joint name="left/holdBar_left" type="fixed">
+   <joint name="left/holdBar_left_joint" type="fixed">
       <parent link="left/base_gripper" />
       <child link="left/holdBar_left" />
       <origin xyz="0 -0.02 0.057" rpy="0 0 0"/>
@@ -236,11 +281,183 @@
          <origin rpy="${pi/2} 0 ${-pi/2}" xyz="0.005 0.017 0.02" />
       </visual>
    </link>
-   <joint name="left/holdBar_right" type="fixed">
+   <joint name="left/holdBar_right_joint" type="fixed">
       <parent link="left/base_gripper" />
       <child link="left/holdBar_right" />
       <origin xyz="0 0.02 0.057" rpy="0 0 0"/>
    </joint>
+
+
+   <link name="left/left_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/left_bar1_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar1" />
+      <origin xyz="0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="left/left_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/left_bar2_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar2" />
+      <origin xyz="0.005 -0.022 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/left_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/left_bar3_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar3" />
+      <origin xyz="-0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/left_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/left_bar4_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar4" />
+      <origin xyz="-0.005 -0.022 0.0265" rpy="0 0 0"/>
+</joint>
+
+<link name="left/right_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/right_bar1_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar1" />
+      <origin xyz="0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/right_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/right_bar2_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar2" />
+      <origin xyz="0.005 0.022 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="left/right_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/right_bar3_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar3" />
+      <origin xyz="-0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/right_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/right_bar4_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar4" />
+      <origin xyz="-0.005 0.022 0.0265" rpy="0 0 0"/>
+</joint>     
+
+
+<link name="left/left_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/left_barMini_joint" type="fixed">
+      <parent link="left/left_bar1" />
+      <child link="left/left_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint> 
+
+<link name="left/right_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} -2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="left/right_barMini_joint" type="fixed">
+      <parent link="left/right_bar1" />
+      <child link="left/right_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/left_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.005 0" />
+      </visual>
+   </link>
+   <joint name="left/left_gripper_joint" type="continuous">
+      <parent link="left/left_barMini" />
+      <child link="left/left_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+</joint> 
+
+
+<link name="left/right_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="-0.005 -0.005 0" />
+      </visual>
+   </link>
+   <joint name="left/right_gripper_joint" type="continuous">
+      <parent link="left/right_barMini" />
+      <child link="left/right_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 ${pi}"/>
+</joint>
+
 <!--///////////////////////////////////Right ARM//////////////////////////////////-->
     
 <!-- Joint 0 -->
@@ -431,19 +648,62 @@
       <origin xyz="0 0 0.041" rpy="0 0 ${-pi/2}"/>
    </joint>
 
-   <link name="right/ScrewActuatorGripper">
+<link name="right/microservo_FT">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/microservo_FT.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.0061 -0.032 0.008" />
+      </visual>
+   </link>
+   <joint name="right/microservo_FT_joint" type="fixed">
+      <parent link="right/base_gripper" />
+      <child link="right/microservo_FT" />
+      <origin xyz="0 0 0.057" rpy="${pi/2} 0 ${pi/2}"/>
+   </joint>
+
+<link name="right/ScrewActuatorGripper">
       <visual>
          <geometry>
             <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripper.stl" />
          </geometry>
-         <origin rpy="0 0 0" xyz="0 0 0" />
+         <origin rpy="0 0 0" xyz="0.001 0 -0.0045" />
       </visual>
    </link>
    <joint name="right/ScrewActuatorGripper_joint" type="fixed">
-      <parent link="right/base_gripper" />
+      <parent link="right/microservo_FT" />
       <child link="right/ScrewActuatorGripper" />
-      <origin xyz="0 0 0.055" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
    </joint>
+
+<link name="right/base_gripper_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/base_gripper_case.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi}" xyz="-0.0145 0.02 0.004" />
+      </visual>
+   </link>
+   <joint name="right/base_gripper_case_joint" type="fixed">
+      <parent link="right/ScrewActuatorGripper" />
+      <child link="right/base_gripper_case" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+  <link name="right/ScrewActuatorGripperCenter">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripperCenter.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="-0.01 0.01 0.018" />
+      </visual>
+   </link>
+   <joint name="right/ScrewActuatorGripperCenter_joint" type="fixed">
+      <parent link="right/ScrewActuatorGripper" />
+      <child link="right/ScrewActuatorGripperCenter" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
 
    <link name="right/holdBar_left">
       <visual>
@@ -453,7 +713,7 @@
          <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.017 0.02" />
       </visual>
    </link>
-   <joint name="right/holdBar_left" type="fixed">
+   <joint name="right/holdBar_left_joint" type="fixed">
       <parent link="right/base_gripper" />
       <child link="right/holdBar_left" />
       <origin xyz="0 -0.02 0.057" rpy="0 0 0"/>
@@ -468,12 +728,179 @@
          <origin rpy="${pi/2} 0 ${-pi/2}" xyz="0.005 0.017 0.02" />
       </visual>
    </link>
-   <joint name="right/holdBar_right" type="fixed">
+   <joint name="right/holdBar_right_joint" type="fixed">
       <parent link="right/base_gripper" />
       <child link="right/holdBar_right" />
       <origin xyz="0 0.02 0.057" rpy="0 0 0"/>
-   </joint-->
+   </joint>
+
+   <link name="right/left_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/left_bar1_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar1" />
+      <origin xyz="0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="right/left_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/left_bar2_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar2" />
+      <origin xyz="0.005 -0.022 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/left_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/left_bar3_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar3" />
+      <origin xyz="-0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/left_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/left_bar4_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar4" />
+      <origin xyz="-0.005 -0.022 0.0265" rpy="0 0 0"/>
+</joint>
+
+<link name="right/right_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/right_bar1_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar1" />
+      <origin xyz="0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/right_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/right_bar2_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar2" />
+      <origin xyz="0.005 0.022 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="right/right_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/right_bar3_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar3" />
+      <origin xyz="-0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/right_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/right_bar4_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar4" />
+      <origin xyz="-0.005 0.022 0.0265" rpy="0 0 0"/>
+</joint>
+
+<link name="right/left_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/left_barMini_joint" type="fixed">
+      <parent link="right/left_bar1" />
+      <child link="right/left_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint> 
+
+<link name="right/right_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} -2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+   </link>
+   <joint name="right/right_barMini_joint" type="fixed">
+      <parent link="right/right_bar1" />
+      <child link="right/right_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint>
+
+   <link name="right/left_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.005 0" />
+      </visual>
+   </link>
+   <joint name="right/left_gripper_joint" type="continuous">
+      <parent link="right/left_barMini" />
+      <child link="right/left_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+</joint> 
 
 
+<link name="right/right_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="-0.005 -0.005 0" />
+      </visual>
+   </link>
+   <joint name="right/right_gripper_joint" type="continuous">
+      <parent link="right/right_barMini" />
+      <child link="right/right_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 ${pi}"/>
+</joint-->
 
 </robot>
