@@ -1,8 +1,9 @@
 <KinBody name ="arm_gripper_5dof">
     <Body name="arm_0_top" type="dynamic">
         <Translation>0 0.03 0</Translation>
+        
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_top.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_top.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -10,8 +11,9 @@
     <Body name="arm_0_bottom" type="dynamic">
         <offsetfrom>arm_0_top</offsetfrom>
         <Translation>0 0.0 -0.0125</Translation>
+<rotationaxis>0 0 1  90</rotationaxis>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_bottom.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_bottom.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -28,7 +30,7 @@
         <rotationaxis>1 0 0  180</rotationaxis>
         <Translation>0 0.0 -0.02</Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_1.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_1.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -44,7 +46,7 @@
         <offsetfrom>arm_1</offsetfrom>
         <Translation>0 0.0 0.15</Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_2_microservo.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_2_microservo.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -60,7 +62,7 @@
         <offsetfrom>arm_2</offsetfrom>
         <Translation>0 0.0 0.065</Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/end_effector_connector.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/end_effector_connector.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -78,7 +80,7 @@
         <rotationaxis>0 1 0  -90</rotationaxis>
         <rotationaxis>0 0 1  90</rotationaxis>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/core_structure.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/core_structure.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -94,7 +96,7 @@
         <Translation>0.1235 0 0.</Translation>
         <rotationaxis>0 1 0  90</rotationaxis>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/base_gripper.stl</render>
+            <render>/home/polux/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/base_gripper.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
