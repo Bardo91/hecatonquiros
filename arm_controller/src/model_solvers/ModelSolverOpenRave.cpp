@@ -294,12 +294,36 @@ namespace hecatonquiros{
             if(mInstance == nullptr){
                 mInstance = new ModelSolverOpenRave();
 
-                OpenRAVE::RaveInitialize(true);
+                OpenRAVE::RaveInitialize(false, OpenRAVE::Level_Debug);
+
+                std::cout << "Load Plugins" << std::endl;
+
+                OpenRAVE::RaveLoadPlugin("basecontrollers");
+                OpenRAVE::RaveLoadPlugin("baserobots");
+                OpenRAVE::RaveLoadPlugin("basesamplers");
+                OpenRAVE::RaveLoadPlugin("basesensors");
+                OpenRAVE::RaveLoadPlugin("bulletrave");
+                OpenRAVE::RaveLoadPlugin("configurationcache");
+                OpenRAVE::RaveLoadPlugin("dualmanipulation");
+                OpenRAVE::RaveLoadPlugin("fclrave");
+                OpenRAVE::RaveLoadPlugin("grasper");
+                OpenRAVE::RaveLoadPlugin("ikfastsolvers");
+                OpenRAVE::RaveLoadPlugin("logging");
+                OpenRAVE::RaveLoadPlugin("mobyrave");
+                OpenRAVE::RaveLoadPlugin("oderave");
+                OpenRAVE::RaveLoadPlugin("pqprave");
+                OpenRAVE::RaveLoadPlugin("rmanipulation");
+                OpenRAVE::RaveLoadPlugin("rplanners");
+                OpenRAVE::RaveLoadPlugin("textserver");
+                if(_enableVis){
+                    OpenRAVE::RaveLoadPlugin("qtosgrave");
+                    OpenRAVE::RaveLoadPlugin("qtcoinrave");
+                }
+
                 mEnvironment = OpenRAVE::RaveCreateEnvironment();
                 mViewerThread = std::thread([&](bool _enableVis) {
                     {
                         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-                        mEnvironment->SetDebugLevel(OpenRAVE::Level_Debug);
                         if(_enableVis){
                             mViewer.reset();
                             mViewer = OpenRAVE::RaveCreateViewer(mEnvironment, "qtcoin");
