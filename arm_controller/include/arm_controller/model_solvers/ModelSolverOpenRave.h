@@ -71,6 +71,7 @@ namespace hecatonquiros{
             static OpenRAVE::EnvironmentBasePtr mEnvironment;
             static OpenRAVE::ViewerBasePtr      mViewer;
             static std::thread                  mViewerThread;
+            static OpenRAVE::ModuleBasePtr      mIkFast;
         #endif
 
     private:

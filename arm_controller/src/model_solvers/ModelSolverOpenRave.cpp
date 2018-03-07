@@ -145,9 +145,6 @@ namespace hecatonquiros{
     bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-            OpenRAVE::ModuleBasePtr pikfast = OpenRAVE::RaveCreateModule(mEnvironment,"ikfast");
-            mEnvironment->Add(pikfast,true,"");
-
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
@@ -168,7 +165,7 @@ namespace hecatonquiros{
 
             // Request solver
             try{
-                if( !pikfast->SendCommand(ssout,ssin) ) {
+                if( !mIkFast->SendCommand(ssout,ssin) ) {
                     RAVELOG_ERROR("failed to load iksolver\n");
                     return false;
                 }
@@ -227,9 +224,6 @@ namespace hecatonquiros{
     bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-            OpenRAVE::ModuleBasePtr pikfast = OpenRAVE::RaveCreateModule(mEnvironment,"ikfast");
-            mEnvironment->Add(pikfast,true,"");
-
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
@@ -240,7 +234,7 @@ namespace hecatonquiros{
 
             // Request solver
             try{
-                if( !pikfast->SendCommand(ssout,ssin) ) {
+                if( !mIkFast->SendCommand(ssout,ssin) ) {
                     RAVELOG_ERROR("failed to load iksolver\n");
                     return false;
                 }
@@ -321,6 +315,10 @@ namespace hecatonquiros{
                 }
 
                 mEnvironment = OpenRAVE::RaveCreateEnvironment();
+                
+                mIkFast = OpenRAVE::RaveCreateModule(mEnvironment,"ikfast");
+                mEnvironment->Add(mIkFast,true,"");
+                
                 mViewerThread = std::thread([&](bool _enableVis) {
                     {
                         EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
@@ -348,4 +346,5 @@ namespace hecatonquiros{
     OpenRAVE::EnvironmentBasePtr    ModelSolverOpenRave::mEnvironment  = nullptr;
     OpenRAVE::ViewerBasePtr         ModelSolverOpenRave::mViewer       = nullptr;
     std::thread                     ModelSolverOpenRave::mViewerThread;
+    OpenRAVE::ModuleBasePtr         ModelSolverOpenRave::mIkFast = nullptr;
 }
