@@ -21,7 +21,7 @@
         <offsetfrom>arm_0_bottom</offsetfrom>
         <body>arm_0_top</body>
         <body>arm_0_bottom</body>
-        <limitsdeg>-90 90</limitsdeg>
+        <limitsdeg>-110 110</limitsdeg>
         <initial>0</initial>
     </joint>
     <!-- Joint 1 -->
@@ -38,7 +38,7 @@
         <offsetfrom>arm_1</offsetfrom>
         <body>arm_0_bottom</body>
         <body>arm_1</body>
-        <limitsdeg>-90 90</limitsdeg>
+        <limitsdeg>-110 110</limitsdeg>
         <Axis>1 0 0</Axis>
     </joint>
     <!-- Joint 2 -->
@@ -55,7 +55,7 @@
         <body>arm_1</body>
         <body>arm_2</body>
         <Axis>1 0 0</Axis>
-        <limitsdeg>-90 90</limitsdeg>
+        <limitsdeg>-110 110</limitsdeg>
     </joint>
     <!-- Joint 3 wirst-->
     <Body name="effector_connector" type="dynamic">
@@ -71,7 +71,7 @@
         <body>arm_2</body>
         <body>effector_connector</body>
         <Axis>0 0 1</Axis>
-        <limitsdeg>-90 90</limitsdeg>
+        <limitsdeg>-110 110</limitsdeg>
     </joint>
     <!--GRIPPER-->
     <!--wirst_1-->
@@ -104,7 +104,7 @@
         <offsetfrom>wirst_2</offsetfrom>
         <body>wirst_1</body>
         <body>wirst_2</body>
-        <limitsdeg>-90 90</limitsdeg>
+        <limitsdeg>-110 110</limitsdeg>
         <initial>0</initial>
     </joint>
 
