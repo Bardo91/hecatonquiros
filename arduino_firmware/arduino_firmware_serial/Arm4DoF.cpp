@@ -30,8 +30,10 @@ void Arm4DoF::setup(int _id){
   
   mNJoints = 5;
   mJointMinMaxPairs = new Pair[mNJoints];
+  mJointOffsets = new float[mNJoints];
   for(unsigned i = 0; i < mNJoints; i++){
     setMinMaxJoint(i, -90,90);
+    mJointOffsets[i] = 0;
   }
   
   Serial1.begin(1000000);
@@ -54,8 +56,15 @@ void Arm4DoF::setMinMaxJoint(int _joint, float _min, float _max){
     mJointMinMaxPairs[_joint] = p;
   }else{
     return; // bad id of joint
-  }
-  
+  } 
+}
+
+void Arm4DoF::offsetJoint(int _joint, float _val){
+  if(_joint < mNJoints){
+    mJointOffsets[_joint] = _val;
+  }else{
+    return; // bad id of joint
+  } 
 }
 
 //--------------------------------------------------------------------------------------------------------------------
@@ -86,7 +95,7 @@ void Arm4DoF::joints(float *_joints, int _nJoints){
     //Serial.print(", value ");
     //Serial.print(mapAngleToVal(mJointMinMaxPairs[i].min, mJointMinMaxPairs[i].max,_joints[i]));
     //Serial.println();
-    mServosInterface.WritePos(mId*10 + i + 1, mapAngleToVal(mJointMinMaxPairs[i].min, mJointMinMaxPairs[i].max,_joints[i]), mSpeed); // <<--- Comprobar angulos max y min  
+    mServosInterface.WritePos(mId*10 + i + 1, mapAngleToVal(mJointMinMaxPairs[i].min, mJointMinMaxPairs[i].max,_joints[i] + mJointOffsets[i]), mSpeed); // <<--- Comprobar angulos max y min  
   }
 }
 

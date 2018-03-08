@@ -37,8 +37,12 @@ class Arm4DoF{
     /// \return servo speed
     float speed();
 
+    /// Min and max values of joints in angles according to servo's specifications
     void setMinMaxJoint(int _joint, float _min, float _max);
 
+    /// Offsets to fix minor displacements in joints due to alignment erros, and so on.
+    void offsetJoint(int _joint, float _val);
+    
     /// Set target joint coordinates
     /// \param _v0: desired angle for joint 0
     /// \param _v1: desired angle for joint 1
@@ -70,10 +74,12 @@ class Arm4DoF{
   private:
     Pair *mJointMinMaxPairs;
     int mNJoints = 5; // 666 Customizable?
+
+    float* mJointOffsets;
     
     SCServo mServosInterface;
     int mId = 0;
-    float mSpeed=1000;
+    float mSpeed=400;
     int mFlagClose = 0;
 
     unsigned long mTimeClose1, mTimeClose2, mTimeOpen1, mTimeOpen2 = 0;

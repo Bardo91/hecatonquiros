@@ -36,13 +36,15 @@ void setup() {
   leftArm.setMinMaxJoint(0, -110,110);  // datasheet 200º
   leftArm.setMinMaxJoint(1, -110,110);
   leftArm.setMinMaxJoint(2, -110,115);
-  leftArm.setMinMaxJoint(3, -155,155);
+  leftArm.setMinMaxJoint(3, -155,155); // datasheet 160º
   leftArm.setMinMaxJoint(4, -155,155);
+
+  leftArm.offsetJoint(1, 10);  // This arm fall more than the other, this is an small help.
 
   rightArm.setMinMaxJoint(0, -110,110);  // datasheet 200º
   rightArm.setMinMaxJoint(1, -110,110);
   rightArm.setMinMaxJoint(2, -110,110);
-  rightArm.setMinMaxJoint(3, -155,155);
+  rightArm.setMinMaxJoint(3, -155,155); // datasheet 160º
   rightArm.setMinMaxJoint(4, -155,155);
 
 }
