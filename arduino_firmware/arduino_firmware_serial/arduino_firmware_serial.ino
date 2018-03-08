@@ -31,12 +31,20 @@ void setup() {
   Serial.begin(115200);
 
   leftArm.setup(1);
-  leftArm.offsets(90,90,90,90);
-
   rightArm.setup(2);
-  rightArm.offsets(90,90,90,90);
-  
-  
+
+  leftArm.setMinMaxJoint(0, -110,110);  // datasheet 200º
+  leftArm.setMinMaxJoint(1, -110,110);
+  leftArm.setMinMaxJoint(2, -110,115);
+  leftArm.setMinMaxJoint(3, -155,155);
+  leftArm.setMinMaxJoint(4, -155,155);
+
+  rightArm.setMinMaxJoint(0, -110,110);  // datasheet 200º
+  rightArm.setMinMaxJoint(1, -110,110);
+  rightArm.setMinMaxJoint(2, -110,110);
+  rightArm.setMinMaxJoint(3, -155,155);
+  rightArm.setMinMaxJoint(4, -155,155);
+
 }
 
 void exec             (String _cmd);
@@ -118,7 +126,7 @@ void execArm(String _cmd, Arm4DoF *_arm){
       numberJoints++;
     }
   }
-   Serial.println(numberJoints); 
+   //Serial.println(numberJoints); 
   _arm->joints(signals, numberJoints);
 }
 
