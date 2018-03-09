@@ -79,6 +79,7 @@ namespace hecatonquiros{
 
     private:
         #ifdef HAS_OPENRAVE
+            std::vector<OpenRAVE::GraphHandlePtr> poses;
             OpenRAVE::GraphHandlePtr mPoseManipX;
             OpenRAVE::GraphHandlePtr mPoseManipY;
             OpenRAVE::GraphHandlePtr mPoseManipZ;

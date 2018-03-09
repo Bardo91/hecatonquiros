@@ -60,19 +60,23 @@ namespace hecatonquiros{
             }
             robot->SetDOFValues(joints, 1, indices);
             
+            poses.clear();
+
             std::vector<Eigen::Matrix4f> transforms;
             jointsTransform(transforms);
-            Eigen::Matrix4f pose = transforms.back();
-            RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
-            RaveVector<float> dir = {pose(0,2),pose(1,2), pose(2,2)};
-            p2 = p1 + dir*0.05;
-            mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
-            dir = {pose(0,1),pose(1,1), pose(2,1)};
-            p2 = p1 + dir*0.05;
-            mPoseManipY = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1));
-            dir = {pose(0,0),pose(1,0), pose(2,0)};
-            p2 = p1 + dir*0.05;
-            mPoseManipX = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1));
+            
+            for(auto &pose:transforms){
+                RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
+                RaveVector<float> dir = {pose(0,2),pose(1,2), pose(2,2)};
+                p2 = p1 + dir*0.05;
+                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1)));
+                dir = {pose(0,1),pose(1,1), pose(2,1)};
+                p2 = p1 + dir*0.05;
+                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1)));
+                dir = {pose(0,0),pose(1,0), pose(2,0)};
+                p2 = p1 + dir*0.05;
+                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1)));
+            }
         #else
             std::cout << "OpenRAVE not installed, cannot use ModelSolverOpenRAVE" << std::endl;
         #endif 
