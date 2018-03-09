@@ -34,7 +34,7 @@ namespace hecatonquiros{
                 EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
                 auto robot = mEnvironment->ReadRobotXMLFile(mConfig.robotFile);
                 robot->SetName(mConfig.robotName);
-                OpenRAVE::Transform offset(OpenRAVE::Vector({0,0,0,1}),OpenRAVE::Vector({mConfig.offset[0], mConfig.offset[1], mConfig.offset[2]}));
+                OpenRAVE::Transform offset(OpenRAVE::Vector({mConfig.rotation[0], mConfig.rotation[1], mConfig.rotation[2], mConfig.rotation[3]}),OpenRAVE::Vector({mConfig.offset[0], mConfig.offset[1], mConfig.offset[2]}));
                 robot->SetTransform(offset);
                 mEnvironment->Add(robot);
                 return true;
