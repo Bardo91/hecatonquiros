@@ -90,7 +90,32 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri){
-        return mModelSolver->checkIk(_pose, _angles, _forceOri);
+        if(_forceOri){
+            std::vector<std::vector<float>> vectorJoints;
+            mModelSolver->checkIk(_pose, vectorJoints,false);
+            if(vectorJoints.size() == 0)
+                return false;
+            
+            int minIdx = 0;
+            float minDistance = std::numeric_limits<float>::max();
+            Eigen::Matrix3f r1 = _pose.block<3,3>(0,0);
+            for(unsigned i = 0; i < vectorJoints.size(); i++){
+                Eigen::Matrix4f pose = mModelSolver->testIk(vectorJoints[i]);
+                Eigen::Matrix3f r2 = pose.block<3,3>(0,0);
+                Eigen::Matrix3f diffRot = r1.inverse()*r2;
+                Eigen::Vector3f ea = diffRot.eulerAngles(0, 1, 2);
+                if(ea.norm() < minDistance){
+                    minDistance = ea.norm();
+                    minIdx = i;
+                }
+                //getchar();
+            }
+            std::cout << "min angle: " << minDistance << std::endl;
+            _angles = vectorJoints[minIdx];
+            return true;
+        }else{
+            return mModelSolver->checkIk(_pose, _angles, _forceOri);
+        }
     }
     
     //---------------------------------------------------------------------------------------------------------------------

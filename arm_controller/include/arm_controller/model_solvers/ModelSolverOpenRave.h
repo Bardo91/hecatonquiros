@@ -60,6 +60,9 @@ namespace hecatonquiros{
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true);
 
+        /// Five end effector pose given joints without moving the arm
+        /// \param _joints: list of possible solutions joints for given pose
+        virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
     protected:
         virtual bool init(const ModelSolver::Config &_config);
 
@@ -76,7 +79,10 @@ namespace hecatonquiros{
 
     private:
         #ifdef HAS_OPENRAVE
-        
+            OpenRAVE::GraphHandlePtr mPoseManipX;
+            OpenRAVE::GraphHandlePtr mPoseManipY;
+            OpenRAVE::GraphHandlePtr mPoseManipZ;
+            OpenRAVE::GraphHandlePtr mPoseIK;
         #endif
     };
 
