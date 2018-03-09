@@ -1,0 +1,5 @@
+geometry_msgs/PoseStamped inPose
+bool forceOri
+bool single
+---
+sensor_msgs/JointState[] outJoints

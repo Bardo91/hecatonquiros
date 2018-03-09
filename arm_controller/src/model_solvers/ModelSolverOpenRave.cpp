@@ -114,13 +114,17 @@ namespace hecatonquiros{
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
             std::vector<OpenRAVE::Transform> or_transforms;
-            robot->GetBodyTransformations(or_transforms);
+            robot->GetLinkTransformations (or_transforms);
 
 
             for(unsigned k = 0; k < or_transforms.size(); k++){
                 Eigen::Matrix4f T = Eigen::Matrix4f::Identity();;
 
-                Eigen::Quaternionf q(or_transforms[k].rot.w, or_transforms[k].rot.x, or_transforms[k].rot.y, or_transforms[k].rot.z);   
+                Eigen::Quaternionf q;
+                q.x() = or_transforms[k].rot.x;
+                q.y() = or_transforms[k].rot.y;
+                q.z() = or_transforms[k].rot.z;
+                q.w() = or_transforms[k].rot.w; 
                 T.block<3,3>(0,0) = q.matrix();
                 T(0,3) = or_transforms[k].trans.x;
                 T(1,3) = or_transforms[k].trans.y;
@@ -142,11 +146,15 @@ namespace hecatonquiros{
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
             std::vector<OpenRAVE::Transform> or_transforms;
-            robot->GetBodyTransformations(or_transforms);	
+            robot->GetLinkTransformations (or_transforms);	
         
             Eigen::Matrix4f T = Eigen::Matrix4f::Identity();;
 
-            Eigen::Quaternionf q(or_transforms[_idx].rot.w, or_transforms[_idx].rot.x, or_transforms[_idx].rot.y, or_transforms[_idx].rot.z);   
+            Eigen::Quaternionf q;
+            q.x() = or_transforms[_idx].rot.x;
+            q.y() = or_transforms[_idx].rot.y;
+            q.z() = or_transforms[_idx].rot.z;
+            q.w() = or_transforms[_idx].rot.w; 
             T.block<3,3>(0,0) = q.matrix();
             T(0,3) = or_transforms[_idx].trans.x;
             T(1,3) = or_transforms[_idx].trans.y;
