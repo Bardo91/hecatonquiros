@@ -52,7 +52,10 @@ namespace hecatonquiros{
         /// \param _joints: list of possible solutions joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true){ return false;}
-
+        
+        /// Five end effector pose given joints without moving the arm
+        /// \param _joints: list of possible solutions joints for given pose
+        virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints){return Eigen::Matrix4f::Identity(); };
     protected:
         virtual bool init(const ModelSolver::Config &_config) { return false;}
 
