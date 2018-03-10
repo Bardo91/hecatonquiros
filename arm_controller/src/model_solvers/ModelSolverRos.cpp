@@ -44,7 +44,7 @@ namespace hecatonquiros{
                 mJointsSubscriber = nh.subscribe<sensor_msgs::JointState>(mRobotName + "/pose", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
                         mLastJoints = *_msg;
                     });
-                mTransformsSubscriber = nh.subscribe<geometry_msgs::PoseArray>(mRobotName + "/pose", 1, [&](const geometry_msgs::PoseArray::ConstPtr &_msg){
+                mTransformsSubscriber = nh.subscribe<geometry_msgs::PoseArray>(mRobotName + "/joints_transform", 1, [&](const geometry_msgs::PoseArray::ConstPtr &_msg){
                         mLastJointTransforms = *_msg;
                     });
             }
