@@ -107,35 +107,32 @@ class ArmServer:
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
                 direction = np.array([req.inPose.pose.orientation.x, req.inPose.pose.orientation.y, req.inPose.pose.orientation.z, req.inPose.pose.orientation.w])
                 pose = Ray(target,direction)
-                #with self.mRobot:
-                #    solution = self.mIkmodel5D.FindIKSolution(
-                #                            IkParameterization(pose,
-                #                            IkParameterization.Type.TranslationDirection5D),
-                #                            IkFilterOptions.CheckEnvCollisions)
+                solution = self.mIkmodel5D.FindIKSolution(
+                                        IkParameterization(pose,
+                                        IkParameterization.Type.TranslationDirection5D),
+                                        IkFilterOptions.CheckEnvCollisions)
             else:
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
                 direction = np.array([req.inPose.pose.orientation.x, req.inPose.pose.orientation.y, req.inPose.pose.orientation.z, req.inPose.pose.orientation.w])                
                 pose = Ray(position,direction)
-                #with self.mRobot:
-                #    solutions = self.mIkmodel5D.FindIKSolutions(
-                #                            IkParameterization(pose,
-                #                            IkParameterization.Type.TranslationDirection5D),
-                #                            IkFilterOptions.CheckEnvCollisions)
+                solutions = self.mIkmodel5D.FindIKSolutions(
+                                        IkParameterization(pose,
+                                        IkParameterization.Type.TranslationDirection5D),
+                                        IkFilterOptions.CheckEnvCollisions)
         else:
             if(req.single):
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
-                with self.mRobot:
-                    solution = self.mIkmodel3D.FindIKSolution(
-                                            IkParameterization(position,
-                                            IkParameterization.Type.Translation3D),
-                                            IkFilterOptions.CheckEnvCollisions)
+                solution = self.mIkmodel3D.FindIKSolution(
+                                        IkParameterization(position,
+                                        IkParameterization.Type.Translation3D),
+                                        IkFilterOptions.CheckEnvCollisions)
             else:
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
-                with self.mRobot:
-                    solutions = self.mIkmodel3D.FindIKSolutions(
-                                            IkParameterization(position,
-                                            IkParameterization.Type.Translation3D),
-                                            IkFilterOptions.CheckEnvCollisions)
+                
+                solutions = self.mIkmodel3D.FindIKSolutions(
+                                        IkParameterization(position,
+                                        IkParameterization.Type.Translation3D),
+                                        IkFilterOptions.CheckEnvCollisions)
 
         res = SetPoseResponse()
         for j in joints:
@@ -151,9 +148,8 @@ class ArmServer:
         for j in req.inJoints.position:
             joints.append(j)
 
-        with self.mRobot:
-            self.mRobot.SetDOFValues(joints)
-            joints = self.mRobot.GetDOFValues()
+        self.mRobot.SetDOFValues(joints)
+        joints = self.mRobot.GetDOFValues()
         
         res = SetJointsResponse()
         for j in joints:
@@ -168,8 +164,7 @@ class ArmServer:
         rate = rospy.Rate(30) # 10hz
         while(self.mRun):
             orPose = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
-            with self.mRobot:
-                orPose = self.mManip.GetTransform()
+            orPose = self.mManip.GetTransform()
 
             q = quaternion.from_rotation_matrix(orPose[0:3,0:3])
             poseMsg = PoseStamped()
@@ -191,8 +186,7 @@ class ArmServer:
         rate = rospy.Rate(30) # 10hz
         while(self.mRun):
             orJoints = [] 
-            with self.mRobot:
-                orJoints = self.mRobot.GetDOFValues()
+            orJoints = self.mRobot.GetDOFValues()
 
             jointsMsg = JointState()
             for j in orJoints:
@@ -208,8 +202,7 @@ class ArmServer:
         rate = rospy.Rate(30) # 10hz
         while(self.mRun):
             orLinks = []
-            with self.mRobot:
-                orLinks = self.mRobot.GetLinks()
+            orLinks = self.mRobot.GetLinks()
 
             jointsTransform = PoseArray()
 
