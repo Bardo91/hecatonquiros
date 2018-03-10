@@ -104,33 +104,33 @@ for body in robot2.GetLinks():
 #         else:
 #             print("Could not find IK")
 
-# manip = robot1.SetActiveManipulator('manipulator') # set the manipulator to leftarm
-# ikmodel = databases.inversekinematics.InverseKinematicsModel(robot1,iktype=IkParameterization.Type.Translation3D)
-# if not ikmodel.load():
-#     ikmodel.autogenerate()
+manip = robot1.SetActiveManipulator('manipulator') # set the manipulator to leftarm
+ikmodel = databases.inversekinematics.InverseKinematicsModel(robot1,iktype=IkParameterization.Type.Translation3D)
+if not ikmodel.load():
+    ikmodel.autogenerate()
 
-# print("Generated IKMODEL")
+print("Generated IKMODEL")
 
-# with robot1: # lock environment and save robot1 state
-#     robot1.SetDOFValues([0,0,numpy.pi/2],[0,1,2]) # set the first 4 dof values
-#     Tee = manip.GetEndEffectorTransform() # get end effector
-#     print(Tee)
-#     Tee[0][3] = Tee[0][3] +0.1
-#     Tee[2][3] = Tee[2][3] -0.1
-#     ikparam = IkParameterization(Tee[0:3,3],ikmodel.iktype) # build up the translation3d ik query
-#     sols = manip.FindIKSolutions(ikparam, IkFilterOptions.IgnoreSelfCollisions) # get all solutions
+with robot1: # lock environment and save robot1 state
+    robot1.SetDOFValues([0,0,numpy.pi/2],[0,1,2]) # set the first 4 dof values
+    Tee = manip.GetEndEffectorTransform() # get end effector
+    print(Tee)
+    Tee[0][3] = Tee[0][3] +0.1
+    Tee[2][3] = Tee[2][3] -0.1
+    ikparam = IkParameterization(Tee[0:3,3],ikmodel.iktype) # build up the translation3d ik query
+    sols = manip.FindIKSolutions(ikparam, IkFilterOptions.IgnoreSelfCollisions) # get all solutions
 
-# print("FOUND SOLUTIONS")
+print("FOUND SOLUTIONS")
 
-# h = env.plot3(Tee[0:3,3],10) # plot one point
-# with robot1: # save robot1 state
-#     raveLogInfo('%d solutions'%len(sols))
-#     for sol in sols: # go through every solution
-#         robot1.SetDOFValues(sol,manip.GetArmIndices()) # set the current solution
-#         env.UpdatePublishedBodies() # allow viewer to update new robot1
-#         time.sleep(100.0/len(sols))
+h = env.plot3(Tee[0:3,3],10) # plot one point
+with robot1: # save robot1 state
+    raveLogInfo('%d solutions'%len(sols))
+    for sol in sols: # go through every solution
+        robot1.SetDOFValues(sol,manip.GetArmIndices()) # set the current solution
+        env.UpdatePublishedBodies() # allow viewer to update new robot1
+        time.sleep(100.0/len(sols))
 
-# raveLogInfo('restored dof values: '+repr(robot1.GetDOFValues())) # robot1 state is restored to original
+raveLogInfo('restored dof values: '+repr(robot1.GetDOFValues())) # robot1 state is restored to original
 
 
 IPython.embed()
