@@ -101,13 +101,12 @@ class ArmServer:
     #------------------------------------------------------------------------------------------------------------------
     def handlerSetPose(self, req):
         res = SetPoseResponse()
-
         if(req.forceOri):
             if(req.single):
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
                 direction = np.array([req.inPose.pose.orientation.x, req.inPose.pose.orientation.y, req.inPose.pose.orientation.z, req.inPose.pose.orientation.w])
                 pose = Ray(target,direction)
-                solution = self.mIkmodel5D.FindIKSolution(
+                solution = self.mManip.FindIKSolution(
                                         IkParameterization(pose,
                                         IkParameterization.Type.TranslationDirection5D),
                                         IkFilterOptions.CheckEnvCollisions)
@@ -115,28 +114,36 @@ class ArmServer:
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
                 direction = np.array([req.inPose.pose.orientation.x, req.inPose.pose.orientation.y, req.inPose.pose.orientation.z, req.inPose.pose.orientation.w])                
                 pose = Ray(position,direction)
-                solutions = self.mIkmodel5D.FindIKSolutions(
+                solutions = self.mManip.FindIKSolutions(
                                         IkParameterization(pose,
                                         IkParameterization.Type.TranslationDirection5D),
                                         IkFilterOptions.CheckEnvCollisions)
         else:
             if(req.single):
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
-                solution = self.mIkmodel3D.FindIKSolution(
+                solution = self.mManip.FindIKSolution(
                                         IkParameterization(position,
                                         IkParameterization.Type.Translation3D),
                                         IkFilterOptions.CheckEnvCollisions)
             else:
                 position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
                 
-                solutions = self.mIkmodel3D.FindIKSolutions(
+                solutions = self.mManip.FindIKSolutions(
                                         IkParameterization(position,
                                         IkParameterization.Type.Translation3D),
                                         IkFilterOptions.CheckEnvCollisions)
 
         res = SetPoseResponse()
-        for j in joints:
-            res.outJoints.position.append(j) 
+        if(req.single):
+            res.outJoints = [JointState()]
+            for j in solution:
+                res.outJoints[0].position.append(j) 
+        else:
+            for joints in solutions:
+                resJoints = JointState()
+                for j in joints:
+                    resJoints.position.append(j)
+                res.outJoints.append(resJoints)
 
         return res
         
