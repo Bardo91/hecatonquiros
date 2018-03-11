@@ -42,14 +42,14 @@ leftArm = arm_server.ArmServer (    env,
                                     "",
                                     "left_arm", 
                                     np.array([0.20,0.14,-0.04]),
-                                    np.array([0,0,1,0]))    # 180 over Y
+                                    np.array([0,0,1,0]))   # {w,x,y,z} 180 over Y
 
 rightArm = arm_server.ArmServer (   env, 
                                     #"/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/config/arm_gripper_5dof.robot.xml", 
                                     "",
                                     "right_arm", 
                                     np.array([0.2,-0.2,-0.04]),
-                                    np.array([0,0,1,0]))    # 180 over Y
+                                    np.array([0,0,1,0]))   # {w,x,y,z} 180 over Y
 
 
 spinThread = threading.Thread(target=lambda: rospy.spin(), name="spin_thread")

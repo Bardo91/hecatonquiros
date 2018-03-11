@@ -111,48 +111,60 @@ class ArmServer:
     def handlerSetPose(self, req):
         res = SetPoseResponse()
         if(req.forceOri):
+            if not self.mIkmodel5D.load():
+                return SetPoseResponse()
+
+            position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
+            q= np.quaternion(   req.inPose.pose.orientation.w, 
+                                req.inPose.pose.orientation.x, 
+                                req.inPose.pose.orientation.y, 
+                                req.inPose.pose.orientation.z)
+
+            rotMat = quaternion.as_rotation_matrix(q)
+            direction = rotMat[0:3,2]   # Z AXIS
+
             if(req.single):
-                position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
-                direction = np.array([req.inPose.pose.orientation.x, req.inPose.pose.orientation.y, req.inPose.pose.orientation.z, req.inPose.pose.orientation.w])
-                pose = Ray(target,direction)
+                print( Ray(position,direction))
                 solution = self.mManip.FindIKSolution(
-                                        IkParameterization(pose,
+                                        IkParameterization(Ray(position,direction),
                                         IkParameterization.Type.TranslationDirection5D),
                                         IkFilterOptions.CheckEnvCollisions)
+                print(solution)
             else:
-                position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
-                direction = np.array([req.inPose.pose.orientation.x, req.inPose.pose.orientation.y, req.inPose.pose.orientation.z, req.inPose.pose.orientation.w])                
-                pose = Ray(position,direction)
                 solutions = self.mManip.FindIKSolutions(
-                                        IkParameterization(pose,
+                                        IkParameterization(Ray(position,direction),
                                         IkParameterization.Type.TranslationDirection5D),
                                         IkFilterOptions.CheckEnvCollisions)
         else:
+            if not self.mIkmodel3D.load():
+                return SetPoseResponse()
+
+            position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
             if(req.single):
-                position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
                 solution = self.mManip.FindIKSolution(
                                         IkParameterization(position,
                                         IkParameterization.Type.Translation3D),
                                         IkFilterOptions.CheckEnvCollisions)
             else:
-                position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
-                
                 solutions = self.mManip.FindIKSolutions(
                                         IkParameterization(position,
                                         IkParameterization.Type.Translation3D),
                                         IkFilterOptions.CheckEnvCollisions)
 
         res = SetPoseResponse()
+        
         if(req.single):
-            res.outJoints = [JointState()]
-            for j in solution:
-                res.outJoints[0].position.append(j) 
+            if not solution is None:
+                res.outJoints = [JointState()]
+                for j in solution:
+                    res.outJoints[0].position.append(j) 
         else:
-            for joints in solutions:
-                resJoints = JointState()
-                for j in joints:
-                    resJoints.position.append(j)
-                res.outJoints.append(resJoints)
+            if not solutions is None:
+                for joints in solutions:
+                    resJoints = JointState()
+                    for j in joints:
+                        resJoints.position.append(j)
+                    res.outJoints.append(resJoints)
 
         return res
         
