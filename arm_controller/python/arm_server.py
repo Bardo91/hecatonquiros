@@ -69,13 +69,13 @@ class ArmServer:
                         
             self.mManip = self.mRobot.SetActiveManipulator('manipulator') # set the manipulator to leftarm
             self.mIkmodel3D = databases.inversekinematics.InverseKinematicsModel(self.mRobot, iktype=IkParameterization.Type.Translation3D)
-            #self.mIkmodel5D = databases.inversekinematics.InverseKinematicsModel(self.mRobot, iktype=IkParameterization.Type.TranslationDirection5D)
+            self.mIkmodel5D = databases.inversekinematics.InverseKinematicsModel(self.mRobot, iktype=IkParameterization.Type.TranslationDirection5D)
 
             if not self.mIkmodel3D.load():
                 self.mIkmodel3D.autogenerate()
 
-            #if not self.mIkmodel5D.load():
-            #    self.mIkmodel5D.autogenerate()
+            if not self.mIkmodel5D.load():
+                self.mIkmodel5D.autogenerate()
 
         # Init threading
         self.mRun = True
@@ -172,7 +172,7 @@ class ArmServer:
             res.outJoints.position.append(j) 
 
         #Visualization of joints transform
-        lengthAxis = 0.05;
+        lengthAxis = 0.05
         for body in self.mRobot.GetLinks():
             T =body.GetTransform()
             self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( T[0:3,3],
