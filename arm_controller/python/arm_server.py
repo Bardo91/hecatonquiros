@@ -47,8 +47,9 @@ class ArmServer:
         self.mJointsPublisher           = rospy.Publisher   (name + '/joints', JointState, queue_size=1)
         self.mPosePublisher             = rospy.Publisher   (name + '/pose', PoseStamped, queue_size=1)
         self.mJointsTransformPublisher  = rospy.Publisher   (name + '/joints_transform', PoseArray, queue_size=1)
-
+        
         # Init openrave "things"
+        self.mEnvironment = env
         with env:
             if not filePath == '' :
                 self.mRobot = env.ReadRobotXMLFile(filePath)
@@ -84,6 +85,14 @@ class ArmServer:
         self.mPosePubThread.start()
         self.mJointsPubThread.start()
         self.mJointsTransformsPubThread.start()
+
+        # Extra variables for visualization 
+        self.mHandles = []
+
+        # homming
+        reqJoints = SetJointsRequest()
+        reqJoints.inJoints.position = [0,0,np.pi/2,0,0]
+        self.handlerSetJoints(reqJoints)
         
 
     #------------------------------------------------------------------------------------------------------------------
@@ -161,6 +170,26 @@ class ArmServer:
         res = SetJointsResponse()
         for j in joints:
             res.outJoints.position.append(j) 
+
+        #Visualization of joints transform
+        lengthAxis = 0.05;
+        for body in self.mRobot.GetLinks():
+            T =body.GetTransform()
+            self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( T[0:3,3],
+                                                                T[0:3,3] + T[0:3,0]*lengthAxis)),
+                                            linewidth=3.0,
+                                            colors=np.array(((1,0,0)))))
+
+            self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( T[0:3,3],
+                                                                T[0:3,3] + T[0:3,1]*lengthAxis)),
+                                            linewidth=3.0,
+                                            colors=np.array(((0,1,0)))))
+
+
+            self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( T[0:3,3],
+                                                                T[0:3,3] + T[0:3,2]*lengthAxis)),
+                                            linewidth=3.0,
+                                            colors=np.array(((0,0,1)))))
 
         return res
 
