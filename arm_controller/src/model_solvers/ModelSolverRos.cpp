@@ -134,9 +134,9 @@ namespace hecatonquiros{
         #ifdef HAS_ROS
             ros::NodeHandle n;
             arm_controller::SetPose poseSrv;
-            poseSrv.request.inPose.pose.position.x = _pose(0,2);
-            poseSrv.request.inPose.pose.position.y = _pose(1,2);
-            poseSrv.request.inPose.pose.position.z = _pose(2,2);
+            poseSrv.request.inPose.pose.position.x = _pose(0,3);
+            poseSrv.request.inPose.pose.position.y = _pose(1,3);
+            poseSrv.request.inPose.pose.position.z = _pose(2,3);
 
             Eigen::Quaternionf q(_pose.block<3,3>(0,0));
 
@@ -146,13 +146,18 @@ namespace hecatonquiros{
             poseSrv.request.inPose.pose.orientation.w = q.w();
             poseSrv.request.forceOri = _forceOri;
             poseSrv.request.single = true;
+            poseSrv.request.set = true;
 
-            ros::ServiceClient client = n.serviceClient<arm_controller::SetJoints>(mRobotName + "/set_pose");
+            ros::ServiceClient client = n.serviceClient<arm_controller::SetPose>(mRobotName + "/set_pose");
             if(client.call(poseSrv)){
-                for(auto &j:poseSrv.response.outJoints[0].position){
-                    _joints.push_back(j);
+                if(poseSrv.response.outJoints.size() > 0){
+                    for(auto &j:poseSrv.response.outJoints[0].position){
+                        _joints.push_back(j);
+                    }
+                    return true;
+                }else{
+                    return false;
                 }
-                return true;
             }else{
                 return false;
             }
@@ -167,9 +172,9 @@ namespace hecatonquiros{
         #ifdef HAS_ROS
             ros::NodeHandle n;
             arm_controller::SetPose poseSrv;
-            poseSrv.request.inPose.pose.position.x = _pose(0,2);
-            poseSrv.request.inPose.pose.position.y = _pose(1,2);
-            poseSrv.request.inPose.pose.position.z = _pose(2,2);
+            poseSrv.request.inPose.pose.position.x = _pose(0,3);
+            poseSrv.request.inPose.pose.position.y = _pose(1,3);
+            poseSrv.request.inPose.pose.position.z = _pose(2,3);
 
             Eigen::Quaternionf q(_pose.block<3,3>(0,0));
 
@@ -177,10 +182,13 @@ namespace hecatonquiros{
             poseSrv.request.inPose.pose.orientation.y = q.y();
             poseSrv.request.inPose.pose.orientation.z = q.z();
             poseSrv.request.inPose.pose.orientation.w = q.w();
-            poseSrv.request.forceOri = _forceOri;
+            poseSrv.request.forceOri = 2;
             poseSrv.request.single = false;
+            poseSrv.request.set = true;
 
-            ros::ServiceClient client = n.serviceClient<arm_controller::SetJoints>(mRobotName + "/set_pose");
+            std::cout << _pose << std::endl;
+
+            ros::ServiceClient client = n.serviceClient<arm_controller::SetPose>(mRobotName + "/set_pose");
             if(client.call(poseSrv)){
                 for(unsigned i = 0; i <  poseSrv.response.outJoints.size(); i++){
                     _joints.push_back(std::vector<float>());

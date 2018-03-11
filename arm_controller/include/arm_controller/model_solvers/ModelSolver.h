@@ -31,7 +31,7 @@ namespace hecatonquiros{
     public:
         /// Configuration class for Model solvers
         struct Config{
-            enum class eType {Simple4DoF, OpenRave, OpenRavePython};
+            enum class eType {Simple4DoF, OpenRave, Ros};
             eType type;
             std::string robotName;
             std::string manipulatorName;

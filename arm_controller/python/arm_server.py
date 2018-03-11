@@ -231,7 +231,7 @@ class ArmServer:
                         resJoints.position.append(j)
                     res.outJoints.append(resJoints)
 
-        if(req.set):
+        if(req.set and len(res.outJoints) > 0):
             reqSetJoints = SetJointsRequest()
             reqSetJoints.inJoints = res.outJoints[0]
             self.handlerSetJoints(reqSetJoints)
