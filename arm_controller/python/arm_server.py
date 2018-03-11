@@ -72,13 +72,13 @@ class ArmServer:
                         
             self.mManip = self.mRobot.SetActiveManipulator('manipulator') # set the manipulator to leftarm
             self.mIkmodel3D = databases.inversekinematics.InverseKinematicsModel(self.mRobot, iktype=IkParameterization.Type.Translation3D)
-            #self.mIkmodel5D = databases.inversekinematics.InverseKinematicsModel(self.mRobot, iktype=IkParameterization.Type.TranslationDirection5D)
+            self.mIkmodel5D = databases.inversekinematics.InverseKinematicsModel(self.mRobot, iktype=IkParameterization.Type.TranslationDirection5D)
 
             if not self.mIkmodel3D.load():
                 self.mIkmodel3D.autogenerate()
 
-            #if not self.mIkmodel5D.load():
-            #    self.mIkmodel5D.autogenerate()
+            if not self.mIkmodel5D.load():
+                self.mIkmodel5D.autogenerate()
 
         # Init threading
         self.mRun = True
@@ -114,8 +114,8 @@ class ArmServer:
     def handlerSetPose(self, req):
         res = SetPoseResponse()
         if(req.forceOri):
-            # if not self.mIkmodel5D.load():
-            #     return SetPoseResponse()
+            if not self.mIkmodel5D.load():
+                return SetPoseResponse()
 
             position = np.array([req.inPose.pose.position.x, req.inPose.pose.position.y, req.inPose.pose.position.z])
             qTarget= np.quaternion(   req.inPose.pose.orientation.w, 
@@ -123,83 +123,21 @@ class ArmServer:
                                 req.inPose.pose.orientation.y, 
                                 req.inPose.pose.orientation.z)
             rotTarget = quaternion.as_rotation_matrix(qTarget)
-            # rotMat = quaternion.as_rotation_matrix(qTarget)
-            # direction = rotMat[0:3,2]   # Z AXIS
+            rotMat = quaternion.as_rotation_matrix(qTarget)
+            direction = rotMat[0:3,0]   # Z AXIS
 
-            # if(req.single):
-            #     print( Ray(position,direction))
-            #     solution = self.mManip.FindIKSolution(
-            #                             IkParameterization(Ray(position,direction),
-            #                             IkParameterization.Type.TranslationDirection5D),
-            #                             IkFilterOptions.CheckEnvCollisions)
-            #     print(solution)
-            # else:
-            #     solutions = self.mManip.FindIKSolutions(
-            #                             IkParameterization(Ray(position,direction),
-            #                             IkParameterization.Type.TranslationDirection5D),
-            #                             IkFilterOptions.CheckEnvCollisions)
-            
-            if not self.mIkmodel3D.load():
-                return SetPoseResponse()
-
-            solutions = self.mManip.FindIKSolutions(
-                                    IkParameterization(position,
-                                    IkParameterization.Type.Translation3D),
-                                    IkFilterOptions.CheckEnvCollisions)
-
-            minDist = 9999
-            minIdx = 0
-            jointsOld = self.mRobot.GetDOFValues()
-            
-            self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( position,
-                                                                position + rotTarget[0:3,0]*0.03)),
-                                            linewidth=5,
-                                            colors=np.array(((1,0,0)))))
-
-            self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( position,
-                                                                position + rotTarget[0:3,1]*0.03)),
-                                            linewidth=5,
-                                            colors=np.array(((0,1,0)))))
-
-
-            self.mHandles.append(self.mEnvironment.drawlinestrip(points=np.array(( position,
-                                                                position + rotTarget[0:3,2]*0.03)),
-                                            linewidth=5,
-                                            colors=np.array(((0,0,1)))))
-
-            clonedEnv = self.mEnvironment.CloneSelf(CloningOptions.Bodies)
-            robotCloned = None
-            for robot in clonedEnv.GetRobots():
-                if robot.GetName() == self.mName:
-                    robotCloned = robot
-
-            newmanip = robotCloned.SetActiveManipulator('manipulator') # set the manipulator to leftarm
-            for idx in range(len(solutions)):
-                robotCloned.SetDOFValues(solutions[idx])
-                orPose = newmanip.GetTransform()
-                dist = 0
-                if req.forceOri == 1:
-                    dist = math_utils.angle_between(orPose[0:3,0], rotTarget[0:3,0])
-                elif req.forceOri == 2:
-                    qCur = quaternion.from_rotation_matrix(orPose[0:3,0:3])
-                    qDiff = qCur.inverse()*qTarget
-                    eulerAngles = abs(quaternion.as_euler_angles(qDiff))
-                    dist =  (eulerAngles[0] if (eulerAngles[0] < np.pi) else (eulerAngles[0] - np.pi)) + \
-                            (eulerAngles[1] if (eulerAngles[1] < np.pi) else (eulerAngles[1] - np.pi)) + \
-                            (eulerAngles[2] if (eulerAngles[2] < np.pi) else (eulerAngles[2] - np.pi))
-                
-                if dist < minDist:
-                    minDist = dist
-                    minIdx = idx
-
-            solution = []
-            if(minDist < np.pi): # 5 deg
-                solution = solutions[minIdx]
+            if(req.single):
+                print( Ray(position,direction))
+                solution = self.mManip.FindIKSolution(
+                                        IkParameterization(Ray(position,direction),
+                                        IkParameterization.Type.TranslationDirection5D),
+                                        IkFilterOptions.CheckEnvCollisions)
+                print(solution)
             else:
-                res = SetPoseResponse()
-                return res
-
-            
+                solutions = self.mManip.FindIKSolutions(
+                                        IkParameterization(Ray(position,direction),
+                                        IkParameterization.Type.TranslationDirection5D),
+                                        IkFilterOptions.CheckEnvCollisions)
         else:
             if not self.mIkmodel3D.load():
                 return SetPoseResponse()
