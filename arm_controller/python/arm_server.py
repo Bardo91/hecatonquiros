@@ -123,7 +123,7 @@ class ArmServer:
                                 req.inPose.pose.orientation.y, 
                                 req.inPose.pose.orientation.z)
             rotTarget = quaternion.as_rotation_matrix(qTarget)
-            # rotMat = quaternion.as_rotation_matrix(q)
+            # rotMat = quaternion.as_rotation_matrix(qTarget)
             # direction = rotMat[0:3,2]   # Z AXIS
 
             # if(req.single):
@@ -138,6 +138,7 @@ class ArmServer:
             #                             IkParameterization(Ray(position,direction),
             #                             IkParameterization.Type.TranslationDirection5D),
             #                             IkFilterOptions.CheckEnvCollisions)
+            
             if not self.mIkmodel3D.load():
                 return SetPoseResponse()
 
