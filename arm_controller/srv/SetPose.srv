@@ -1,5 +1,8 @@
 geometry_msgs/PoseStamped inPose
-bool forceOri
+# 0 no force, 1 force dir, 2 force ori
+int8 forceOri
 bool single
+bool set
+bool fineTune
 ---
 sensor_msgs/JointState[] outJoints

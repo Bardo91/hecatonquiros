@@ -19,44 +19,23 @@
 #  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #---------------------------------------------------------------------------------------------------------------------
 
-from openravepy import *
 
-import time
-import IPython
 import numpy as np
-import rospy
-import threading
 
-import arm_server
+def unit_vector(vector):    # source: https://stackoverflow.com/a/13849249
+    """ Returns the unit vector of the vector.  """
+    return vector / np.linalg.norm(vector)
 
-rospy.init_node('dual_arm_openrave_environment',anonymous=True)
+def angle_between(v1, v2):  # source: https://stackoverflow.com/a/13849249
+    """ Returns the angle in radians between vectors 'v1' and 'v2'::
 
-env = Environment() # create openrave environment
-env.SetViewer('qtcoin') # attach viewer (optional)
-env.Load('/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/config/dual_arm_manipulator_5dof.env.xml') # load a simple scene
-
-with env: # lock the environment since robot will be used
-    viewer = env.GetViewer()
-    viewer.SetBkgndColor([.8, .85, .9])  # RGB tuple
-
-leftArm = arm_server.ArmServer (    env, 
-                                    #"/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/config/arm_gripper_5dof.robot.xml", 
-                                    "",
-                                    "left_arm", 
-                                    np.array([0.20,0.14,-0.04]),
-                                    np.array([0,0,1,0]))   # {w,x,y,z} 180 over Y
-
-rightArm = arm_server.ArmServer (   env, 
-                                    #"/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/config/arm_gripper_5dof.robot.xml", 
-                                    "",
-                                    "right_arm", 
-                                    np.array([0.2,-0.2,-0.04]),
-                                    np.array([0,0,1,0]))   # {w,x,y,z} 180 over Y
-
-
-spinThread = threading.Thread(target=lambda: rospy.spin(), name="spin_thread")
-
-IPython.embed()
-
-leftArm.stop()
-rightArm.stop()
+            >>> angle_between((1, 0, 0), (0, 1, 0))
+            1.5707963267948966
+            >>> angle_between((1, 0, 0), (1, 0, 0))
+            0.0
+            >>> angle_between((1, 0, 0), (-1, 0, 0))
+            3.141592653589793
+    """
+    v1_u = unit_vector(v1)
+    v2_u = unit_vector(v2)
+    return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
