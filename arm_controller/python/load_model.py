@@ -34,7 +34,7 @@ with env: # lock the environment since robot will be used
     viewer = env.GetViewer()
     viewer.SetBkgndColor([.8, .85, .9])  # RGB tuple
     
-robot1.SetDOFValues([numpy.pi/2,numpy.pi/2,numpy.pi/2,numpy.pi/2,numpy.pi/2],[0,1,2, 3, 4]) # set joint 0 to value 0.5
+robot1.SetDOFValues([0,0,numpy.pi/2,0,0],[0,1,2, 3, 4]) # set joint 0 to value 0.5
 robot2.SetDOFValues([0,0,numpy.pi/2,0,0],[0,1,2, 3, 4]) # set joint 0 to value 0.5
 
 raveLogInfo("Robot "+robot1.GetName()+" has "+repr(robot1.GetDOF())+" joints with values:\n"+repr(robot1.GetDOFValues()))
@@ -87,14 +87,13 @@ print("Generated ikmodel")
 
 while True:
     with env:
-        target=ikmodel.manip.GetTransform()[0:3,3]
-        print(target)
-        direction = random.rand(3)*0 +  (0,1,0)
+        target=ikmodel.manip.GetTransform()[0:3,3] + random.rand(3)*0.01
+        direction = random.rand(3)*0.01 + ikmodel.manip.GetTransform()[0:3,2]
         direction /= linalg.norm(direction)
         solutions = ikmodel.manip.FindIKSolutions(IkParameterization(Ray(target,direction),IkParameterization.Type.TranslationDirection5D),IkFilterOptions.CheckEnvCollisions)
         if solutions is not None and len(solutions) > 0: # if found, then break
             print("Found IK")
-            h=env.drawlinestrip(array([target,target+0.1*direction]),10)
+            h=env.drawlinestrip(numpy.array([target,target+0.1*direction]),10)
             for i in random.permutation(len(solutions))[0:min(80,len(solutions))]:
                 with env:
                     robot1.SetDOFValues(solutions[i],ikmodel.manip.GetArmIndices())

@@ -39,6 +39,7 @@ namespace hecatonquiros{
             std::vector<float> offset = {0,0,0};    /// {x, y, z}
             std::vector<float> rotation = {0,0,0,1};     /// {x, y, z,w}
             bool visualizer = false;
+            std::string environment;
         };
 
         static ModelSolver* create(const Config &_config);

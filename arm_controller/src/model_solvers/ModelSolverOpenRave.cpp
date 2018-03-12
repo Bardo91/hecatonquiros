@@ -32,11 +32,21 @@ namespace hecatonquiros{
                 mConfig = _config;
                 // lock the environment to prevent changes
                 EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-                auto robot = mEnvironment->ReadRobotXMLFile(mConfig.robotFile);
-                robot->SetName(mConfig.robotName);
-                OpenRAVE::Transform offset(OpenRAVE::Vector({mConfig.rotation[0], mConfig.rotation[1], mConfig.rotation[2], mConfig.rotation[3]}),OpenRAVE::Vector({mConfig.offset[0], mConfig.offset[1], mConfig.offset[2]}));
-                robot->SetTransform(offset);
-                mEnvironment->Add(robot);
+                if(mConfig.robotFile == ""){
+                    if(mConfig.environment != "")
+                        mEnvironment->Load(_config.environment);
+
+                    auto robot = mEnvironment->GetRobot(mConfig.robotName);
+                    if(!robot)
+                        return false;
+                }else{
+                    auto robot = mEnvironment->ReadRobotXMLFile(mConfig.robotFile);
+                    robot->SetName(mConfig.robotName);
+                    OpenRAVE::Transform offset(OpenRAVE::Vector({mConfig.rotation[0], mConfig.rotation[1], mConfig.rotation[2], mConfig.rotation[3]}),OpenRAVE::Vector({mConfig.offset[0], mConfig.offset[1], mConfig.offset[2]}));
+                    robot->SetTransform(offset);
+                    mEnvironment->Add(robot);
+                }
+
                 return true;
             #endif
         }else{
@@ -67,15 +77,15 @@ namespace hecatonquiros{
             
             for(auto &pose:transforms){
                 RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
-                RaveVector<float> dir = {pose(0,2),pose(1,2), pose(2,2)};
+                RaveVector<float> dir = {pose(0,0),pose(1,0), pose(2,0)};
                 p2 = p1 + dir*0.05;
-                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1)));
+                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1)));
                 dir = {pose(0,1),pose(1,1), pose(2,1)};
                 p2 = p1 + dir*0.05;
                 poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1)));
-                dir = {pose(0,0),pose(1,0), pose(2,0)};
+                dir = {pose(0,2),pose(1,2), pose(2,2)};
                 p2 = p1 + dir*0.05;
-                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1)));
+                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1)));
             }
         #else
             std::cout << "OpenRAVE not installed, cannot use ModelSolverOpenRAVE" << std::endl;
@@ -87,7 +97,6 @@ namespace hecatonquiros{
     std::vector<float> ModelSolverOpenRave::joints() const{
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-            std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
             std::vector< dReal > values;
@@ -110,25 +119,21 @@ namespace hecatonquiros{
     void ModelSolverOpenRave::jointsTransform(std::vector<Eigen::Matrix4f> &_transforms){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-            std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
             std::vector<OpenRAVE::Transform> or_transforms;
             robot->GetLinkTransformations (or_transforms);
 
+            for(auto &link: robot->GetLinks()){
+                auto orTransform = link->GetTransform();
+                OpenRAVE::TransformMatrix orMatrix(orTransform);
 
-            for(unsigned k = 0; k < or_transforms.size(); k++){
                 Eigen::Matrix4f T = Eigen::Matrix4f::Identity();;
 
-                Eigen::Quaternionf q;
-                q.x() = or_transforms[k].rot.x;
-                q.y() = or_transforms[k].rot.y;
-                q.z() = or_transforms[k].rot.z;
-                q.w() = or_transforms[k].rot.w; 
-                T.block<3,3>(0,0) = q.matrix();
-                T(0,3) = or_transforms[k].trans.x;
-                T(1,3) = or_transforms[k].trans.y;
-                T(2,3) = or_transforms[k].trans.z;
+                T(0,0) = orMatrix.m[0];     T(0,1) = orMatrix.m[1];     T(0,2) = orMatrix.m[2];     T(0,3) = orMatrix.trans.x;
+                T(1,0) = orMatrix.m[4];     T(1,1) = orMatrix.m[5];     T(1,2) = orMatrix.m[6];     T(1,3) = orMatrix.trans.y;
+                T(2,0) = orMatrix.m[8];     T(2,1) = orMatrix.m[9];     T(2,2) = orMatrix.m[10];    T(2,3) = orMatrix.trans.z;
+
                 _transforms.push_back(T);
             }
         #else
@@ -202,40 +207,19 @@ namespace hecatonquiros{
 
             std::cout << "Getting ready for computing IK" << std::endl;
 
-            Eigen::Quaternionf q(_pose.block<3,3>(0,0));
-
-            Transform transform;
-            transform.rot.x = q.x();
-            transform.rot.y = q.y();
-            transform.rot.z = q.z();
-            transform.rot.w = q.w();
-            transform.trans.x = _pose(0,3);
-            transform.trans.y = _pose(1,3);
-            transform.trans.z = _pose(2,3);
-
             OpenRAVE::IkParameterization ikParam;
             if(_forceOri){
-                OpenRAVE::Transform t = pmanip->GetTransform();
                 OpenRAVE::RAY ray;
-                ray.pos = transform.trans;
+                ray.pos = {_pose(0,3), _pose(1,3), _pose(2,3)};
                 ray.dir = {_pose(0,2), _pose(1,2), _pose(2,2)};
                 ikParam.SetTranslationDirection5D(ray);
 
-
-                std::vector<Eigen::Matrix4f> transforms;
-                jointsTransform(transforms);
-                Eigen::Matrix4f pose = transforms.back();
-                RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
-                RaveVector<float> dir = {pose(0,2),pose(1,2), pose(2,2)};
+                RaveVector<float> p1 = ray.pos, p2;
+                RaveVector<float> dir = ray.dir;
                 p2 = p1 + dir*0.05;
-                mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
-
-                // p1 = ray.pos;
-                // dir = ray.dir;
-                // p2 = p1 + dir*0.05;
-                // mPoseIK = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1));
+                mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
             }else{
-                ikParam  = OpenRAVE::IkParameterization(transform, intType);
+                ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
             }
 
             std::vector<dReal> vsolution;
