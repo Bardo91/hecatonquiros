@@ -21,6 +21,7 @@
 
 #include <arm_controller/model_solvers/ModelSolverOpenRave.h>
 #include <arm_controller/model_solvers/ModelSolverSimple4Dof.h>
+#include <arm_controller/model_solvers/ModelSolverRos.h>
 
 namespace hecatonquiros{
     ModelSolver* ModelSolver::create(const ModelSolver::Config &_config){
@@ -28,8 +29,13 @@ namespace hecatonquiros{
         switch(_config.type){
         case Config::eType::Simple4DoF:
             ms = new ModelSolverSimple4Dof();
+            break;
         case Config::eType::OpenRave:
             ms = new ModelSolverOpenRave();
+            break;
+        case Config::eType::Ros:
+            ms = new ModelSolverRos();
+            break;
         }
 
         if(ms->init(_config)){

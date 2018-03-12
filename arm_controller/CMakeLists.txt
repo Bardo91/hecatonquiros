@@ -39,20 +39,36 @@ find_package(Serial REQUIRED)
 find_package(OpenCV 3 REQUIRED)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
-find_package(catkin REQUIRED COMPONENTS
-			geometry_msgs
-			std_msgs
-			roscpp
-			)
-
 ## Check if OpenRAVE is installed and use it
 find_package(OpenRAVE)
 if(${OpenRAVE_FOUND})
 	add_definitions(-DHAS_OPENRAVE)
 endif(${OpenRAVE_FOUND})
 
+find_package(catkin REQUIRED COMPONENTS
+			geometry_msgs
+			sensor_msgs
+			std_msgs
+			roscpp
+			message_generation
+			)
+if(${catkin_FOUND})
+	add_definitions(-DHAS_ROS)
+endif(${catkin_FOUND})
+
+add_service_files(
+  FILES
+  SetJoints.srv
+  SetPose.srv
+)
+
+generate_messages(
+    DEPENDENCIES std_msgs geometry_msgs sensor_msgs
+)
+
 catkin_package(
 	INCLUDE_DIRS ./include
+	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
 )
 
 ## Load PCL
