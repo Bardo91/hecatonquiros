@@ -34,7 +34,7 @@ namespace hecatonquiros{
     class Arm4DoF {
     public:
         /// Constructor 
-        Arm4DoF(const Backend::Config &_config);
+        Arm4DoF(const ModelSolver::Config &_modelConfig, const Backend::Config &_backendConfig);
 
         /// Send robot to home.
         void home();
@@ -59,6 +59,9 @@ namespace hecatonquiros{
         /// Position in cartesian coordinates (meters)
         bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
 
+        /// Pose in cartesian coordinates (meters)
+        bool checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri);
+
         void closeClaw();
         void openClaw();
         void stopClaw();
@@ -71,8 +74,8 @@ namespace hecatonquiros{
         float   mHome1 = 0*M_PI/180.0,
                 mHome2 = 0*M_PI/180.0,
                 mHome3 = 90*M_PI/180.0,
-                mHome4 = 90*M_PI/180.0,
-                mHome5 = 90*M_PI/180.0;
+                mHome4 = 0*M_PI/180.0,
+                mHome5 = 0*M_PI/180.0;
 
         int mArmId = 1;
     };

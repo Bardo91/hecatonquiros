@@ -20,13 +20,21 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERSIMPLE4DOF_H_
-#define HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERSIMPLE4DOF_H_
+#ifndef HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERROS_H_
+#define HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERROS_H_
 
 #include <arm_controller/model_solvers/ModelSolver.h>
 
+#include <thread>
+
+#ifdef HAS_ROS
+    #include <ros/ros.h>
+    #include <geometry_msgs/PoseArray.h>
+    #include <sensor_msgs/JointState.h>
+    #include <geometry_msgs/PoseStamped.h>
+#endif 
 namespace hecatonquiros{
-    class ModelSolverSimple4Dof: public ModelSolver{
+    class ModelSolverRos: public ModelSolver{
     public:
         /// Set joints of robot
         /// \param _joints: desired joints
@@ -51,28 +59,23 @@ namespace hecatonquiros{
         /// \param _pose: desired pose
         /// \param _joints: list of possible solutions joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true){ return false;}
-        
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true);
+
         /// Five end effector pose given joints without moving the arm
         /// \param _joints: list of possible solutions joints for given pose
-        virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints){return Eigen::Matrix4f::Identity(); };
+        virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
     protected:
-        virtual bool init(const ModelSolver::Config &_config) { return false;}
+        virtual bool init(const ModelSolver::Config &_config);
 
     private:
-        void updateTransforms();
+        #ifdef HAS_ROS
+            ros::Subscriber mPoseSubscriber, mJointsSubscriber, mTransformsSubscriber;
+            geometry_msgs::PoseStamped mLastPose;
+            sensor_msgs::JointState mLastJoints;
+            geometry_msgs::PoseArray mLastJointTransforms;
+        #endif 
 
-    private:
-        std::vector<float> mJoints = std::vector<float>(4);
-        bool mUpdatedTransforms = false;
-
-        std::vector<Eigen::Matrix<float,4,4,Eigen::DontAlign>> mJointsTransform;
-        Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
-
-        float mHumerus = 0.15;
-        float mRadius = 0.09;
-        float mBaseHeight = 0.08;
-
+        std::string mRobotName;
 
     };
 

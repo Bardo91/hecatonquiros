@@ -1,0 +1,9 @@
+<Robot name="arm">
+    <kinbody name="arm" file="arm_gripper_5dof.kinbody.xml"/>
+    <Translation>0 0 0</Translation>
+    <manipulator name="manipulator">
+        <base>arm_0_top</base>
+        <effector>end_effector</effector>
+        <direction>1 0 0</direction>
+    </manipulator>
+</Robot>

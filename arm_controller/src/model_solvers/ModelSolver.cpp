@@ -19,31 +19,27 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-
-#include <arm_controller/backends/Backend.h>
-#include <arm_controller/backends/BackendArduino.h>
-#include <arm_controller/backends/BackendGazebo.h>
-
+#include <arm_controller/model_solvers/ModelSolverOpenRave.h>
+#include <arm_controller/model_solvers/ModelSolverSimple4Dof.h>
+#include <arm_controller/model_solvers/ModelSolverRos.h>
 
 namespace hecatonquiros{
-    Backend * Backend::create(const Backend::Config &_config){
-        Backend *bd = nullptr;
+    ModelSolver* ModelSolver::create(const ModelSolver::Config &_config){
+        ModelSolver *ms = nullptr;
         switch(_config.type){
-        case Backend::Config::eType::Arduino:
-            bd = new BackendArduino();
+        case Config::eType::Simple4DoF:
+            ms = new ModelSolverSimple4Dof();
             break;
-        case Backend::Config::eType::Gazebo:
-            bd = new BackendGazebo();
+        case Config::eType::OpenRave:
+            ms = new ModelSolverOpenRave();
             break;
-        case Backend::Config::eType::Dummy:
-            bd = new BackendDummy();
+        case Config::eType::Ros:
+            ms = new ModelSolverRos();
             break;
-        default:
-            return nullptr;
         }
 
-        if(bd->init(_config)){
-            return bd;
+        if(ms->init(_config)){
+            return ms;
         }else{
             return nullptr;
         }

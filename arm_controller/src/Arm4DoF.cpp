@@ -30,22 +30,25 @@
 
 namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
-    Arm4DoF::Arm4DoF(const Backend::Config &_config) {
-        mBackend = Backend::create(_config);
-        mArmId = _config.armId;
-        mModelSolver = new ModelSolverSimple4Dof();
+    Arm4DoF::Arm4DoF(const ModelSolver::Config &_modelConfig, const Backend::Config &_backendConfig) {
+        mBackend = Backend::create(_backendConfig);
+        mArmId = _backendConfig.armId;
+        mModelSolver = ModelSolver::create(_modelConfig);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
-        mModelSolver->joints({mHome1, mHome2, mHome3, mHome4});
-        mBackend->joints({mHome1, mHome2, mHome3, mHome4});
+        mModelSolver->joints({mHome1, mHome2, mHome3, mHome4, mHome5});
+        std::vector<float> joints;
+        joints = mModelSolver->joints();
+        mBackend->joints(joints);
+
+        std::vector<Eigen::Matrix4f> transforms;
+        mModelSolver->jointsTransform(transforms);
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<float> _q) {
-        assert(_q.size() == 3 || _q.size() == 4);
-        
         mModelSolver->joints(_q);
         
         if(mBackend != nullptr){
@@ -66,6 +69,7 @@ namespace hecatonquiros{
         if(mModelSolver->checkIk(pose, angles, false)){
             angles[3] = _wirst; //
             mBackend->joints(angles);
+            mModelSolver->joints(angles);
         }
     }
 
@@ -80,10 +84,23 @@ namespace hecatonquiros{
     bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
         Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
         pose.block<3,1>(0,3) = _position;
-        std::vector<float> angles;
-        return mModelSolver->checkIk(pose, angles, false);
+        return mModelSolver->checkIk(pose, _angles, false);
     }
 
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri){
+        if(_forceOri){
+            mModelSolver->checkIk(_pose, _angles,true);
+            if(_angles.size() == 0)
+                return false;
+            
+            return true;
+        }else{
+            return mModelSolver->checkIk(_pose, _angles, _forceOri);
+        }
+    }
+    
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::pose() const {
         std::vector<Eigen::Matrix4f> transforms;
