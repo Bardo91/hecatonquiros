@@ -24,11 +24,13 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Header.h"
 #include <sensor_msgs/JointState.h>
+#include <iomanip>
 #include <math.h>
 #include <sstream>
 #include <ros/subscribe_options.h>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 
 namespace hecatonquiros{
@@ -51,14 +53,79 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     bool BackendGazebo::joints(const std::vector<float> &_joints, bool _blocking){
-	//while (ros::ok())
- 	 //{
+	
     	
     	  	
 		int cnt=0;
-                sensor_msgs::JointState j_msg;
-		
+        sensor_msgs::JointState j_msg;
+		int len_fixed_string = 0;
+		int next_iteration=0;
+		int i;
+		int cnt_vector=0;
+		std::ifstream inFile;
+		std::string string;
+		std::string var_string;
+		std::string item_name;
+		std::ifstream nameFileout;
+		std::string string_vector[10];
 
+		//Detect the names
+
+		nameFileout.open("/home/luis/catkin_ws_2/src/hecatonquiros/arm_description/urdf/4dof.urdf");
+		while (nameFileout >> item_name)
+		{
+  			  //std::cout << item_name << "\n";
+	
+			if(next_iteration==2)
+				{
+					len_fixed_string=item_name.length();
+					if(len_fixed_string==13)   //13 is the amount of characters in type="fixed">
+					{
+					//Deleting
+					string_vector[cnt_vector]="deleted";
+					}
+					else
+					{
+					//Saving because the joint is continuous
+					cnt_vector++;
+					}
+
+				next_iteration=0;
+				}
+
+
+			if(next_iteration==1)
+				{
+				string=item_name;	
+				var_string.resize(string.length()-7); //7 is the number of characters that I dont need in the xml
+				for(i=0;i<=(string.length()-7) ;i++)
+				{
+				var_string[i]=string[i+6];
+				}
+				string_vector[cnt_vector]=var_string;
+				next_iteration++;
+				}
+			
+			
+			if(item_name=="<joint") //Search the joints
+				{
+					next_iteration++;
+				}
+			
+
+		}
+		for(i=0;i<cnt_vector;i++)
+		{
+		std::cout << "\n" << string_vector[i];
+		}
+		nameFileout.close();
+
+
+
+
+
+
+		//Send messages
 
 			if(marmId==2){
 			j_msg.header.seq=cnt;
@@ -69,6 +136,10 @@ namespace hecatonquiros{
                         j_msg.name.push_back ("right/arm_0_bottom_joint");
                         j_msg.name.push_back ("right/arm_1_joint");
                         j_msg.name.push_back ("right/arm_2_joint");
+
+						//j_msg.name.push_back (string_vector[3]);
+                        //j_msg.name.push_back (string_vector[4]);
+                        //j_msg.name.push_back (string_vector[5]);
 			j_msg.header.stamp = ros::Time::now();					
 			}
 			else{
@@ -80,6 +151,9 @@ namespace hecatonquiros{
                         j_msg.name.push_back ("left/arm_0_bottom_joint");
                         j_msg.name.push_back ("left/arm_1_joint");
                         j_msg.name.push_back ("left/arm_2_joint");
+						//j_msg.name.push_back (string_vector[0]);
+                        //j_msg.name.push_back (string_vector[1]);
+                        //j_msg.name.push_back (string_vector[2]);
 			j_msg.header.stamp = ros::Time::now();					
 			}
 
@@ -90,8 +164,7 @@ namespace hecatonquiros{
 	    joint_pub.publish(j_msg);      
 	    cnt++;
 	    return true;
-	  //}
-		
+	  		
 
     }
 

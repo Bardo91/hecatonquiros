@@ -18,7 +18,7 @@ int main() {
     std::string var_string;
     std::string item_name;
     std::ifstream nameFileout;
-    std::string string_vector[10];
+    std::string string_vector[30];
     
 
 

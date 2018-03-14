@@ -461,7 +461,7 @@
 <!--///////////////////////////////////Right ARM//////////////////////////////////-->
     
 <!-- Joint 0 -->
-    <!--link name="right/arm_0_attachment">
+    <link name="right/arm_0_attachment">
       <visual>
          <geometry>
             <mesh filename="package://arm_description/meshes/new_meshes/arm_0_attachment.stl" />
@@ -901,6 +901,6 @@
       <parent link="right/right_barMini" />
       <child link="right/right_gripper" />
       <origin xyz="0 0 0.025" rpy="0 0 ${pi}"/>
-</joint-->
+</joint>
 
 </robot>
