@@ -20,16 +20,16 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
-#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
+#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDARDUINO_H_
+#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDARDUINO_H_
 
-#include <arm_controller/backends/Backend.h>
-#include "ros/ros.h"
+#include <hecatonquiros/backends/Backend.h>  
+
 namespace hecatonquiros{
-    class BackendGazebo: public Backend{
+    class BackendArduino: public Backend{
     public:
         /// Default constructor
-        BackendGazebo():Backend(){}
+        BackendArduino():Backend(){}
 
         /// This method is not implemented in arduino backend, it sends false by default.
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
@@ -44,11 +44,15 @@ namespace hecatonquiros{
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action);
     private:
+        // Initialize communication with the arduino with the given configuration.
+        // \param _config: Configuration file. Either port and baudrate or sharedSerial port must be filled
+        // \return true if communication is etablished or false if some error arises. 
         virtual bool init(const Config &_config);
 
-	std::string mtopic; 
-	ros::Publisher joint_pub; 
-	int marmId;
+        std::string     mPort;
+        int             mBaudRate;
+        serial::Serial  *mSerialPort; 
+        int             mArmId;
     };
 }
 

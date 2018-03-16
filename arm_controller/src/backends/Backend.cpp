@@ -20,9 +20,9 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <arm_controller/backends/Backend.h>
-#include <arm_controller/backends/BackendArduino.h>
-#include <arm_controller/backends/BackendGazebo.h>
+#include <hecatonquiros/backends/Backend.h>
+#include <hecatonquiros/backends/BackendArduino.h>
+#include <hecatonquiros/backends/BackendGazebo.h>
 
 
 namespace hecatonquiros{

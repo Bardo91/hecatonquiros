@@ -5,7 +5,7 @@
 ###############################################################
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
-project(arm_controller)
+project(hecatonquiros)
 set(PROJECT_VERSION 0.3.0)
 
 # Clasify sources according to folder structure.

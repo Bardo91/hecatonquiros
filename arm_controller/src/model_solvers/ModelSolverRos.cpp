@@ -19,12 +19,9 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-#include <arm_controller/model_solvers/ModelSolverRos.h>
-
-#include <arm_controller/SetPose.h>
-#include <arm_controller/SetJoints.h>
-
-
+#include <hecatonquiros/model_solvers/ModelSolverRos.h>
+#include <hecatonquiros/SetPose.h>
+#include <hecatonquiros/SetJoints.h>
 
 
 namespace hecatonquiros{
@@ -59,11 +56,11 @@ namespace hecatonquiros{
     void ModelSolverRos::joints(const std::vector<float> &_joints){
         #ifdef HAS_ROS
             ros::NodeHandle n;
-            arm_controller::SetJoints jointsSrv;
+            hecatonquiros::SetJoints jointsSrv;
             for(auto &j: _joints){
                 jointsSrv.request.inJoints.position.push_back(j);
             }
-            ros::ServiceClient client = n.serviceClient<arm_controller::SetJoints>(mRobotName + "/set_joints");
+            ros::ServiceClient client = n.serviceClient<hecatonquiros::SetJoints>(mRobotName + "/set_joints");
             client.call(jointsSrv);
         #else
             std::cout << "ROS not installed, cannot use ModelSolverRos" << std::endl;
@@ -133,7 +130,7 @@ namespace hecatonquiros{
     bool ModelSolverRos::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
         #ifdef HAS_ROS
             ros::NodeHandle n;
-            arm_controller::SetPose poseSrv;
+            hecatonquiros::SetPose poseSrv;
             poseSrv.request.inPose.pose.position.x = _pose(0,3);
             poseSrv.request.inPose.pose.position.y = _pose(1,3);
             poseSrv.request.inPose.pose.position.z = _pose(2,3);
@@ -148,7 +145,7 @@ namespace hecatonquiros{
             poseSrv.request.single = true;
             poseSrv.request.set = true;
 
-            ros::ServiceClient client = n.serviceClient<arm_controller::SetPose>(mRobotName + "/set_pose");
+            ros::ServiceClient client = n.serviceClient<hecatonquiros::SetPose>(mRobotName + "/set_pose");
             if(client.call(poseSrv)){
                 if(poseSrv.response.outJoints.size() > 0){
                     for(auto &j:poseSrv.response.outJoints[0].position){
@@ -171,7 +168,7 @@ namespace hecatonquiros{
     bool ModelSolverRos::checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri){
         #ifdef HAS_ROS
             ros::NodeHandle n;
-            arm_controller::SetPose poseSrv;
+            hecatonquiros::SetPose poseSrv;
             poseSrv.request.inPose.pose.position.x = _pose(0,3);
             poseSrv.request.inPose.pose.position.y = _pose(1,3);
             poseSrv.request.inPose.pose.position.z = _pose(2,3);
@@ -188,7 +185,7 @@ namespace hecatonquiros{
 
             std::cout << _pose << std::endl;
 
-            ros::ServiceClient client = n.serviceClient<arm_controller::SetPose>(mRobotName + "/set_pose");
+            ros::ServiceClient client = n.serviceClient<hecatonquiros::SetPose>(mRobotName + "/set_pose");
             if(client.call(poseSrv)){
                 for(unsigned i = 0; i <  poseSrv.response.outJoints.size(); i++){
                     _joints.push_back(std::vector<float>());

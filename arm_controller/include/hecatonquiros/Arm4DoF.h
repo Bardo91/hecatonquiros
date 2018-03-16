@@ -23,8 +23,8 @@
 #ifndef HECATONQUIROS_ARMCONTROLLER_ARM4DOF_H_
 #define HECATONQUIROS_ARMCONTROLLER_ARM4DOF_H_
 
-#include <arm_controller/backends/Backend.h>
-#include <arm_controller/model_solvers/ModelSolver.h>
+#include <hecatonquiros/backends/Backend.h>
+#include <hecatonquiros/model_solvers/ModelSolver.h>
 
 #include <string>
 #include <Eigen/Eigen>
@@ -33,8 +33,14 @@
 namespace hecatonquiros{
     class Arm4DoF {
     public:
-        /// Constructor 
+        /// Construct arm wrapper with given configuration for model solver and backend
+        /// \param _modelConfig: model solver configuration
+        /// \param _backendConfig: backend configuration
         Arm4DoF(const ModelSolver::Config &_modelConfig, const Backend::Config &_backendConfig);
+
+        /// Construct arm wrapper just with backend
+        /// \param _backendConfig: backend configuration
+        Arm4DoF(const Backend::Config &_backendConfig);
 
         /// Send robot to home.
         void home();

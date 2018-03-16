@@ -36,19 +36,57 @@ struct Potentiometer {
 
 class Positioner{
 public:
+	/// Construct positioner hal given the port id and baudrate.
+	/// \param _port: string with path to serial port file.
+	/// \param _baudrate: baudrate for the serial port.
 	Positioner(std::string _port, int _baudrate);
+
+	/// Construct positioner hal given a serial connection.
+	/// \param _serialPort: already connected serial port.
 	Positioner(serial::Serial *_serialPort);
 
+	/// Initialize all the internal members
     void init();
 
+	/// Deinitialize all internal members
+	/// \return: true or false if deinitialization of the internal member went good or bad
 	bool close();
 
+	/// Returns the relative position of the hand from the base of the positioner
+	/// \param _x: 
+	/// \param _y: 
+	/// \param _z: 
 	void baseToHand (float &_x, float &_y, float &_z);
+	
+	/// Returns the relative position of the base from the handle of the positioner
+	/// \param _x: /// \param _t0:
+	/// \param _y: 
+	/// \param _z:
 	void handToBase (float &_x, float &_y, float &_z);
+	
+	/// Returns the raw values of the potentiomenters from 0 to 1023
+	/// \param _j0: 
+	/// \param _j1: 
+	/// \param _j2: 
+	/// \param _j3:
 	void rawJoints  (float &_j0, float &_j1, float &_j2, float &_j3, float &_j4);
+	
+	/// Returns the angles of the joints
+	/// \param _t0: 
+	/// \param _t1: 
+	/// \param _t2: 
+	/// \param _t3:
 	void angles     (float &_t0, float &_t1, float &_t2, float &_t3, float &_j4);
-    std::vector<float> angles     ();
 
+    /// Returns the angles of the joints
+	/// \return angles of the potentiometer in a vector
+	std::vector<float> angles     ();
+
+	/// Returns the transforms of the joints
+	/// \param _T01:
+	/// \param _T12:
+	/// \param _T23:
+	/// \param _T34: 
 	void lastTransforms(Eigen::Matrix4f &_T01, Eigen::Matrix4f &_T12, Eigen::Matrix4f &_T23, Eigen::Matrix4f & _T34, Eigen::Matrix4f & _T4f);
 
 private:

@@ -19,14 +19,17 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-#include <arm_controller/backends/BackendGazebo.h>
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-#include "std_msgs/Header.h"
+#include <hecatonquiros/backends/BackendGazebo.h>
+
+#include <ros/ros.h>
+#include <ros/subscribe_options.h>
+
+#include <std_msgs/String.h>
+#include <std_msgs/Header.h>
 #include <sensor_msgs/JointState.h>
+
 #include <math.h>
 #include <sstream>
-#include <ros/subscribe_options.h>
 #include <iostream>
 #include <string>
 

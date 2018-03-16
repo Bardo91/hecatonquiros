@@ -19,9 +19,9 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-#include <arm_controller/model_solvers/ModelSolverOpenRave.h>
-#include <arm_controller/model_solvers/ModelSolverSimple4Dof.h>
-#include <arm_controller/model_solvers/ModelSolverRos.h>
+#include <hecatonquiros/model_solvers/ModelSolverOpenRave.h>
+#include <hecatonquiros/model_solvers/ModelSolverSimple4Dof.h>
+#include <hecatonquiros/model_solvers/ModelSolverRos.h>
 
 namespace hecatonquiros{
     ModelSolver* ModelSolver::create(const ModelSolver::Config &_config){

@@ -20,8 +20,9 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <arm_controller/Arm4DoF.h>
-#include <arm_controller/model_solvers/ModelSolverSimple4Dof.h>
+#include <hecatonquiros/Arm4DoF.h>
+#include <hecatonquiros/model_solvers/ModelSolverSimple4Dof.h>
+
 #include <iostream>
 #include <string>
 #include <thread>
@@ -37,75 +38,120 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::home(){
-        mModelSolver->joints({mHome1, mHome2, mHome3, mHome4, mHome5});
-        std::vector<float> joints;
-        joints = mModelSolver->joints();
-        mBackend->joints(joints);
+    Arm4DoF::Arm4DoF(const Backend::Config &_backendConfig) {
+        mBackend = Backend::create(_backendConfig);
+        mArmId = _backendConfig.armId;
+        mModelSolver = nullptr;
+    }
 
-        std::vector<Eigen::Matrix4f> transforms;
-        mModelSolver->jointsTransform(transforms);
+    //---------------------------------------------------------------------------------------------------------------------
+    void Arm4DoF::home(){
+        std::vector<float> joints = {mHome1, mHome2, mHome3, mHome4, mHome5};
+        if(mModelSolver != nullptr){
+            mModelSolver->joints(joints);
+            joints = mModelSolver->joints();
+        }
+        if(!mBackend){
+            mBackend->joints(joints);
+        }
+
+        if(mModelSolver != nullptr){  /// 666 Just for visualizing transforms in joints in ModelSolverOpenRave
+            std::vector<Eigen::Matrix4f> transforms;
+            mModelSolver->jointsTransform(transforms);
+        }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::joints(std::vector<float> _q) {
-        mModelSolver->joints(_q);
-        
-        if(mBackend != nullptr){
+        if(mModelSolver != nullptr){
+            mModelSolver->joints(_q);
+        }
+
+        if(!mBackend){
             mBackend->joints(_q);
         }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     std::vector<float> Arm4DoF::joints() const {
-        return mModelSolver->joints();
+        if(mModelSolver != nullptr){
+            return mModelSolver->joints();
+        }else{
+            std::cout << "No model solver instantiated" << std::endl;
+            return {};
+        }
+        
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::position(Eigen::Vector3f _position, float _wirst) {
-        Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-        pose.block<3,1>(0,3) = _position;
-        std::vector<float> angles;
-        if(mModelSolver->checkIk(pose, angles, false)){
-            angles[3] = _wirst; //
-            mBackend->joints(angles);
-            mModelSolver->joints(angles);
+        if(mModelSolver != nullptr){
+            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+            pose.block<3,1>(0,3) = _position;
+            std::vector<float> angles;
+            if(mModelSolver->checkIk(pose, angles, false)){
+                angles[3] = _wirst; //
+                mBackend->joints(angles);
+                mModelSolver->joints(angles);
+            }
+        }else{
+            std::cout << "No model solver instantiated" << std::endl;
         }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Vector3f Arm4DoF::position() {
-        std::vector<Eigen::Matrix4f> transforms;
-        mModelSolver->jointsTransform(transforms);
-        return transforms.back().block<3,1>(0,3);
+        if(mModelSolver != nullptr){
+            std::vector<Eigen::Matrix4f> transforms;
+            mModelSolver->jointsTransform(transforms);
+            return transforms.back().block<3,1>(0,3);
+        }else{
+            std::cout << "No model solver instantiated" << std::endl;
+            return Eigen::Vector3f();
+        }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::checkIk(Eigen::Vector3f _position, std::vector<float> &_angles){
-        Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-        pose.block<3,1>(0,3) = _position;
-        return mModelSolver->checkIk(pose, _angles, false);
+        if(mModelSolver != nullptr){
+            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+            pose.block<3,1>(0,3) = _position;
+            return mModelSolver->checkIk(pose, _angles, false);
+        }else{
+            std::cout << "No model solver instantiated" << std::endl;
+            return false;
+        }
     }
 
 
     //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri){
-        if(_forceOri){
-            mModelSolver->checkIk(_pose, _angles,true);
-            if(_angles.size() == 0)
-                return false;
-            
-            return true;
+        if(mModelSolver != nullptr){
+            if(_forceOri){
+                mModelSolver->checkIk(_pose, _angles,true);
+                if(_angles.size() == 0)
+                    return false;
+                
+                return true;
+            }else{
+                return mModelSolver->checkIk(_pose, _angles, _forceOri);
+            }
         }else{
-            return mModelSolver->checkIk(_pose, _angles, _forceOri);
+            std::cout << "No model solver instantiated" << std::endl;
+            return false;
         }
     }
     
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::pose() const {
-        std::vector<Eigen::Matrix4f> transforms;
-        mModelSolver->jointsTransform(transforms);
-        return transforms.back();
+        if(mModelSolver != nullptr){
+            std::vector<Eigen::Matrix4f> transforms;
+            mModelSolver->jointsTransform(transforms);
+            return transforms.back();
+        }else{
+            std::cout << "No model solver instantiated" << std::endl;
+            return Eigen::Matrix4f::Identity();
+        }
     }
 
     //---------------------------------------------------------------------------------------------------------------------

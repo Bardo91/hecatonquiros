@@ -20,21 +20,14 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVEROPENRAVE_H_
-#define HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVEROPENRAVE_H_
+#ifndef HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERSIMPLE4DOF_H_
+#define HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERSIMPLE4DOF_H_
 
-#include <arm_controller/model_solvers/ModelSolver.h>
-
-#ifdef HAS_OPENRAVE
-    #include <openrave-core.h>
-#endif
-
-#include <thread>
+#include <hecatonquiros/model_solvers/ModelSolver.h>
 
 namespace hecatonquiros{
-    class ModelSolverOpenRave: public ModelSolver{
+    class ModelSolverSimple4Dof: public ModelSolver{
     public:
-
         /// Set joints of robot
         /// \param _joints: desired joints
         virtual void joints(const std::vector<float> &_joints);
@@ -58,33 +51,29 @@ namespace hecatonquiros{
         /// \param _pose: desired pose
         /// \param _joints: list of possible solutions joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true);
-
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true){ return false;}
+        
         /// Five end effector pose given joints without moving the arm
         /// \param _joints: list of possible solutions joints for given pose
-        virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
+        virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints){return Eigen::Matrix4f::Identity(); };
     protected:
-        virtual bool init(const ModelSolver::Config &_config);
+        virtual bool init(const ModelSolver::Config &_config) { return false;}
 
     private:
-        // Singleton interface
-        static bool initSingleton(bool _enableVis);
-        static ModelSolverOpenRave *mInstance;
-        #ifdef HAS_OPENRAVE
-            static OpenRAVE::EnvironmentBasePtr mEnvironment;
-            static OpenRAVE::ViewerBasePtr      mViewer;
-            static std::thread                  mViewerThread;
-            static OpenRAVE::ModuleBasePtr      mIkFast;
-        #endif
+        void updateTransforms();
 
     private:
-        #ifdef HAS_OPENRAVE
-            std::vector<OpenRAVE::GraphHandlePtr> poses;
-            OpenRAVE::GraphHandlePtr mPoseManipX;
-            OpenRAVE::GraphHandlePtr mPoseManipY;
-            OpenRAVE::GraphHandlePtr mPoseManipZ;
-            OpenRAVE::GraphHandlePtr mPoseIK;
-        #endif
+        std::vector<float> mJoints = std::vector<float>(4);
+        bool mUpdatedTransforms = false;
+
+        std::vector<Eigen::Matrix<float,4,4,Eigen::DontAlign>> mJointsTransform;
+        Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
+
+        float mHumerus = 0.15;
+        float mRadius = 0.09;
+        float mBaseHeight = 0.08;
+
+
     };
 
 }

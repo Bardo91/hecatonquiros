@@ -20,22 +20,21 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERROS_H_
-#define HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVERROS_H_
+#ifndef HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVEROPENRAVE_H_
+#define HECATONQUIROS_ARMCONTROLLER_MODELSOLVERS_MODELSOLVEROPENRAVE_H_
 
-#include <arm_controller/model_solvers/ModelSolver.h>
+#include <hecatonquiros/model_solvers/ModelSolver.h>
+
+#ifdef HAS_OPENRAVE
+    #include <openrave-core.h>
+#endif
 
 #include <thread>
 
-#ifdef HAS_ROS
-    #include <ros/ros.h>
-    #include <geometry_msgs/PoseArray.h>
-    #include <sensor_msgs/JointState.h>
-    #include <geometry_msgs/PoseStamped.h>
-#endif 
 namespace hecatonquiros{
-    class ModelSolverRos: public ModelSolver{
+    class ModelSolverOpenRave: public ModelSolver{
     public:
+
         /// Set joints of robot
         /// \param _joints: desired joints
         virtual void joints(const std::vector<float> &_joints);
@@ -68,15 +67,24 @@ namespace hecatonquiros{
         virtual bool init(const ModelSolver::Config &_config);
 
     private:
-        #ifdef HAS_ROS
-            ros::Subscriber mPoseSubscriber, mJointsSubscriber, mTransformsSubscriber;
-            geometry_msgs::PoseStamped mLastPose;
-            sensor_msgs::JointState mLastJoints;
-            geometry_msgs::PoseArray mLastJointTransforms;
-        #endif 
+        // Singleton interface
+        static bool initSingleton(bool _enableVis);
+        static ModelSolverOpenRave *mInstance;
+        #ifdef HAS_OPENRAVE
+            static OpenRAVE::EnvironmentBasePtr mEnvironment;
+            static OpenRAVE::ViewerBasePtr      mViewer;
+            static std::thread                  mViewerThread;
+            static OpenRAVE::ModuleBasePtr      mIkFast;
+        #endif
 
-        std::string mRobotName;
-
+    private:
+        #ifdef HAS_OPENRAVE
+            std::vector<OpenRAVE::GraphHandlePtr> poses;
+            OpenRAVE::GraphHandlePtr mPoseManipX;
+            OpenRAVE::GraphHandlePtr mPoseManipY;
+            OpenRAVE::GraphHandlePtr mPoseManipZ;
+            OpenRAVE::GraphHandlePtr mPoseIK;
+        #endif
     };
 
 }
