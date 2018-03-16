@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">hecatonquiros
-   &#160;<span id="projectnumber">0.3.0</span>
+   &#160;<span id="projectnumber">0.4.0</span>
    </div>
    <div id="projectbrief">HECATONQUIROS. Multi-arm open source and hardware project for general purpose.</div>
   </td>
@@ -40,6 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -134,6 +135,8 @@ virtual Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><a cl
 <tr class="separator:ae1eb2a1ea3951ac01d6e546e459eb36e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c5dbbcdf269ce3f3207275429dde1da"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a2c5dbbcdf269ce3f3207275429dde1da">checkIk</a> (const Eigen::Matrix4f &amp;_pose, std::vector&lt; std::vector&lt; float &gt;&gt; &amp;_joints, bool _forceOri=true)</td></tr>
 <tr class="separator:a2c5dbbcdf269ce3f3207275429dde1da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02b1c58db31989f336b00cfbe7ddafe5"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a02b1c58db31989f336b00cfbe7ddafe5">testIk</a> (const std::vector&lt; float &gt; &amp;_joints)</td></tr>
+<tr class="separator:a02b1c58db31989f336b00cfbe7ddafe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -285,8 +288,40 @@ static <a class="el" href="classhecatonquiros_1_1_model_solver.html">ModelSolver
 
 </div>
 </div>
+<a class="anchor" id="a02b1c58db31989f336b00cfbe7ddafe5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Eigen::Matrix4f hecatonquiros::ModelSolverSimple4Dof::testIk </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>_joints</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Five end effector pose given joints without moving the arm </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">_joints</td><td>list of possible solutions joints for given pose </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classhecatonquiros_1_1_model_solver.html#a0878dbdf7ca80711b690d36141cd3a6d">hecatonquiros::ModelSolver</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/include/arm_controller/model_solvers/<a class="el" href="_model_solver_simple4_dof_8h_source.html">ModelSolverSimple4Dof.h</a></li>
+<li>/home/bardo91/programming/hecatonquiros/arm_controller/include/hecatonquiros/model_solvers/<a class="el" href="_model_solver_simple4_dof_8h_source.html">ModelSolverSimple4Dof.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -1,4 +1,5 @@
 <map id="hecatonquiros::ModelSolver" name="hecatonquiros::ModelSolver">
-<area shape="rect" id="node2" href="$classhecatonquiros_1_1_model_solver_open_rave.html" title="hecatonquiros::ModelSolver\lOpenRave" alt="" coords="5,80,188,121"/>
-<area shape="rect" id="node3" href="$classhecatonquiros_1_1_model_solver_simple4_dof.html" title="hecatonquiros::ModelSolver\lSimple4Dof" alt="" coords="212,80,395,121"/>
+<area shape="rect" id="node2" href="$classhecatonquiros_1_1_model_solver_open_rave.html" title="hecatonquiros::ModelSolver\lOpenRave" alt="" coords="248,5,431,47"/>
+<area shape="rect" id="node3" href="$classhecatonquiros_1_1_model_solver_ros.html" title="hecatonquiros::ModelSolverRos" alt="" coords="236,71,443,98"/>
+<area shape="rect" id="node4" href="$classhecatonquiros_1_1_model_solver_simple4_dof.html" title="hecatonquiros::ModelSolver\lSimple4Dof" alt="" coords="248,123,431,164"/>
 </map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['topic',['topic',['../structhecatonquiros_1_1_backend_1_1_config.html#a505e8077def81eb154514b571d2602e5',1,'hecatonquiros::Backend::Config']]]
+  ['rotation',['rotation',['../structhecatonquiros_1_1_model_solver_1_1_config.html#af9d50f2686373779992bf18b5a8963b9',1,'hecatonquiros::ModelSolver::Config']]]
 ];

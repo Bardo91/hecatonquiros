@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">hecatonquiros
-   &#160;<span id="projectnumber">0.3.0</span>
+   &#160;<span id="projectnumber">0.4.0</span>
    </div>
    <div id="projectbrief">HECATONQUIROS. Multi-arm open source and hardware project for general purpose.</div>
   </td>
@@ -40,6 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -104,8 +105,9 @@ Inheritance diagram for hecatonquiros::ModelSolver:</div>
 <div class="dyncontent">
 <div class="center"><img src="classhecatonquiros_1_1_model_solver__inherit__graph.png" border="0" usemap="#hecatonquiros_1_1_model_solver_inherit__map" alt="Inheritance graph"/></div>
 <map name="hecatonquiros_1_1_model_solver_inherit__map" id="hecatonquiros_1_1_model_solver_inherit__map">
-<area shape="rect" id="node2" href="classhecatonquiros_1_1_model_solver_open_rave.html" title="hecatonquiros::ModelSolver\lOpenRave" alt="" coords="5,80,188,121"/>
-<area shape="rect" id="node3" href="classhecatonquiros_1_1_model_solver_simple4_dof.html" title="hecatonquiros::ModelSolver\lSimple4Dof" alt="" coords="212,80,395,121"/>
+<area shape="rect" id="node2" href="classhecatonquiros_1_1_model_solver_open_rave.html" title="hecatonquiros::ModelSolver\lOpenRave" alt="" coords="248,5,431,47"/>
+<area shape="rect" id="node3" href="classhecatonquiros_1_1_model_solver_ros.html" title="hecatonquiros::ModelSolverRos" alt="" coords="236,71,443,98"/>
+<area shape="rect" id="node4" href="classhecatonquiros_1_1_model_solver_simple4_dof.html" title="hecatonquiros::ModelSolver\lSimple4Dof" alt="" coords="248,123,431,164"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -143,6 +145,8 @@ virtual Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><a cl
 <tr class="separator:a5d31b4ffe1b4f7adcf66862ffb61240d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6955104fb4d2fb98e2a0f41cc2bf21c2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_model_solver.html#a6955104fb4d2fb98e2a0f41cc2bf21c2">checkIk</a> (const Eigen::Matrix4f &amp;_pose, std::vector&lt; std::vector&lt; float &gt;&gt; &amp;_joints, bool _forceOri=true)=0</td></tr>
 <tr class="separator:a6955104fb4d2fb98e2a0f41cc2bf21c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0878dbdf7ca80711b690d36141cd3a6d"><td class="memItemLeft" align="right" valign="top">virtual Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_model_solver.html#a0878dbdf7ca80711b690d36141cd3a6d">testIk</a> (const std::vector&lt; float &gt; &amp;_joints)=0</td></tr>
+<tr class="separator:a0878dbdf7ca80711b690d36141cd3a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -202,14 +206,14 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Check if exists IK for a given pose </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">_pose</td><td>desired pose </td></tr>
+    <tr><td class="paramname">_pose</td><td>desired pose. If 5DoF, the Z axis is used as target direction. </td></tr>
     <tr><td class="paramname">_joints</td><td>joints for given pose </td></tr>
     <tr><td class="paramname">_forceOri</td><td>if true target pose need to be reachable in position and orientation. If false target orientation can be ignored. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a3953a7e4835782f69411279612b0061a">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#ae1eb2a1ea3951ac01d6e546e459eb36e">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
+<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_ros.html#a4019abec00247e32fb05bb818846b868">hecatonquiros::ModelSolverRos</a>, <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a3953a7e4835782f69411279612b0061a">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#ae1eb2a1ea3951ac01d6e546e459eb36e">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
 
 </div>
 </div>
@@ -252,14 +256,14 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Check if exists IK for a given pose </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">_pose</td><td>desired pose </td></tr>
+    <tr><td class="paramname">_pose</td><td>desired pose. If 5DoF, the Z axis is used as target direction. </td></tr>
     <tr><td class="paramname">_joints</td><td>list of possible solutions joints for given pose </td></tr>
     <tr><td class="paramname">_forceOri</td><td>if true target pose need to be reachable in position and orientation. If false target orientation can be ignored. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a9ef9f86fca87004534b91e9245a3c088">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a2c5dbbcdf269ce3f3207275429dde1da">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
+<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_ros.html#a32398aa264e4aeea1e35c685ecf6019c">hecatonquiros::ModelSolverRos</a>, <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a9ef9f86fca87004534b91e9245a3c088">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a2c5dbbcdf269ce3f3207275429dde1da">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
 
 </div>
 </div>
@@ -291,12 +295,44 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a254e3237730bb6508a52b5e6935a6c40">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a6b7055d0387594ab9dd324bb81fbccaf">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
+<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_ros.html#af3e3861841df1fb085048d8d5a978f85">hecatonquiros::ModelSolverRos</a>, <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a254e3237730bb6508a52b5e6935a6c40">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a6b7055d0387594ab9dd324bb81fbccaf">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0878dbdf7ca80711b690d36141cd3a6d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Eigen::Matrix4f hecatonquiros::ModelSolver::testIk </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; float &gt; &amp;&#160;</td>
+          <td class="paramname"><em>_joints</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Five end effector pose given joints without moving the arm </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">_joints</td><td>list of possible solutions joints for given pose </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="classhecatonquiros_1_1_model_solver_ros.html#adbd02081e2d9ddb8e5b72a7d766cf1cb">hecatonquiros::ModelSolverRos</a>, <a class="el" href="classhecatonquiros_1_1_model_solver_open_rave.html#a7e654276922802f0a770e67dcc2cad28">hecatonquiros::ModelSolverOpenRave</a>, and <a class="el" href="classhecatonquiros_1_1_model_solver_simple4_dof.html#a02b1c58db31989f336b00cfbe7ddafe5">hecatonquiros::ModelSolverSimple4Dof</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/include/arm_controller/model_solvers/<a class="el" href="_model_solver_8h_source.html">ModelSolver.h</a></li>
+<li>/home/bardo91/programming/hecatonquiros/arm_controller/include/hecatonquiros/model_solvers/<a class="el" href="_model_solver_8h_source.html">ModelSolver.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

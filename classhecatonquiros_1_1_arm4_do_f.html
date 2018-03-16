@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">hecatonquiros
-   &#160;<span id="projectnumber">0.3.0</span>
+   &#160;<span id="projectnumber">0.4.0</span>
    </div>
    <div id="projectbrief">HECATONQUIROS. Multi-arm open source and hardware project for general purpose.</div>
   </td>
@@ -40,6 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -98,10 +99,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6aec5fd069dec2ed7b321da7845507d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6aec5fd069dec2ed7b321da7845507d2"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a6aec5fd069dec2ed7b321da7845507d2">Arm4DoF</a> (const <a class="el" href="structhecatonquiros_1_1_model_solver_1_1_config.html">ModelSolver::Config</a> &amp;_modelConfig, const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;_backendConfig)</td></tr>
-<tr class="memdesc:a6aec5fd069dec2ed7b321da7845507d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. <br /></td></tr>
+<tr class="memitem:a6aec5fd069dec2ed7b321da7845507d2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a6aec5fd069dec2ed7b321da7845507d2">Arm4DoF</a> (const <a class="el" href="structhecatonquiros_1_1_model_solver_1_1_config.html">ModelSolver::Config</a> &amp;_modelConfig, const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;_backendConfig)</td></tr>
 <tr class="separator:a6aec5fd069dec2ed7b321da7845507d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9127c68af2f850a8cf05edd7288bd04"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#ac9127c68af2f850a8cf05edd7288bd04">Arm4DoF</a> (const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;_backendConfig)</td></tr>
+<tr class="separator:ac9127c68af2f850a8cf05edd7288bd04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02fedc4218da99c464b3f867dc7891b4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02fedc4218da99c464b3f867dc7891b4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a02fedc4218da99c464b3f867dc7891b4">home</a> ()</td></tr>
 <tr class="memdesc:a02fedc4218da99c464b3f867dc7891b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send robot to home. <br /></td></tr>
@@ -131,6 +132,10 @@ Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><b>pose</b> (
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#aed136d20169caf07907460fea4786115">checkIk</a> (Eigen::Vector3f _position, std::vector&lt; float &gt; &amp;_angles)</td></tr>
 <tr class="memdesc:aed136d20169caf07907460fea4786115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Position in cartesian coordinates (meters) <br /></td></tr>
 <tr class="separator:aed136d20169caf07907460fea4786115"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a344904fbab9c359d8f7ee1c34de83698"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a344904fbab9c359d8f7ee1c34de83698"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhecatonquiros_1_1_arm4_do_f.html#a344904fbab9c359d8f7ee1c34de83698">checkIk</a> (Eigen::Matrix4f _pose, std::vector&lt; float &gt; &amp;_angles, bool _forceOri)</td></tr>
+<tr class="memdesc:a344904fbab9c359d8f7ee1c34de83698"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pose in cartesian coordinates (meters) <br /></td></tr>
+<tr class="separator:a344904fbab9c359d8f7ee1c34de83698"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f4dcaffe1c53880acdcb0c8dfb909e6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3f4dcaffe1c53880acdcb0c8dfb909e6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>closeClaw</b> ()</td></tr>
 <tr class="separator:a3f4dcaffe1c53880acdcb0c8dfb909e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -144,8 +149,64 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>stopClaw</b> ()</td><
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>isInit</b> () const </td></tr>
 <tr class="separator:afcc8e013a6fef06cf6bcf283da647683"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="a6aec5fd069dec2ed7b321da7845507d2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hecatonquiros::Arm4DoF::Arm4DoF </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structhecatonquiros_1_1_model_solver_1_1_config.html">ModelSolver::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>_modelConfig</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>_backendConfig</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Construct arm wrapper with given configuration for model solver and backend </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">_modelConfig</td><td>model solver configuration </td></tr>
+    <tr><td class="paramname">_backendConfig</td><td>backend configuration </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ac9127c68af2f850a8cf05edd7288bd04"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">hecatonquiros::Arm4DoF::Arm4DoF </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structhecatonquiros_1_1_backend_1_1_config.html">Backend::Config</a> &amp;&#160;</td>
+          <td class="paramname"><em>_backendConfig</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Construct arm wrapper just with backend </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">_backendConfig</td><td>backend configuration </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/include/arm_controller/<a class="el" href="_arm4_do_f_8h_source.html">Arm4DoF.h</a></li>
+<li>/home/bardo91/programming/hecatonquiros/arm_controller/include/hecatonquiros/<a class="el" href="_arm4_do_f_8h_source.html">Arm4DoF.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -24,7 +24,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">hecatonquiros
-   &#160;<span id="projectnumber">0.3.0</span>
+   &#160;<span id="projectnumber">0.4.0</span>
    </div>
    <div id="projectbrief">HECATONQUIROS. Multi-arm open source and hardware project for general purpose.</div>
   </td>
@@ -40,6 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -105,7 +106,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:ae7cfa8fac9674ec0ae7bf8d694524b9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7cfa8fac9674ec0ae7bf8d694524b9b"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>eType</b> { <b>Simple4DoF</b>, 
-<b>OpenRave</b>
+<b>OpenRave</b>, 
+<b>Ros</b>
  }</td></tr>
 <tr class="separator:ae7cfa8fac9674ec0ae7bf8d694524b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -126,14 +128,22 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>robotFile</b><
 <tr class="memitem:a73ee107455749adad8fe04d413ba53cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73ee107455749adad8fe04d413ba53cf"></a>
 std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>offset</b> = {0,0,0}</td></tr>
 <tr class="separator:a73ee107455749adad8fe04d413ba53cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9d50f2686373779992bf18b5a8963b9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9d50f2686373779992bf18b5a8963b9"></a>
+std::vector&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhecatonquiros_1_1_model_solver_1_1_config.html#af9d50f2686373779992bf18b5a8963b9">rotation</a> = {0,0,0,1}</td></tr>
+<tr class="memdesc:af9d50f2686373779992bf18b5a8963b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">{x, y, z} <br /></td></tr>
+<tr class="separator:af9d50f2686373779992bf18b5a8963b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b294cc146a794d57fdff7dec1fa486e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b294cc146a794d57fdff7dec1fa486e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>visualizer</b> = false</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structhecatonquiros_1_1_model_solver_1_1_config.html#a0b294cc146a794d57fdff7dec1fa486e">visualizer</a> = false</td></tr>
+<tr class="memdesc:a0b294cc146a794d57fdff7dec1fa486e"><td class="mdescLeft">&#160;</td><td class="mdescRight">{x, y, z,w} <br /></td></tr>
 <tr class="separator:a0b294cc146a794d57fdff7dec1fa486e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3c7276eb4662337f535940f5f70f9d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab3c7276eb4662337f535940f5f70f9d1"></a>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>environment</b></td></tr>
+<tr class="separator:ab3c7276eb4662337f535940f5f70f9d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Configuration class for Model solvers. </p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/include/arm_controller/model_solvers/<a class="el" href="_model_solver_8h_source.html">ModelSolver.h</a></li>
+<li>/home/bardo91/programming/hecatonquiros/arm_controller/include/hecatonquiros/model_solvers/<a class="el" href="_model_solver_8h_source.html">ModelSolver.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
