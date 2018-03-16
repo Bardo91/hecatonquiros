@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>hecatonquiros</name>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <description> Wrapper arm controller</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
