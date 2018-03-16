@@ -135,11 +135,16 @@ namespace hecatonquiros{
 			j_msg.position.push_back (_joints[2]);   
                         j_msg.name.push_back ("right/arm_0_bottom_joint");
                         j_msg.name.push_back ("right/arm_1_joint");
-                        j_msg.name.push_back ("right/arm_2_joint");
-
-						//j_msg.name.push_back (string_vector[3]);
-                        //j_msg.name.push_back (string_vector[4]);
-                        //j_msg.name.push_back (string_vector[5]);
+                        j_msg.name.push_back ("right/arm_2_microservo_joint");
+			j_msg.name.push_back ("right/base_gripper_joint");
+		        j_msg.name.push_back ("right/left_gripper_joint");
+			j_msg.name.push_back ("right/right_gripper_joint");
+			//j_msg.name.push_back (string_vector[6]);
+                        //j_msg.name.push_back (string_vector[7]);
+                        //j_msg.name.push_back (string_vector[8]);
+			//j_msg.name.push_back (string_vector[9]);
+                        //j_msg.name.push_back (string_vector[10]);
+                        //j_msg.name.push_back (string_vector[11]);
 			j_msg.header.stamp = ros::Time::now();					
 			}
 			else{
@@ -150,10 +155,19 @@ namespace hecatonquiros{
 			j_msg.position.push_back (_joints[2]);   
                         j_msg.name.push_back ("left/arm_0_bottom_joint");
                         j_msg.name.push_back ("left/arm_1_joint");
-                        j_msg.name.push_back ("left/arm_2_joint");
-						//j_msg.name.push_back (string_vector[0]);
+                        j_msg.name.push_back ("left/arm_2_microservo_joint");
+			j_msg.name.push_back ("left/base_gripper_joint");
+		        j_msg.name.push_back ("left/left_gripper_joint");
+			j_msg.name.push_back ("left/right_gripper_joint");
+			//j_msg.name.push_back (string_vector[0]);
                         //j_msg.name.push_back (string_vector[1]);
                         //j_msg.name.push_back (string_vector[2]);
+			//j_msg.name.push_back (string_vector[3]);
+                        //j_msg.name.push_back (string_vector[4]);
+                        //j_msg.name.push_back (string_vector[5]);
+
+
+
 			j_msg.header.stamp = ros::Time::now();					
 			}
 
