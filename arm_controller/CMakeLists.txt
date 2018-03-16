@@ -6,7 +6,7 @@
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 project(hecatonquiros)
-set(PROJECT_VERSION 0.3.0)
+set(PROJECT_VERSION 0.4.0)
 
 # Clasify sources according to folder structure.
 # This creates a nice layout for the project in visual studio
