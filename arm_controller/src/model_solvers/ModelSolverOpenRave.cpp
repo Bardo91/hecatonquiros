@@ -249,8 +249,18 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
+            std::string stringType;
+            OpenRAVE::IkParameterizationType intType;
+            if(_forceOri){
+                stringType = "TranslationDirection5D";
+                intType = IKP_TranslationDirection5D;
+            }else{
+                stringType = "Translation3D";
+                intType = IKP_Translation3D;
+            }
+
             std::stringstream ssin,ssout;
-            ssin << "LoadIKFastSolver " << robot->GetName() << " " << "Translation3D";
+            ssin << "LoadIKFastSolver " << robot->GetName() << " " << stringType;
             // get the active manipulator
             OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->SetActiveManipulator(mConfig.manipulatorName);
 
@@ -267,21 +277,23 @@ namespace hecatonquiros{
 
             std::cout << "Getting ready for computing IK" << std::endl;
 
-            Eigen::Quaternionf q(_pose.block<3,3>(0,0));
+            OpenRAVE::IkParameterization ikParam;
+            if(_forceOri){
+                OpenRAVE::RAY ray;
+                ray.pos = {_pose(0,3), _pose(1,3), _pose(2,3)};
+                ray.dir = {_pose(0,2), _pose(1,2), _pose(2,2)};
+                ikParam.SetTranslationDirection5D(ray);
 
-            Transform trans;
-            trans.rot.x = q.x();
-            trans.rot.y = q.y();
-            trans.rot.z = q.z();
-            trans.rot.w = q.w();
-            trans.trans.x = _pose(0,3);
-            trans.trans.y = _pose(1,3);
-            trans.trans.z = _pose(2,3);
-
-            std::cout << trans << std::endl;
+                RaveVector<float> p1 = ray.pos, p2;
+                RaveVector<float> dir = ray.dir;
+                p2 = p1 + dir*0.05;
+                mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
+            }else{
+                ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
+            }
 
             std::vector<std::vector<dReal>> vsolutions;
-            if( pmanip->FindIKSolutions(OpenRAVE::IkParameterization(trans, IKP_Translation3D),vsolutions,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_IgnoreSelfCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolutions.size());
                 for(size_t i = 0; i < vsolutions.size(); ++i) {

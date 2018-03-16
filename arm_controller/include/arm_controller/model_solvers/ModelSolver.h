@@ -58,14 +58,14 @@ namespace hecatonquiros{
         virtual Eigen::Matrix4f jointTransform(int _idx) = 0;
 
         /// Check if exists IK for a given pose
-        /// \param _pose: desired pose
+        /// \param _pose: desired pose. If 5DoF, the Z axis is used as target direction.
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true) = 0;
 
 
         /// Check if exists IK for a given pose
-        /// \param _pose: desired pose
+        /// \param _pose: desired pose. If 5DoF, the Z axis is used as target direction.
         /// \param _joints: list of possible solutions joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
         virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true) = 0;
