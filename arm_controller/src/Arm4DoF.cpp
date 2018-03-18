@@ -46,14 +46,8 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
-        std::vector<float> joints = {mHome1, mHome2, mHome3, mHome4, mHome5};
-        if(mModelSolver != nullptr){
-            mModelSolver->joints(joints);
-            joints = mModelSolver->joints();
-        }
-        if(!mBackend){
-            mBackend->joints(joints);
-        }
+        std::vector<float> angles = {mHome1, mHome2, mHome3, mHome4, mHome5};
+        joints(angles);
 
         if(mModelSolver != nullptr){  /// 666 Just for visualizing transforms in joints in ModelSolverOpenRave
             std::vector<Eigen::Matrix4f> transforms;
@@ -67,7 +61,7 @@ namespace hecatonquiros{
             mModelSolver->joints(_q);
         }
 
-        if(!mBackend){
+        if(mBackend != nullptr){
             mBackend->joints(_q);
         }
     }
@@ -91,8 +85,7 @@ namespace hecatonquiros{
             std::vector<float> angles;
             if(mModelSolver->checkIk(pose, angles, false)){
                 angles[3] = _wirst; //
-                mBackend->joints(angles);
-                mModelSolver->joints(angles);
+                joints(angles);
             }
         }else{
             std::cout << "No model solver instantiated" << std::endl;
