@@ -20,37 +20,42 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <hecatonquiros/backends/Backend.h>
-#include <hecatonquiros/backends/BackendArduino.h>
-#include <hecatonquiros/backends/BackendGazebo.h>
+#include <serial/serial.h> 
 #include <hecatonquiros/backends/BackendFeetech.h>
-
+#include <iostream>
 
 namespace hecatonquiros{
-    Backend * Backend::create(const Backend::Config &_config){
-        Backend *bd = nullptr;
-        switch(_config.type){
-        case Backend::Config::eType::Arduino:
-            bd = new BackendArduino();
-            break;
-        case Backend::Config::eType::Gazebo:
-            bd = new BackendGazebo();
-            break;
-        case Backend::Config::eType::Feetech:
-            bd = new BackendFeetech();
-            break;
-        case Backend::Config::eType::Dummy:
-            bd = new BackendDummy();
-            break;
-        default:
-            return nullptr;
-        }
-
-        if(bd->init(_config)){
-            return bd;
-        }else{
-            return nullptr;
-        }
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::init(const Config &_config){
+        mSerialPort = _config.port;
+        mArmId = _config.armId;
+        mServoDriver =  new SCServo(mSerialPort);
+        return mServoDriver->isConnected();
     }
 
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::pose(const Eigen::Matrix4f &_pose, bool _blocking){
+        return false;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::joints(const std::vector<float> &_joints, bool _blocking){
+        if(mServoDriver->isConnected()){
+            for(unsigned i = 0; i < _joints.size(); i++){
+                mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i]), mSpeed);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::claw(const int _action){
+        return false;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::mapAngleToVal(float _minAngle, float _maxAngle, float _angle){
+        return (_angle-_minAngle)/(_maxAngle-_minAngle)*(1023-0);
+    }
 }

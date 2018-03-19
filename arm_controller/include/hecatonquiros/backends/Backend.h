@@ -33,7 +33,7 @@ namespace hecatonquiros{
     public:
         struct Config{
             /// Type of backend
-            enum class eType {Arduino, Gazebo, Dummy};
+            enum class eType {Arduino, Gazebo, Feetech, Dummy};
             eType type;
 
             /// Config for Arduino
