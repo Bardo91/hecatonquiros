@@ -22,7 +22,8 @@ class SCServo{
 		class SafeSerial{
 			public:
 				bool init(std::string &_port){
-					mSerial = new serial::Serial(_port, 10000000, serial::Timeout::simpleTimeout(1000));
+					mSerial = new serial::Serial(_port, 1000000, serial::Timeout::simpleTimeout(1000));
+					return mSerial->isOpen();
 				}
 				std::string readline(){
 					std::lock_guard<std::mutex> lock(mLocker);
@@ -81,7 +82,7 @@ class SCServo{
 	public:
 		/// Default constructor. Initializes internal variables and serial port
 		/// \brief _port: given serial port
-		SCServo(std::string &_serialPort);
+		SCServo(std::string _serialPort);
 		bool isConnected();
 
 		int genWrite(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen);//��ͨдָ��
@@ -112,7 +113,7 @@ class SCServo{
 
 	private:
 		SafeSerial *mSerialConnection = nullptr;
-
+		
 	private:
 		void writeBuf(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen, u8 Fun);
 		int writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun);

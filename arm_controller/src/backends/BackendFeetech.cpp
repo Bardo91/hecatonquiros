@@ -42,7 +42,7 @@ namespace hecatonquiros{
     bool BackendFeetech::joints(const std::vector<float> &_joints, bool _blocking){
         if(mServoDriver->isConnected()){
             for(unsigned i = 0; i < _joints.size(); i++){
-                mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second,joints[i]), mSpeed); // <<--- Comprobar angulos max y min  
+                mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i]), mSpeed);
             }
             return true;
         }
@@ -52,5 +52,10 @@ namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::claw(const int _action){
         return false;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::mapAngleToVal(float _minAngle, float _maxAngle, float _angle){
+        return (_angle-_minAngle)/(_maxAngle-_minAngle)*(1023-0);
     }
 }

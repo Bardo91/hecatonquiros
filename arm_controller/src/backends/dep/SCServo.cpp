@@ -9,7 +9,7 @@
 
 #include <hecatonquiros/backends/dep/SCServo.h>
 
-SCServo::SCServo(std::string &_serialPort) {
+SCServo::SCServo(std::string _serialPort) {
 	Level = 1;
 	End = 1;
 	if(this->init(_serialPort)){
@@ -293,3 +293,6 @@ int	SCServo::Ack(u8 ID) {
 	}
 	return 1;
 }
+
+
+std::map<std::string, SCServo::SafeSerial*> SCServo::mSerialPorts;
