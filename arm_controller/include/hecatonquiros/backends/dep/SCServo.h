@@ -102,6 +102,8 @@ class SCServo{
 		int ReadPos(u8 ID);//��λ��
 		int ReadVoltage(u8 ID);//����ѹ
 		int ReadTemper(u8 ID);//���¶�
+		int ReadLoadL(u8 ID);
+		int ReadLoadH(u8 ID);
 		int Ping(u8 ID);//Pingָ��
 		void reBoot(u8 ID);
 		int wheelMode(u8 ID);//��Ȧ����ģʽ

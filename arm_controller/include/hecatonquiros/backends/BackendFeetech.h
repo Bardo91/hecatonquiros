@@ -26,6 +26,7 @@
 #include <hecatonquiros/backends/Backend.h>  
 #include <hecatonquiros/backends/dep/SCServo.h>  
 
+#include <thread>
 
 namespace hecatonquiros{
     class BackendFeetech: public Backend {
@@ -64,6 +65,9 @@ namespace hecatonquiros{
                                                                 {-110, 115},
                                                                 {-155, 155},
                                                                 {-155, 155}};
+
+        std::thread mLoadChecker;
+        std::vector<int> mUsedJoints;
     };
 }
 

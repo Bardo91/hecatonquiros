@@ -22,7 +22,9 @@
 
 #include <serial/serial.h> 
 #include <hecatonquiros/backends/BackendFeetech.h>
+
 #include <iostream>
+#include <chrono>
 
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
@@ -30,7 +32,22 @@ namespace hecatonquiros{
         mSerialPort = _config.port;
         mArmId = _config.armId;
         mServoDriver =  new SCServo(mSerialPort);
-        return mServoDriver->isConnected();
+        if(mServoDriver->isConnected()){
+            mLoadChecker = std::thread([&](){
+                while(mServoDriver->isConnected()){
+                    for(auto &id:mUsedJoints){
+                        int load = mServoDriver->ReadLoadH(mArmId*10 + id + 1);
+                        if(load > 200)
+                            std::cout << "WARNING: Load of servo " << mArmId*10 + id + 1 << " is " << load <<std::endl;
+                        // 666 TODO do something with it;
+                    }
+                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                }
+            });
+            return true;
+        }else{
+            return false;
+        }
     }
 
     //-----------------------------------------------------------------------------------------------------------------
@@ -40,6 +57,11 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::joints(const std::vector<float> &_joints, bool _blocking){
+        if(_joints.size() > mUsedJoints.size()){
+            for(int i = mUsedJoints.size() ; i<_joints.size(); i++){
+                mUsedJoints.push_back(i);
+            }
+        }
         if(mServoDriver->isConnected()){
             for(unsigned i = 0; i < _joints.size(); i++){
                 mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i]), mSpeed);
