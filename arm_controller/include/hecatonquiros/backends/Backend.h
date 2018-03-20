@@ -33,14 +33,18 @@ namespace hecatonquiros{
     public:
         struct Config{
             /// Type of backend
-            enum class eType {Arduino, Gazebo, Dummy};
+            enum class eType {Arduino, Gazebo, Feetech, Dummy};
             eType type;
 
-            /// Config for Arduino
+            /// Shared Configuration
+            int             armId;
+
+            /// Config for Arduino and feetech
             std::string     port = "";
+
+            /// Config specific for arduino
             int             baudrate = -1;
             serial::Serial *sharedSerialPort = nullptr;
-            int             armId;
 
 
             /// Config for gazebo
@@ -60,6 +64,11 @@ namespace hecatonquiros{
         /// \brief abstract method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action) = 0;
+
+        /// \brief Request for particular information of the hardware.
+        /// Each backend might have a different behaviour.
+        /// \param _cmd: command sent to the backend for requesting something
+        virtual float request(std::string &_cmd) {return 0.0;}
     protected:
         Backend() {}  
         // \brief abstract method for initialization of the class
