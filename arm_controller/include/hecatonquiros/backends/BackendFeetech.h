@@ -60,11 +60,11 @@ namespace hecatonquiros{
 
         SCServo *mServoDriver;
         float mSpeed = 500;     // 666 SEE HOW TO TUNE SPEED
-        std::vector<std::pair<float, float> > mMinMaxValues = { {-110, 110},    // 666 SEE HOW TO TUNE FOREACH ROBOT
-                                                                {-110, 110},
-                                                                {-110, 115},
-                                                                {-155, 155},
-                                                                {-155, 155}};
+        std::vector<std::pair<float, float> > mMinMaxValues = { {-110.0/180.0*M_PI, 110/180.0*M_PI},    // 666 SEE HOW TO TUNE FOREACH ROBOT
+                                                                {-110.0/180.0*M_PI, 110/180.0*M_PI},
+                                                                {-110.0/180.0*M_PI, 115/180.0*M_PI},
+                                                                {-155.0/180.0*M_PI, 155/180.0*M_PI},
+                                                                {-155.0/180.0*M_PI, 155/180.0*M_PI}};
 
         std::thread mLoadChecker;
         std::vector<int> mUsedJoints;

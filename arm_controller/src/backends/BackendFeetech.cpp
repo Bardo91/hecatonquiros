@@ -35,12 +35,12 @@ namespace hecatonquiros{
         if(mServoDriver->isConnected()){
             mLoadChecker = std::thread([&](){
                 while(mServoDriver->isConnected()){
-                    for(auto &id:mUsedJoints){
-                        int load = mServoDriver->ReadLoadH(mArmId*10 + id + 1);
-                        if(load > 200)
-                            std::cout << "WARNING: Load of servo " << mArmId*10 + id + 1 << " is " << load <<std::endl;
-                        // 666 TODO do something with it;
-                    }
+                    //for(auto &id:mUsedJoints){
+                    //    int load = mServoDriver->ReadLoadH(mArmId*10 + id + 1);
+                    //    if(load > 200)
+                    //        std::cout << "WARNING: Load of servo " << mArmId*10 + id + 1 << " is " << load <<std::endl;
+                    //    // 666 TODO do something with it;
+                    //}
                     std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 }
             });

@@ -38,7 +38,7 @@
         <body>arm_0_bottom</body>
         <limitsdeg>-110 110</limitsdeg>
         <initial>0</initial>
-        <Axis>0 0 1</Axis>
+        <Axis>0 0 -1</Axis>
     </joint>
 
     <!-- Joint 1 -->
