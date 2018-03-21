@@ -9,3 +9,4 @@
 /cad_models/arm_4_dof/serial_model/OldVersions
 
 *.pyc
+/cad_models/tools/gripper/serial_model_6DoF/OldVersions
