@@ -63,9 +63,9 @@ namespace hecatonquiros{
         std::vector<std::pair<float, float> > mMinMaxValues = { {-110.0/180.0*M_PI, 110/180.0*M_PI},    // 666 SEE HOW TO TUNE FOREACH ROBOT
                                                                 {-110.0/180.0*M_PI, 110/180.0*M_PI},
                                                                 {-110.0/180.0*M_PI, 115/180.0*M_PI},
-                                                                {-155.0/180.0*M_PI, 155/180.0*M_PI},
-                                                                {-155.0/180.0*M_PI, 155/180.0*M_PI},
-                                                                {-155.0/180.0*M_PI, 155/180.0*M_PI}};
+                                                                {-135.0/180.0*M_PI, 135/180.0*M_PI},
+                                                                {-135.0/180.0*M_PI, 135/180.0*M_PI},
+                                                                {-135.0/180.0*M_PI, 135/180.0*M_PI}};
         
         std::vector<float> mOffsets = {};   /// 666 TODO: do it
 
