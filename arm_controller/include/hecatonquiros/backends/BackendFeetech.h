@@ -64,7 +64,10 @@ namespace hecatonquiros{
                                                                 {-110.0/180.0*M_PI, 110/180.0*M_PI},
                                                                 {-110.0/180.0*M_PI, 115/180.0*M_PI},
                                                                 {-155.0/180.0*M_PI, 155/180.0*M_PI},
+                                                                {-155.0/180.0*M_PI, 155/180.0*M_PI},
                                                                 {-155.0/180.0*M_PI, 155/180.0*M_PI}};
+        
+        std::vector<float> mOffsets = {};   /// 666 TODO: do it
 
         std::thread mLoadChecker;
         std::vector<int> mUsedJoints;
