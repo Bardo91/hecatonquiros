@@ -50,6 +50,8 @@ namespace hecatonquiros{
             /// Config for gazebo
             std::string topic = "";
 	    
+            /// offsets  to joints
+            std::vector<float> jointsOffsets;
 
         };
 

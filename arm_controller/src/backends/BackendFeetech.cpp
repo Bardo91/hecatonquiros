@@ -29,6 +29,7 @@
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::init(const Config &_config){
+        mOffsetJoints = _config.jointsOffsets;
         mSerialPort = _config.port;
         mArmId = _config.armId;
         mServoDriver =  new SCServo(mSerialPort);
@@ -57,6 +58,11 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::joints(const std::vector<float> &_joints, bool _blocking){
+        if(_joints.size() > mOffsetJoints.size()){
+            for(int i = mOffsetJoints.size() ; i<_joints.size(); i++){
+                mOffsetJoints.push_back(0); // Fill with zeros
+            }
+        }
         if(_joints.size() > mUsedJoints.size()){
             for(int i = mUsedJoints.size() ; i<_joints.size(); i++){
                 mUsedJoints.push_back(i);
@@ -64,7 +70,7 @@ namespace hecatonquiros{
         }
         if(mServoDriver->isConnected()){
             for(unsigned i = 0; i < _joints.size(); i++){
-                mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i]), mSpeed);
+                mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
             }
             return true;
         }

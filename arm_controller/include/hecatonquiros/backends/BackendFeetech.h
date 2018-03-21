@@ -71,6 +71,7 @@ namespace hecatonquiros{
 
         std::thread mLoadChecker;
         std::vector<int> mUsedJoints;
+        std::vector<float> mOffsetJoints;
     };
 }
 
