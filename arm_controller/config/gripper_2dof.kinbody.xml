@@ -1,17 +1,18 @@
 <KinBody name ="gripper_2dof">
+    <!--wirst_1-->
     <Body name="wirst_1" type="dynamic">
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/core_structure.stl</render>
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/attachment.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
-    <!-- wirst 0 -->
+    <!--wirst_2-->
     <Body name="wirst_2" type="dynamic">
         <offsetfrom>wirst_1</offsetfrom>
-        <Translation>0.1235 0 0.</Translation>
-        <rotationaxis>0 1 0  90</rotationaxis>
+        <Translation>0 0 0.115</Translation>
+        <rotationaxis>0 1 0 -90</rotationaxis>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/base_gripper.stl</render>
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/middle_joint.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -19,168 +20,52 @@
         <offsetfrom>wirst_2</offsetfrom>
         <body>wirst_1</body>
         <body>wirst_2</body>
-        <limitsdeg>-90 90</limitsdeg>
+        <limitsdeg>-110 110</limitsdeg>
+        <Axis>0 0 1</Axis>
         <initial>0</initial>
     </joint>
 
-
-    <!-- holdBar_1 -->
-    <Body name="holdbar_1" type="dynamic">
+    <!--wirst_3-->
+    <Body name="wirst_3" type="dynamic">
         <offsetfrom>wirst_2</offsetfrom>
-        <Translation>-0.005 -0.037 0.077</Translation>
-        <rotationaxis>1 0 0 90</rotationaxis>
-        <rotationaxis>0 0 1 90</rotationaxis>
+        <rotationaxis>0 1 0 90</rotationaxis>
+        <Translation>0.04 0 0 </Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/holdBar.stl</render>
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/base_gripper.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
+    <joint name="wirst_3_joint" type="hinge">
+        <offsetfrom>wirst_3</offsetfrom>
+        <body>wirst_2</body>
+        <body>wirst_3</body>
+        <limitsdeg>-110 110</limitsdeg>
+        <Axis>0 0 1</Axis>
+        <initial>0</initial>
+    </joint>
 
-    <!-- bar_11a -->
-    <Body name="bar_11a" type="dynamic">
-        <offsetfrom>holdbar_1</offsetfrom>
-        <Translation>-0.005 0.006 0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
+     <!--end_effector-->
+    <Body name="end_effector" type="dynamic">
+        <offsetfrom>wirst_3</offsetfrom>
+        <Translation>-0.015 0 0.12</Translation>
+        <geom type="box">
+            <extents>0.005 0.005 0.005</extents>
+        </geom>
     </Body>
-
-    <!-- bar_11b -->
-    <Body name="bar_11b" type="dynamic">
-        <offsetfrom>holdbar_1</offsetfrom>
-        <Translation>-0.005 0.006 -0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
+    <joint name="end_effector_joint_dummy" type="hinge" enable="False">
+        <offsetfrom>end_effector</offsetfrom>
+        <body>wirst_3</body>
+        <body>end_effector</body>
+        <Axis>0 0 1</Axis>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
     
-    <!-- bar_12a -->
-    <Body name="bar_12a" type="dynamic">
-        <offsetfrom>holdbar_1</offsetfrom>
-        <Translation>0.005 0.006 0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-    
-    <!-- bar_12b -->
-    <Body name="bar_12b" type="dynamic">
-        <offsetfrom>holdbar_1</offsetfrom>
-        <Translation>0.005 0.006 -0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- minibar_1 -->
-    <Body name="minibar_1" type="dynamic">
-        <offsetfrom>bar_12a</offsetfrom>
-        <Translation>0.0 0.015 -0.005</Translation>
-        <rotationaxis>0 0 1 -90</rotationaxis>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/barMini.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- gripper_1 -->
-    <Body name="gripper_1" type="dynamic">
-        <offsetfrom>bar_12a</offsetfrom>
-        <Translation>-0.005 0.04 -0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/gripper.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-    
-    <!-- holdBar_2 -->
-    <Body name="holdbar_2" type="dynamic">
-        <offsetfrom>wirst_2</offsetfrom>
-        <Translation>0 0.037 0.077</Translation>
-        <rotationaxis>1 0 0 90</rotationaxis>
-        <rotationaxis>0 0 1 -90</rotationaxis>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/holdBar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- bar_21a -->
-    <Body name="bar_21a" type="dynamic">
-        <offsetfrom>holdbar_2</offsetfrom>
-        <Translation>-0.005 0.006 0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- bar_21b -->
-    <Body name="bar_21b" type="dynamic">
-        <offsetfrom>holdbar_2</offsetfrom>
-        <Translation>-0.005 0.006 -0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-    
-    <!-- bar_22a -->
-    <Body name="bar_22a" type="dynamic">
-        <offsetfrom>holdbar_2</offsetfrom>
-        <Translation>0.005 0.006 0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-    
-    <!-- bar_22b -->
-    <Body name="bar_22b" type="dynamic">
-        <offsetfrom>holdbar_2</offsetfrom>
-        <Translation>0.005 0.006 -0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/bar.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- minibar_2 -->
-    <Body name="minibar_2" type="dynamic">
-        <offsetfrom>bar_22a</offsetfrom>
-        <Translation>0.0 0.015 -0.005</Translation>
-        <rotationaxis>0 0 1 -90</rotationaxis>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/barMini.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- gripper_2 -->
-    <Body name="gripper_2" type="dynamic">
-        <offsetfrom>bar_22a</offsetfrom>
-        <Translation>-0.005 0.04 -0.005</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/gripper.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-    <!-- screw -->
-    <Body name="screw" type="dynamic">
-        <offsetfrom>wirst_2</offsetfrom>
-        <Translation>0 0 0.055</Translation>
-        <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper2dof/ScrewActuatorGripper.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
-        </Geom>
-    </Body>
-
-
-    <!-- screw_nut -->
-
+    <!-- Adjacents elements for selfcollision -->
+    <adjacent>arm_0_top arm_0_bottom</adjacent>
+    <adjacent>arm_0_bottom arm_1</adjacent>
+    <adjacent>arm_1 arm_2</adjacent>
+    <adjacent>arm_2 end_effector_connector</adjacent>
+    <adjacent>end_effector_connector wirst1</adjacent>
+    <adjacent>arm_2 wirst_1</adjacent>
+    <adjacent>wirst_1 wirst_2</adjacent>
 </KinBody>
