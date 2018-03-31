@@ -29,6 +29,7 @@
     #include <openrave-core.h>
 #endif
 
+#include <string>
 #include <thread>
 
 namespace hecatonquiros{
@@ -63,6 +64,16 @@ namespace hecatonquiros{
         /// Five end effector pose given joints without moving the arm
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
+
+    #ifdef HAS_OPENRAVE
+    public: // Specific interface for OpenRave access
+        /// Get copy of environment
+        static OpenRAVE::EnvironmentBasePtr cloneEnvironment();
+        static OpenRAVE::EnvironmentBasePtr getEnvironment();
+        static bool addObject(std::string _xmlObject, std::string _name = "object");
+        static void moveObject(Eigen::Matrix4f _T, std::string _name);
+
+    #endif 
     protected:
         virtual bool init(const ModelSolver::Config &_config);
 

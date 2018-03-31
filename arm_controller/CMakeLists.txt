@@ -43,6 +43,8 @@ set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBIN
 find_package(OpenRAVE)
 if(${OpenRAVE_FOUND})
 	add_definitions(-DHAS_OPENRAVE)
+else(${OpenRAVE_FOUND})
+	MESSAGE(WARNING "OpenRAVE NOT FOUND")
 endif(${OpenRAVE_FOUND})
 
 find_package(catkin REQUIRED COMPONENTS
@@ -94,9 +96,7 @@ ENDIF()
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
-set(PROJECT_NAME arm_controller)
 GroupSources(src)
-
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
@@ -120,6 +120,8 @@ if(${OpenRAVE_FOUND})
 	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenRAVE_CORE_LIBRARIES})
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXX_FLAGS}")
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${OpenRAVE_LINK_FLAGS}")
+else(${OpenRAVE_FOUND})
+	MESSAGE(WARNING "OpenRAVE NOT FOUND")
 endif(${OpenRAVE_FOUND})
 
 ### DOC generation

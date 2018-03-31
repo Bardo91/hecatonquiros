@@ -73,6 +73,9 @@ namespace hecatonquiros{
         void stopClaw();
 
         bool isInit() const;
+
+        Backend * backend(){return mBackend;};
+        ModelSolver * modelSolver(){return mModelSolver;};
     private:
         Backend *mBackend;
         ModelSolver *mModelSolver;

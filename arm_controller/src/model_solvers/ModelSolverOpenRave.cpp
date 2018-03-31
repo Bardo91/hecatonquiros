@@ -364,6 +364,47 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    OpenRAVE::EnvironmentBasePtr ModelSolverOpenRave::cloneEnvironment(){
+        return mEnvironment->CloneSelf(Clone_All);
+
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    OpenRAVE::EnvironmentBasePtr ModelSolverOpenRave::getEnvironment(){
+        return mEnvironment;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool ModelSolverOpenRave::addObject(std::string _xmlObject, std::string _name){
+        #ifdef HAS_OPENRAVE
+            if(mInstance != nullptr){
+                EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+                auto object = mEnvironment->ReadKinBodyXMLFile(_xmlObject);
+                object->SetName(_name);
+                mEnvironment->Add(object);
+                return object != nullptr;
+            }
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    void ModelSolverOpenRave::moveObject(Eigen::Matrix4f _T, std::string _name){
+        if(mInstance != nullptr){
+            auto object = mEnvironment->GetKinBody(_name);
+            OpenRAVE::Transform T;
+            Eigen::Quaternionf q(_T.block<3,3>(0,0));
+            T.rot.x = q.x();
+            T.rot.y = q.y();
+            T.rot.z = q.z();
+            T.rot.w = q.w();
+            T.trans.x = _T(0,3);
+            T.trans.y = _T(1,3);
+            T.trans.z = _T(2,3);
+            object->SetTransform(T);
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     bool ModelSolverOpenRave::initSingleton(bool _enableVis){
         #ifdef HAS_OPENRAVE
             if(mInstance == nullptr){

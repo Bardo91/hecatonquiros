@@ -26,7 +26,7 @@ import numpy as np
 import quaternion
 
 import rospy
-from arm_controller.srv import *
+from hecatonquiros.srv import *
 from geometry_msgs.msg  import *
 from sensor_msgs.msg    import *
 import threading
