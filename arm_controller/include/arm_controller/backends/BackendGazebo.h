@@ -48,6 +48,11 @@ namespace hecatonquiros{
 
 	std::string mtopic; 
 	ros::Publisher joint_pub; 
+        ros::Publisher joint_pub_dron_1;
+        ros::Publisher joint_pub_dron_2;
+        ros::Publisher joint_pub_dron_3;
+        ros::Publisher joint_pub_dron_4;
+        ros::Publisher joint_pub_dron_5;
 	int marmId;
     };
 }

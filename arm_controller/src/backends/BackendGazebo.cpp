@@ -24,6 +24,7 @@
 #include "std_msgs/String.h"
 #include "std_msgs/Header.h"
 #include <sensor_msgs/JointState.h>
+#include "std_msgs/Float64.h"
 #include <iomanip>
 #include <math.h>
 #include <sstream>
@@ -38,10 +39,19 @@ namespace hecatonquiros{
     bool BackendGazebo::init(const Config &_config){
 	
 		
-	ros::NodeHandle n;
+	ros::NodeHandle n,m;
   	mtopic=_config.topic;	
 	marmId=_config.armId;
- 	joint_pub = n.advertise<sensor_msgs::JointState>(mtopic, 1000);
+ 	//joint_pub = n.advertise<sensor_msgs::JointState>(mtopic, 1000);
+
+ //falta 1 publicacion de rotacion en el arm_tester, son 6 articulaciones no 5
+	joint_pub_dron_1 = m.advertise<std_msgs::Float64>( mtopic + "/arm_1_joint_position_controller/command", 1000);
+	joint_pub_dron_2 = m.advertise<std_msgs::Float64>(  mtopic + "/arm_2_microservo_joint_position_controller/command", 1000);
+	joint_pub_dron_3 = m.advertise<std_msgs::Float64>(mtopic + "/base_gripper_joint_position_controller/command", 1000);
+	joint_pub_dron_4 = m.advertise<std_msgs::Float64>(mtopic + "/left_gripper_joint_position_controller/command", 1000);
+	joint_pub_dron_5 = m.advertise<std_msgs::Float64>(mtopic + "/right_gripper_joint_position_controller/command", 1000);
+
+
 	return true;
     }
 
@@ -57,7 +67,8 @@ namespace hecatonquiros{
     	
     	  	
 		int cnt=0;
-        sensor_msgs::JointState j_msg;
+       		sensor_msgs::JointState j_msg;
+		std_msgs::Float64 msg_dron_1,msg_dron_2,msg_dron_3,msg_dron_4, msg_dron_5;
 		int len_fixed_string = 0;
 		int next_iteration=0;
 		int i;
@@ -172,10 +183,22 @@ namespace hecatonquiros{
 			}
 
 		
+		msg_dron_1.data=_joints[0];    
+		msg_dron_2.data=_joints[1];
+		msg_dron_3.data=_joints[2];
+		msg_dron_4.data=_joints[3];
+		msg_dron_5.data=_joints[4];
 	
 
+
+
 	
-	    joint_pub.publish(j_msg);      
+	        joint_pub.publish(j_msg);  
+		joint_pub_dron_1.publish(msg_dron_1); 
+		joint_pub_dron_2.publish(msg_dron_2);
+		joint_pub_dron_3.publish(msg_dron_3);
+		joint_pub_dron_4.publish(msg_dron_4);
+		joint_pub_dron_5.publish(msg_dron_5);    
 	    cnt++;
 	    return true;
 	  		
