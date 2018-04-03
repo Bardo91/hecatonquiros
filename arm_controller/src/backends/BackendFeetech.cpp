@@ -29,6 +29,7 @@
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::init(const Config &_config){
+        changeValues(_config.valuesMinMax);
         mOffsetJoints = _config.jointsOffsets;
         mSerialPort = _config.port;
         mArmId = _config.armId;
@@ -80,6 +81,15 @@ namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::claw(const int _action){
         return false;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::changeValues(std::vector<std::pair<float, float> >_newvalues){
+        for(unsigned i = 0; i < _newvalues.size(); i++){
+            mMinMaxValues[i].first = _newvalues[i].first/180.0*M_PI;
+            mMinMaxValues[i].second = _newvalues[i].second/180.0*M_PI;
+        }
+        return true;
     }
 
     //-----------------------------------------------------------------------------------------------------------------

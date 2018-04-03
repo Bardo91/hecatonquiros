@@ -54,6 +54,10 @@ namespace hecatonquiros{
 
         // Map from 0 to 1023 according to min and max angle
         int mapAngleToVal(float _minAngle, float _maxAngle, float _angle);
+
+        /// Change MinMaxValues
+        /// \param _newvalues: vector containing the MinMaxValues
+        virtual bool changeValues(std::vector<std::pair<float, float> > _newvalues);
     private:
         std::string mSerialPort;
         int mArmId;

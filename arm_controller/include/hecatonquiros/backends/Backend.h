@@ -53,6 +53,9 @@ namespace hecatonquiros{
             /// offsets  to joints
             std::vector<float> jointsOffsets;
 
+            /// MinMaxValues for feetech servos
+            std::vector<std::pair<float, float> > valuesMinMax;
+
         };
 
         static Backend* create(const Config &_config);
