@@ -173,7 +173,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
+    bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, IK_TYPE _type){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
@@ -181,12 +181,17 @@ namespace hecatonquiros{
 
             std::string stringType;
             OpenRAVE::IkParameterizationType intType;
-            if(_forceOri){
-                stringType = "TranslationDirection5D";
-                intType = IKP_TranslationDirection5D;
-            }else{
+            if(_type == IK_TYPE::IK_3D){
                 stringType = "Translation3D";
                 intType = IKP_Translation3D;
+            }else if (_type == IK_TYPE::IK_5D){
+                stringType = "TranslationDirection5D";
+                intType = IKP_TranslationDirection5D;
+            }else if (_type == IK_TYPE::IK_6D){
+                stringType = "Transform6D";
+                intType = IKP_Transform6D;
+            }else{
+                assert(false);
             }
 
             std::stringstream ssin,ssout;
@@ -208,7 +213,9 @@ namespace hecatonquiros{
             std::cout << "Getting ready for computing IK" << std::endl;
 
             OpenRAVE::IkParameterization ikParam;
-            if(_forceOri){
+            if(_type == IK_TYPE::IK_3D){
+                ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
+            }else if (_type == IK_TYPE::IK_5D){
                 OpenRAVE::RAY ray;
                 ray.pos = {_pose(0,3), _pose(1,3), _pose(2,3)};
                 ray.dir = {_pose(0,2), _pose(1,2), _pose(2,2)};
@@ -218,8 +225,18 @@ namespace hecatonquiros{
                 RaveVector<float> dir = ray.dir;
                 p2 = p1 + dir*0.05;
                 mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
+            }else if (_type == IK_TYPE::IK_6D){
+                RaveTransformMatrix<float> matT;
+                for(unsigned i = 0; i < 4; i++){
+                    for(unsigned j = 0; j < 4; j++){
+                        matT.m[j*4 + i] = _pose(i,j);
+                    }
+                }
+
+                OpenRAVE::Transform T(matT);
+                ikParam.SetTransform6D(T);
             }else{
-                ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
+                assert(false);
             }
 
             std::vector<dReal> vsolution;
@@ -243,7 +260,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri){
+    bool ModelSolverOpenRave::checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, IK_TYPE _type){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
@@ -251,12 +268,17 @@ namespace hecatonquiros{
 
             std::string stringType;
             OpenRAVE::IkParameterizationType intType;
-            if(_forceOri){
-                stringType = "TranslationDirection5D";
-                intType = IKP_TranslationDirection5D;
-            }else{
+            if(_type == IK_TYPE::IK_3D){
                 stringType = "Translation3D";
                 intType = IKP_Translation3D;
+            }else if (_type == IK_TYPE::IK_5D){
+                stringType = "TranslationDirection5D";
+                intType = IKP_TranslationDirection5D;
+            }else if (_type == IK_TYPE::IK_6D){
+                stringType = "Transform6D";
+                intType = IKP_Transform6D;
+            }else{
+                assert(false);
             }
 
             std::stringstream ssin,ssout;
@@ -278,7 +300,9 @@ namespace hecatonquiros{
             std::cout << "Getting ready for computing IK" << std::endl;
 
             OpenRAVE::IkParameterization ikParam;
-            if(_forceOri){
+            if(_type == IK_TYPE::IK_3D){
+                ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
+            }else if (_type == IK_TYPE::IK_5D){
                 OpenRAVE::RAY ray;
                 ray.pos = {_pose(0,3), _pose(1,3), _pose(2,3)};
                 ray.dir = {_pose(0,2), _pose(1,2), _pose(2,2)};
@@ -288,8 +312,18 @@ namespace hecatonquiros{
                 RaveVector<float> dir = ray.dir;
                 p2 = p1 + dir*0.05;
                 mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
+            }else if (_type == IK_TYPE::IK_6D){
+                RaveTransformMatrix<float> matT;
+                for(unsigned i = 0; i < 4; i++){
+                    for(unsigned j = 0; j < 4; j++){
+                        matT.m[j*4 + i] = _pose(i,j);
+                    }
+                }
+
+                OpenRAVE::Transform T(matT);
+                ikParam.SetTransform6D(T);
             }else{
-                ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
+                assert(false);
             }
 
             std::vector<std::vector<dReal>> vsolutions;

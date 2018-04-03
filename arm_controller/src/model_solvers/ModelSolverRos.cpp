@@ -127,7 +127,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverRos::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
+    bool ModelSolverRos::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, IK_TYPE _type){
         #ifdef HAS_ROS
             ros::NodeHandle n;
             hecatonquiros::SetPose poseSrv;
@@ -141,7 +141,15 @@ namespace hecatonquiros{
             poseSrv.request.inPose.pose.orientation.y = q.y();
             poseSrv.request.inPose.pose.orientation.z = q.z();
             poseSrv.request.inPose.pose.orientation.w = q.w();
-            poseSrv.request.forceOri = _forceOri;
+            if(_type == IK_TYPE::IK_3D)
+                poseSrv.request.forceOri = 0;
+            else if(_type == IK_TYPE::IK_5D)
+                poseSrv.request.forceOri = 1;
+            else if(_type == IK_TYPE::IK_6D)
+                poseSrv.request.forceOri = 2;
+            else
+                poseSrv.request.forceOri = 0;
+                
             poseSrv.request.single = true;
             poseSrv.request.set = true;
 
@@ -165,7 +173,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverRos::checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri){
+    bool ModelSolverRos::checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, IK_TYPE _type){
         #ifdef HAS_ROS
             ros::NodeHandle n;
             hecatonquiros::SetPose poseSrv;
@@ -179,7 +187,16 @@ namespace hecatonquiros{
             poseSrv.request.inPose.pose.orientation.y = q.y();
             poseSrv.request.inPose.pose.orientation.z = q.z();
             poseSrv.request.inPose.pose.orientation.w = q.w();
-            poseSrv.request.forceOri = 2;
+
+            if(_type == IK_TYPE::IK_3D)
+                poseSrv.request.forceOri = 0;
+            else if(_type == IK_TYPE::IK_5D)
+                poseSrv.request.forceOri = 1;
+            else if(_type == IK_TYPE::IK_6D)
+                poseSrv.request.forceOri = 2;
+            else
+                poseSrv.request.forceOri = 0;
+
             poseSrv.request.single = false;
             poseSrv.request.set = true;
 

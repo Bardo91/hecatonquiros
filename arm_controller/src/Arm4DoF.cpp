@@ -21,7 +21,7 @@
 
 
 #include <hecatonquiros/Arm4DoF.h>
-#include <hecatonquiros/model_solvers/ModelSolverSimple4Dof.h>
+#include <hecatonquiros/model_solvers/ModelSolver.h>
 
 #include <iostream>
 #include <string>
@@ -83,7 +83,7 @@ namespace hecatonquiros{
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
             pose.block<3,1>(0,3) = _position;
             std::vector<float> angles;
-            if(mModelSolver->checkIk(pose, angles, false)){
+            if(mModelSolver->checkIk(pose, angles, ModelSolver::IK_TYPE::IK_3D)){
                 angles[3] = _wirst; //
                 joints(angles);
             }
@@ -109,7 +109,7 @@ namespace hecatonquiros{
         if(mModelSolver != nullptr){
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
             pose.block<3,1>(0,3) = _position;
-            return mModelSolver->checkIk(pose, _angles, false);
+            return mModelSolver->checkIk(pose, _angles, ModelSolver::IK_TYPE::IK_3D);
         }else{
             std::cout << "No model solver instantiated" << std::endl;
             return false;
@@ -118,17 +118,9 @@ namespace hecatonquiros{
 
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri){
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type){
         if(mModelSolver != nullptr){
-            if(_forceOri){
-                mModelSolver->checkIk(_pose, _angles,true);
-                if(_angles.size() == 0)
-                    return false;
-                
-                return true;
-            }else{
-                return mModelSolver->checkIk(_pose, _angles, _forceOri);
-            }
+            return mModelSolver->checkIk(_pose, _angles, _type);
         }else{
             std::cout << "No model solver instantiated" << std::endl;
             return false;
