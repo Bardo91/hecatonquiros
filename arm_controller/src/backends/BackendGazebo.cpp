@@ -193,7 +193,7 @@ namespace hecatonquiros{
 
 
 	
-	        joint_pub.publish(j_msg);  
+	       // joint_pub.publish(j_msg);  
 		joint_pub_dron_1.publish(msg_dron_1); 
 		joint_pub_dron_2.publish(msg_dron_2);
 		joint_pub_dron_3.publish(msg_dron_3);
