@@ -363,6 +363,61 @@ namespace hecatonquiros{
 
     }
 
+    #ifdef HAS_OPENRAVE
+        //-----------------------------------------------------------------------------------------------------------------
+        OpenRAVE::EnvironmentBasePtr ModelSolverOpenRave::cloneEnvironment(){
+            return mEnvironment->CloneSelf(Clone_All);
+
+        }
+
+        //-----------------------------------------------------------------------------------------------------------------
+        OpenRAVE::EnvironmentBasePtr ModelSolverOpenRave::getEnvironment(){
+            return mEnvironment;
+        }
+    #endif
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool ModelSolverOpenRave::addObject(std::string _xmlObject, std::string _name){
+        #ifdef HAS_OPENRAVE
+            if(mInstance != nullptr){
+                EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+                auto object = mEnvironment->ReadKinBodyXMLFile(_xmlObject);
+                object->SetName(_name);
+                mEnvironment->Add(object);
+                return object != nullptr;
+            }
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    void ModelSolverOpenRave::moveObject(Eigen::Matrix4f _T, std::string _name){
+        #ifdef HAS_OPENRAVE
+            if(mInstance != nullptr){
+                auto object = mEnvironment->GetKinBody(_name);
+                RaveTransformMatrix<float> matT;
+                for(unsigned i = 0; i < 4; i++){
+                    for(unsigned j = 0; j < 4; j++){
+                        matT.m[j*4 + i] = _T(i,j);
+                    }
+                }
+
+                OpenRAVE::Transform T(matT);
+                object->SetTransform(T);
+            }
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    OpenRAVE::GraphHandlePtr ModelSolverOpenRave::drawLine(Eigen::Vector3f _init, Eigen::Vector3f _end, float _width, float _r, float  _g, float  _b, float  _a){
+        #ifdef HAS_OPENRAVE
+            return mEnvironment->drawarrow	(	RaveVector< float >(_init[0], _init[1], _init[2], 1),
+                                                RaveVector< float >(_end[0], _end[1], _end[2], 1),
+                                                _width,
+                                                RaveVector< float >(_r, _g, _b, _a)
+                                                );
+        #endif
+    }
+
     //-----------------------------------------------------------------------------------------------------------------
     bool ModelSolverOpenRave::initSingleton(bool _enableVis){
         #ifdef HAS_OPENRAVE
@@ -424,8 +479,10 @@ namespace hecatonquiros{
     }
 
     ModelSolverOpenRave             *ModelSolverOpenRave::mInstance     = nullptr;
-    OpenRAVE::EnvironmentBasePtr    ModelSolverOpenRave::mEnvironment  = nullptr;
-    OpenRAVE::ViewerBasePtr         ModelSolverOpenRave::mViewer       = nullptr;
+    #ifdef HAS_OPENRAVE
+        OpenRAVE::EnvironmentBasePtr    ModelSolverOpenRave::mEnvironment  = nullptr;
+        OpenRAVE::ViewerBasePtr         ModelSolverOpenRave::mViewer       = nullptr;
+        OpenRAVE::ModuleBasePtr         ModelSolverOpenRave::mIkFast = nullptr;
+    #endif
     std::thread                     ModelSolverOpenRave::mViewerThread;
-    OpenRAVE::ModuleBasePtr         ModelSolverOpenRave::mIkFast = nullptr;
 }
