@@ -241,11 +241,24 @@
 
     
     <!-- Adjacents elements for selfcollision -->
-    <adjacent>arm_0_top arm_0_bottom</adjacent>
-    <adjacent>arm_0_bottom arm_1</adjacent>
-    <adjacent>arm_1 arm_2</adjacent>
-    <adjacent>arm_2 end_effector_connector</adjacent>
-    <adjacent>end_effector_connector wirst1</adjacent>
-    <adjacent>arm_2 wirst_1</adjacent>
     <adjacent>wirst_1 wirst_2</adjacent>
+
+    <adjacent>wirst_3 bar_00</adjacent>
+    <adjacent>wirst_3 bar_01</adjacent>
+    <adjacent>wirst_3 bar_02</adjacent>
+    <adjacent>wirst_3 bar_03</adjacent>
+    <adjacent>wirst_3 bar_10</adjacent>
+    <adjacent>wirst_3 bar_11</adjacent>
+    <adjacent>wirst_3 bar_12</adjacent>
+    <adjacent>wirst_3 bar_13</adjacent>
+
+    <adjacent>bar_00 finger_0</adjacent>
+    <adjacent>bar_01 finger_0</adjacent>
+    <adjacent>bar_02 finger_0</adjacent>
+    <adjacent>bar_03 finger_0</adjacent>
+    <adjacent>bar_10 finger_1</adjacent>
+    <adjacent>bar_11 finger_1</adjacent>
+    <adjacent>bar_12 finger_1</adjacent>
+    <adjacent>bar_13 finger_1</adjacent>
+    
 </KinBody>

@@ -19,4 +19,9 @@
         <effector>end_effector</effector>
         <direction>0 0 1</direction>
     </manipulator>
+
+    
+    <!-- Adjacents elements for selfcollision -->
+    <adjacent>end_effector_connector wirst1</adjacent>
+    <adjacent>arm_2 wirst_1</adjacent>
 </Robot>
