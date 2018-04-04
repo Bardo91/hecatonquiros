@@ -241,7 +241,6 @@ namespace hecatonquiros{
 
             std::vector<dReal> vsolution;
             if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
-                std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
                     _joints[i] = vsolution[i];
@@ -249,8 +248,6 @@ namespace hecatonquiros{
                 return true;
             }
             else {
-                std::cout << "NOT FOUND SOLUTION" << std::endl;
-                // could fail due to collisions, etc
                 return false;
             }
         #else
