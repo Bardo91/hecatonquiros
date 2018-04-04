@@ -66,13 +66,16 @@ namespace hecatonquiros{
         bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);
 
         /// Pose in cartesian coordinates (meters)
-        bool checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, bool _forceOri);
+        bool checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D);
 
         void closeClaw();
         void openClaw();
         void stopClaw();
 
         bool isInit() const;
+
+        Backend * backend(){return mBackend;};
+        ModelSolver * modelSolver(){return mModelSolver;};
     private:
         Backend *mBackend;
         ModelSolver *mModelSolver;

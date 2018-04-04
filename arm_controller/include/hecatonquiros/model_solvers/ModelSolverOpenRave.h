@@ -29,6 +29,7 @@
     #include <openrave-core.h>
 #endif
 
+#include <string>
 #include <thread>
 
 namespace hecatonquiros{
@@ -52,17 +53,36 @@ namespace hecatonquiros{
         /// \param _pose: desired pose
         /// \param _joints: joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri = true);
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, IK_TYPE _type = IK_TYPE::IK_3D);
 
         /// Check if exists IK for a given pose
         /// \param _pose: desired pose
         /// \param _joints: list of possible solutions joints for given pose
         /// \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, bool _forceOri = true);
+        virtual bool checkIk(const Eigen::Matrix4f &_pose, std::vector<std::vector<float>> &_joints, IK_TYPE _type = IK_TYPE::IK_3D);
 
         /// Five end effector pose given joints without moving the arm
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
+
+    #ifdef HAS_OPENRAVE
+    public: // Specific interface for OpenRave access
+        /// Get copy of environment
+        static OpenRAVE::EnvironmentBasePtr cloneEnvironment();
+        static OpenRAVE::EnvironmentBasePtr getEnvironment();
+        static bool addObject(std::string _xmlObject, std::string _name = "object");
+        static void moveObject(Eigen::Matrix4f _T, std::string _name);
+
+        /// Draw a line on the current environment. Keep returned object to keep the line
+        /// \param _init: beginning of the line
+        /// \param _end: end of the line
+        /// \param _r: from 0 to 1
+        /// \param _g: from 0 to 1
+        /// \param _b: from 0 to 1
+        /// \param _a: from 0 to 1 
+        static OpenRAVE::GraphHandlePtr drawLine(Eigen::Vector3f _init, Eigen::Vector3f _end, float _width = 0.01, float  _r = 1,float  _g = 0,float  _b = 0,float _a = 1);
+
+    #endif 
     protected:
         virtual bool init(const ModelSolver::Config &_config);
 

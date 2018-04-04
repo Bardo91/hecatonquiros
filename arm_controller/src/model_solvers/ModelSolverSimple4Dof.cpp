@@ -57,7 +57,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverSimple4Dof::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, bool _forceOri){
+    bool ModelSolverSimple4Dof::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, IK_TYPE _type){
         _joints.resize(mJoints.size());
 
         Eigen::Vector3f position = _pose.block<3,1>(0,3);
