@@ -1,0 +1,102 @@
+aeroarms:
+
+  # Joint State Controller
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 20
+
+  # Position Controllers
+  # Left arm
+  q1_1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q1_1
+    pid: {p: 1.0, i: 0.5, d: 0.0, i_clamp: 2.0}
+
+  q1_2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q1_2
+    pid: {p: 1.0, i: 0.5, d: 0.0, i_clamp: 2.0}
+
+  q1_3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q1_3
+    pid: {p: 1.0, i: 0.5, d: 0.0, i_clamp: 2.0}
+
+  q1_4_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q1_4
+    pid: {p: 0.25, i: 0.1, d: 0.0, i_clamp: 1.0}
+
+  # Right arm
+  q2_1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q2_1
+    pid: {p: 1.0, i: 0.5, d: 0.0, i_clamp: 2.0}
+
+  q2_2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q2_2
+    pid: {p: 1.0, i: 0.5, d: 0.0, i_clamp: 2.0}
+
+  q2_3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q2_3
+    pid: {p: 1.0, i: 0.5, d: 0.0, i_clamp: 2.0}
+
+  q2_4_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: q2_4
+    pid: {p: 0.25, i: 0.1, d: 0.0, i_clamp: 1.0}
+
+
+  #Hecatonquiros arm
+  left/arm_0_bottom_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left/arm_0_bottom_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  left/arm_1_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left/arm_1_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  left/arm_2_microservo_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left/arm_2_microservo_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  left/base_gripper_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left/base_gripper_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  left/left_gripper_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left/left_gripper_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  left/right_gripper_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left/right_gripper_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  #Right arm
+  right/arm_0_bottom_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right/arm_0_bottom_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  right/arm_1_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right/arm_1_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  right/arm_2_microservo_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right/arm_2_microservo_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  right/base_gripper_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right/base_gripper_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  right/left_gripper_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right/left_gripper_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  right/right_gripper_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right/right_gripper_joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
