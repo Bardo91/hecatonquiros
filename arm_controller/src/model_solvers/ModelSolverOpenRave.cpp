@@ -210,8 +210,6 @@ namespace hecatonquiros{
                 return false;
             }
 
-            std::cout << "Getting ready for computing IK" << std::endl;
-
             OpenRAVE::IkParameterization ikParam;
             if(_type == IK_TYPE::IK_3D){
                 ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
