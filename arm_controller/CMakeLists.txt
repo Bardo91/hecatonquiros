@@ -5,8 +5,8 @@
 ###############################################################
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
-project(arm_controller)
-set(PROJECT_VERSION 0.3.0)
+project(hecatonquiros)
+set(PROJECT_VERSION 0.4.0)
 
 # Clasify sources according to folder structure.
 # This creates a nice layout for the project in visual studio
@@ -39,20 +39,38 @@ find_package(Serial REQUIRED)
 find_package(OpenCV 3 REQUIRED)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
 
-find_package(catkin REQUIRED COMPONENTS
-			geometry_msgs
-			std_msgs
-			roscpp
-			)
-
 ## Check if OpenRAVE is installed and use it
 find_package(OpenRAVE)
 if(${OpenRAVE_FOUND})
 	add_definitions(-DHAS_OPENRAVE)
+else(${OpenRAVE_FOUND})
+	MESSAGE(WARNING "OpenRAVE NOT FOUND")
 endif(${OpenRAVE_FOUND})
+
+find_package(catkin REQUIRED COMPONENTS
+			geometry_msgs
+			sensor_msgs
+			std_msgs
+			roscpp
+			message_generation
+			)
+if(${catkin_FOUND})
+	add_definitions(-DHAS_ROS)
+endif(${catkin_FOUND})
+
+add_service_files(
+  FILES
+  SetJoints.srv
+  SetPose.srv
+)
+
+generate_messages(
+    DEPENDENCIES std_msgs geometry_msgs sensor_msgs
+)
 
 catkin_package(
 	INCLUDE_DIRS ./include
+	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
 )
 
 ## Load PCL
@@ -78,9 +96,7 @@ ENDIF()
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
-set(PROJECT_NAME arm_controller)
 GroupSources(src)
-
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
@@ -104,6 +120,8 @@ if(${OpenRAVE_FOUND})
 	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenRAVE_CORE_LIBRARIES})
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXX_FLAGS}")
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "${OpenRAVE_LINK_FLAGS}")
+else(${OpenRAVE_FOUND})
+	MESSAGE(WARNING "OpenRAVE NOT FOUND")
 endif(${OpenRAVE_FOUND})
 
 ### DOC generation

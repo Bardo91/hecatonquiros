@@ -1,0 +1,176 @@
+<KinBody name ="arm_gripper_5dof">
+    <Body name="arm_0_attachment" type="dynamic">
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_attachment.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+
+    <!-- Attachment -->
+    <Body name="arm_0_top" type="dynamic">
+        <offsetfrom>arm_0_attachment</offsetfrom>
+        <Translation>0 0 0.02</Translation>
+        
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_top.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="arm_0_top_joint" type="hinge" enable="False">
+        <offsetfrom>arm_0_top</offsetfrom>
+        <body>arm_0_attachment</body>
+        <body>arm_0_top</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
+
+    <!-- Joint 0 -->
+    <Body name="arm_0_bottom" type="dynamic">
+        <offsetfrom>arm_0_top</offsetfrom>
+        <Translation>0 0.0 0.03</Translation>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_bottom.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="arm_0_joint" type="hinge">
+        <offsetfrom>arm_0_bottom</offsetfrom>
+        <body>arm_0_top</body>
+        <body>arm_0_bottom</body>
+        <limitsdeg>-110 110</limitsdeg>
+        <initial>0</initial>
+        <Axis>0 0 -1</Axis>
+    </joint>
+
+    <!-- Joint 1 -->
+    <Body name="arm_1" type="dynamic">
+        <offsetfrom>arm_0_bottom</offsetfrom>
+        <Translation>0 0.0 0.03</Translation>
+        <rotationaxis>1 0 0 -90</rotationaxis>
+        <rotationaxis>0 1 0 -90</rotationaxis>
+        <rotationaxis>0 0 1 180</rotationaxis>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_1.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="arm_1_joint" type="hinge">
+        <offsetfrom>arm_1</offsetfrom>
+        <body>arm_0_bottom</body>
+        <body>arm_1</body>
+        <limitsdeg>-110 110</limitsdeg>
+        <Axis>0 0 1</Axis>
+    </joint>
+
+    <!-- Joint 2 -->
+    <Body name="arm_2" type="dynamic">
+        <offsetfrom>arm_1</offsetfrom>
+        <Translation>0.148 0 0</Translation>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_2_microservo.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="arm_2_joint" type="hinge">
+        <offsetfrom>arm_2</offsetfrom>
+        <body>arm_1</body>
+        <body>arm_2</body>
+        <Axis>0 0 1</Axis>
+        <limitsdeg>-110 110</limitsdeg>
+    </joint>
+
+    <!-- Joint 3 wirst-->
+    <Body name="effector_connector" type="dynamic">
+        <offsetfrom>arm_2</offsetfrom>
+        <rotationaxis>0 1 0 90</rotationaxis>
+        <Translation>0.06 0 0 </Translation>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/end_effector_connector.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="effector_connector_joint" type="hinge">
+        <offsetfrom>effector_connector</offsetfrom>
+        <body>arm_2</body>
+        <body>effector_connector</body>
+        <Axis>0 0 1</Axis>
+        <limitsdeg>-110 110</limitsdeg>
+    </joint>
+
+    <!--GRIPPER-->
+    <!--wirst_1-->
+    <Body name="wirst_1" type="dynamic">
+        <offsetfrom>effector_connector</offsetfrom>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/attachment.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="wirst_1_joint" type="hinge" enable="False">
+        <offsetfrom>wirst_1</offsetfrom>
+        <body>effector_connector</body>
+        <body>wirst_1</body>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
+    <!--wirst_2-->
+    <Body name="wirst_2" type="dynamic">
+        <offsetfrom>wirst_1</offsetfrom>
+        <Translation>0 0 0.115</Translation>
+        <rotationaxis>0 1 0 -90</rotationaxis>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/middle_joint.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="wirst_2_joint" type="hinge">
+        <offsetfrom>wirst_2</offsetfrom>
+        <body>wirst_1</body>
+        <body>wirst_2</body>
+        <limitsdeg>-110 110</limitsdeg>
+        <Axis>0 0 1</Axis>
+        <initial>0</initial>
+    </joint>
+
+    <!--wirst_3-->
+    <Body name="wirst_3" type="dynamic">
+        <offsetfrom>wirst_2</offsetfrom>
+        <rotationaxis>0 1 0 90</rotationaxis>
+        <Translation>0.04 0 0 </Translation>
+        <Geom type="trimesh">
+            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/base_gripper.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="wirst_3_joint" type="hinge">
+        <offsetfrom>wirst_3</offsetfrom>
+        <body>wirst_2</body>
+        <body>wirst_3</body>
+        <limitsdeg>-110 110</limitsdeg>
+        <Axis>0 0 1</Axis>
+        <initial>0</initial>
+    </joint>
+
+     <!--end_effector-->
+    <Body name="end_effector" type="dynamic">
+        <offsetfrom>wirst_3</offsetfrom>
+        <Translation>-0.015 0 0.12</Translation>
+        <geom type="box">
+            <extents>0.005 0.005 0.005</extents>
+        </geom>
+    </Body>
+    <joint name="end_effector_joint_dummy" type="hinge" enable="False">
+        <offsetfrom>end_effector</offsetfrom>
+        <body>wirst_3</body>
+        <body>end_effector</body>
+        <Axis>0 0 1</Axis>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
+    
+    <!-- Adjacents elements for selfcollision -->
+    <adjacent>arm_0_top arm_0_bottom</adjacent>
+    <adjacent>arm_0_bottom arm_1</adjacent>
+    <adjacent>arm_1 arm_2</adjacent>
+    <adjacent>arm_2 end_effector_connector</adjacent>
+    <adjacent>end_effector_connector wirst1</adjacent>
+    <adjacent>arm_2 wirst_1</adjacent>
+    <adjacent>wirst_1 wirst_2</adjacent>
+</KinBody>

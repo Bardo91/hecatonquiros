@@ -1,0 +1,27 @@
+<Robot name="arm_6dof">
+    <kinbody file="arm_4dof.kinbody.xml"/>
+    <kinbody file="gripper_2dof.kinbody.xml"/>
+
+    <kinbody>
+        <body name="wirst_1">
+            <offsetfrom>effector_connector</offsetfrom>
+        </body>
+        <joint name="dummyhand" type="hinge" enable="false">
+            <offsetfrom>wirst_1</offsetfrom>
+            <body>effector_connector</body>
+            <body>wirst_1</body>
+            <limits>0 0</limits>
+        </joint>
+    </kinbody>
+
+    <manipulator name="manipulator">
+        <base>arm_0_top</base>
+        <effector>end_effector</effector>
+        <direction>0 0 1</direction>
+    </manipulator>
+
+    
+    <!-- Adjacents elements for selfcollision -->
+    <adjacent>end_effector_connector wirst1</adjacent>
+    <adjacent>arm_2 wirst_1</adjacent>
+</Robot>

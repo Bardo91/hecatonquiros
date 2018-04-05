@@ -29,13 +29,6 @@ class Arm4DoF{
     /// Set id of the arm. ID of servos are computed according to this ID, e.g. ID= 3. Servo1_id=31, Servo2_id=32, etc.
     void setup(int _id);
 
-    /// Set fine tune offsets of the joints
-    /// \param _o0: offset of first servo
-    /// \param _o1: offset of second servo
-    /// \param _o2: offset of third servo
-    /// \param _o3: offset of fourth servo
-    void offsets(float _o0, float _o1, float _o2, float _o3);
-
     /// Set servo speed
     /// \param _speed: desired speed for servos.
     void speed(float _speed);
@@ -44,6 +37,12 @@ class Arm4DoF{
     /// \return servo speed
     float speed();
 
+    /// Min and max values of joints in angles according to servo's specifications
+    void setMinMaxJoint(int _joint, float _min, float _max);
+
+    /// Offsets to fix minor displacements in joints due to alignment erros, and so on.
+    void offsetJoint(int _joint, float _val);
+    
     /// Set target joint coordinates
     /// \param _v0: desired angle for joint 0
     /// \param _v1: desired angle for joint 1
@@ -64,15 +63,23 @@ class Arm4DoF{
     /// Close gripper
     void closeGripper();
 
+    struct Pair{
+      float min = 0;
+      float max = 0;
+    };
   private:
     // Map from 0 to 1023 according to min and max angle
     int mapAngleToVal(float _minAngle, float _maxAngle, float _angle);
     
   private:
+    Pair *mJointMinMaxPairs;
+    int mNJoints = 5; // 666 Customizable?
+
+    float* mJointOffsets;
+    
     SCServo mServosInterface;
     int mId = 0;
-    float mOffset0=90, mOffset1=90, mOffset2=90, mOffset3=90;
-    float mSpeed=1000;
+    float mSpeed=400;
     int mFlagClose = 0;
 
     unsigned long mTimeClose1, mTimeClose2, mTimeOpen1, mTimeOpen2 = 0;

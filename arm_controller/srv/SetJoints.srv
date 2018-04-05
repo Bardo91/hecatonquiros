@@ -1,0 +1,3 @@
+sensor_msgs/JointState inJoints
+---
+sensor_msgs/JointState outJoints

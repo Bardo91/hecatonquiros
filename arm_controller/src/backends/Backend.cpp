@@ -20,9 +20,10 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#include <arm_controller/backends/Backend.h>
-#include <arm_controller/backends/BackendArduino.h>
-#include <arm_controller/backends/BackendGazebo.h>
+#include <hecatonquiros/backends/Backend.h>
+#include <hecatonquiros/backends/BackendArduino.h>
+#include <hecatonquiros/backends/BackendGazebo.h>
+#include <hecatonquiros/backends/BackendFeetech.h>
 
 
 namespace hecatonquiros{
@@ -34,6 +35,9 @@ namespace hecatonquiros{
             break;
         case Backend::Config::eType::Gazebo:
             bd = new BackendGazebo();
+            break;
+        case Backend::Config::eType::Feetech:
+            bd = new BackendFeetech();
             break;
         case Backend::Config::eType::Dummy:
             bd = new BackendDummy();

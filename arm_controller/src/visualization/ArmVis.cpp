@@ -21,7 +21,8 @@
 
 #ifdef ENABLE_PCL
 
-#include <arm_controller/visualization/ArmVis.h>
+#include <hecatonquiros/visualization/ArmVis.h>
+
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
