@@ -1,0 +1,1684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="aeroarms" xmlns:xacro="http://www.ros.org/wiki/xacro">
+   <!-- BASE -->
+
+
+   <!--///////////////////////////////////LEFT ARM//////////////////////////////////-->
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass" value="0.5" /> <!-- arbitrary value for mass -->
+  <xacro:property name="width" value="0.1" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="height1" value="2" /> <!-- Link 1 -->
+  <xacro:property name="height2" value="1" /> <!-- Link 2 -->
+  <xacro:property name="height3" value="1" /> <!-- Link 3 -->
+  <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
+  <xacro:property name="axel_offset" value="0.05" /> <!-- Space btw top of beam and the each joint -->
+
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/aeroarms</robotNamespace>
+    </plugin>
+  </gazebo>
+
+
+   <link name="base_link">
+      <visual>
+         <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+   </link>
+   <!-- Joint 0 -->
+    <link name="left/arm_0_attachment">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_0_attachment.stl" />
+         </geometry>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+
+          <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_0_attachment_joint" type="fixed">
+      <parent link="base_link" />
+      <child link="left/arm_0_attachment" />
+      <origin rpy="0 0 0" xyz="0 0.1 -0.1" />
+   </joint>
+
+<link name="left/arm_0_top">
+       <visual>
+          <geometry>
+             <mesh filename="package://arm_description/meshes/new_meshes/arm_0_top.stl"  />
+          </geometry>
+          <origin rpy="0 0 ${-pi/2}" xyz="0 0 0" />
+       </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+    </link>
+    <joint name="left/arm_0_top_joint" type="fixed">
+       <parent link="left/arm_0_attachment" />
+       <child link="left/arm_0_top" />
+       <origin rpy="0 0 0" xyz="0 0 -0.03" />
+    </joint>
+
+    <link name="left/arm_0_bottom_top_lock">
+       <visual>
+          <geometry>
+             <mesh filename="package://arm_description/meshes/new_meshes/arm_0_bottom_top_lock.stl"  />
+          </geometry>
+       </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+    </link>
+    <joint name="left/arm_0_bottom_top_lock_joint" type="fixed">
+       <parent link="left/arm_0_top" />
+       <child link="left/arm_0_bottom_top_lock" />
+       <origin rpy="0 0 0" xyz="0 0 0" />
+    </joint>
+
+
+   <link name="left/arm_0_bottom">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_0_bottom.stl"  />
+         </geometry>
+         <origin rpy="0 ${pi/2} 0" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_0_bottom_joint" type="continuous">
+      <parent link="left/arm_0_bottom_top_lock" />
+      <child link="left/arm_0_bottom" />
+      <origin rpy="0 ${-pi/2} ${-pi/2}" xyz="0 0 -0.005" />
+   </joint>
+
+    <link name="left/arm_0_bottom_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_0_bottom_case.stl"  />
+         </geometry>
+         <origin rpy="0 ${-pi/2} ${pi}" xyz="-0.015 0.0345 -0.025" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_0_bottom_case_joint" type="fixed">
+      <parent link="left/arm_0_bottom" />
+      <child link="left/arm_0_bottom_case" />
+      <origin rpy="0 0 0" xyz="-0.017 0 0" />
+   </joint>
+
+   
+   <link name="left/arm_1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_1.stl"  />
+         </geometry>
+         <origin rpy="0 0 ${pi}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_1_joint" type="continuous">
+      <parent link="left/arm_0_bottom_case" />
+      <child link="left/arm_1" />
+      <origin xyz="0 0 0" rpy="0 ${3*pi/2} 0" />
+   </joint>
+
+
+ <link name="left/arm_1_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_1_case.stl"  />
+         </geometry>
+         <origin rpy="${pi/2} 0 0" xyz="-0.02 -0.01 -0.035" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_1_case_joint" type="fixed">
+      <parent link="left/arm_1" />
+      <child link="left/arm_1_case" />
+      <origin xyz="0 0 0.145" rpy="0 0 0" />
+   </joint>
+   
+   
+   <link name="left/arm_2_microservo">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_2_microservo.stl" />
+         </geometry>
+         <origin rpy="0 0 ${pi}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_2_microservo_joint" type="continuous">
+      <parent link="left/arm_1_case" />
+      <child link="left/arm_2_microservo" />
+      <origin xyz="0 0 0.0085" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/arm_2_microservo_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_2_microservo_case.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.027 -0.006 0" />
+      </visual>
+
+
+          <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+   </link>
+   <joint name="left/arm_2_microservo_case_joint" type="fixed">
+      <parent link="left/arm_2_microservo" />
+      <child link="left/arm_2_microservo_case" />
+      <origin xyz="0 0 0.057" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/arm_2_case_bearing">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_2_case_bearing.stl" />
+         </geometry>
+         <origin rpy="${pi/2} ${pi} ${pi/2}" xyz="0.027 -0.013 0.01" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/arm_2_case_bearing_joint" type="fixed">
+      <parent link="left/arm_2_microservo_case" />
+      <child link="left/arm_2_case_bearing" />
+      <origin xyz="0 0 0.072" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/end_effector_connector">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/end_effector_connector.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 -0.09" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/end_effector_connector_joint" type="fixed">
+      <parent link="left/arm_2_case_bearing" />
+      <child link="left/end_effector_connector" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+
+
+<link name="left/core_structure">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/core_structure.stl" />
+         </geometry>
+         <origin rpy="0 0 ${pi/2}" xyz="0.01 -0.01 0.018" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/core_structure_joint" type="fixed">
+      <parent link="left/end_effector_connector" />
+      <child link="left/core_structure" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+   <link name="left/base_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/base_gripper.stl" />
+         </geometry>
+         <origin rpy="0 0 ${-pi/2}" xyz="-0.02 0.0098 0.0171" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/base_gripper_joint" type="continuous">
+      <parent link="left/core_structure" />
+      <child link="left/base_gripper" />
+      <origin xyz="0 0 0.041" rpy="0 0 ${-pi/2}"/>
+   </joint>
+
+
+<link name="left/microservo_FT">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/microservo_FT.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.0061 -0.032 0.008" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/microservo_FT_joint" type="fixed">
+      <parent link="left/base_gripper" />
+      <child link="left/microservo_FT" />
+      <origin xyz="0 0 0.057" rpy="${pi/2} 0 ${pi/2}"/>
+   </joint>
+
+<link name="left/ScrewActuatorGripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripper.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.001 0 -0.0045" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/ScrewActuatorGripper_joint" type="fixed">
+      <parent link="left/microservo_FT" />
+      <child link="left/ScrewActuatorGripper" />
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
+   </joint>
+
+<link name="left/base_gripper_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/base_gripper_case.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi}" xyz="-0.0145 0.02 0.004" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/base_gripper_case_joint" type="fixed">
+      <parent link="left/ScrewActuatorGripper" />
+      <child link="left/base_gripper_case" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+   <link name="left/ScrewActuatorGripperCenter">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripperCenter.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="-0.01 0.01 0.018" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/ScrewActuatorGripperCenter_joint" type="fixed">
+      <parent link="left/ScrewActuatorGripper" />
+      <child link="left/ScrewActuatorGripperCenter" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+
+
+<link name="left/holdBar_left">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/holdBar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.017 0.02" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/holdBar_left_joint" type="fixed">
+      <parent link="left/base_gripper" />
+      <child link="left/holdBar_left" />
+      <origin xyz="0 -0.02 0.057" rpy="0 0 0"/>
+   </joint>
+
+   <link name="left/holdBar_right">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/holdBar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${-pi/2}" xyz="0.005 0.017 0.02" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/holdBar_right_joint" type="fixed">
+      <parent link="left/base_gripper" />
+      <child link="left/holdBar_right" />
+      <origin xyz="0 0.02 0.057" rpy="0 0 0"/>
+   </joint>
+
+
+   <link name="left/left_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/left_bar1_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar1" />
+      <origin xyz="0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="left/left_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/left_bar2_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar2" />
+      <origin xyz="0.005 -0.022 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/left_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/left_bar3_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar3" />
+      <origin xyz="-0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/left_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/left_bar4_joint" type="fixed">
+      <parent link="left/holdBar_left" />
+      <child link="left/left_bar4" />
+      <origin xyz="-0.005 -0.022 0.0265" rpy="0 0 0"/>
+</joint>
+
+<link name="left/right_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/right_bar1_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar1" />
+      <origin xyz="0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/right_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/right_bar2_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar2" />
+      <origin xyz="0.005 0.022 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="left/right_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/right_bar3_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar3" />
+      <origin xyz="-0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/right_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/right_bar4_joint" type="fixed">
+      <parent link="left/holdBar_right" />
+      <child link="left/right_bar4" />
+      <origin xyz="-0.005 0.022 0.0265" rpy="0 0 0"/>
+</joint>     
+
+
+<link name="left/left_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/left_barMini_joint" type="fixed">
+      <parent link="left/left_bar1" />
+      <child link="left/left_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint> 
+
+<link name="left/right_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} -2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/right_barMini_joint" type="fixed">
+      <parent link="left/right_bar1" />
+      <child link="left/right_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint>
+
+<link name="left/left_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.005 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/left_gripper_joint" type="continuous">
+      <parent link="left/left_barMini" />
+      <child link="left/left_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+</joint> 
+
+
+<link name="left/right_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="-0.005 -0.005 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="left/right_gripper_joint" type="continuous">
+      <parent link="left/right_barMini" />
+      <child link="left/right_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 ${pi}"/>
+</joint>
+  
+<!--RIGHT ARMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM-->
+
+
+<link name="right/arm_0_attachment">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_0_attachment.stl" />
+         </geometry>
+          <origin rpy="0 0 0" xyz="0 0 0" />
+      </visual>
+
+          <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_0_attachment_joint" type="fixed">
+      <parent link="base_link" />
+      <child link="right/arm_0_attachment" />
+      <origin rpy="0 0 0" xyz="0 -0.1 -0.1" />
+   </joint>
+
+<link name="right/arm_0_top">
+       <visual>
+          <geometry>
+             <mesh filename="package://arm_description/meshes/new_meshes/arm_0_top.stl"  />
+          </geometry>
+          <origin rpy="0 0 ${-pi/2}" xyz="0 0 0" />
+       </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+    </link>
+    <joint name="right/arm_0_top_joint" type="fixed">
+       <parent link="right/arm_0_attachment" />
+       <child link="right/arm_0_top" />
+       <origin rpy="0 0 0" xyz="0 0 -0.03" />
+    </joint>
+
+    <link name="right/arm_0_bottom_top_lock">
+       <visual>
+          <geometry>
+             <mesh filename="package://arm_description/meshes/new_meshes/arm_0_bottom_top_lock.stl"  />
+          </geometry>
+       </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+    </link>
+    <joint name="right/arm_0_bottom_top_lock_joint" type="fixed">
+       <parent link="right/arm_0_top" />
+       <child link="right/arm_0_bottom_top_lock" />
+       <origin rpy="0 0 0" xyz="0 0 0" />
+    </joint>
+
+
+   <link name="right/arm_0_bottom">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_0_bottom.stl"  />
+         </geometry>
+         <origin rpy="0 ${pi/2} 0" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_0_bottom_joint" type="continuous">
+      <parent link="right/arm_0_bottom_top_lock" />
+      <child link="right/arm_0_bottom" />
+      <origin rpy="0 ${-pi/2} ${-pi/2}" xyz="0 0 -0.005" />
+   </joint>
+
+    <link name="right/arm_0_bottom_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_0_bottom_case.stl"  />
+         </geometry>
+         <origin rpy="0 ${-pi/2} ${pi}" xyz="-0.015 0.0345 -0.025" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_0_bottom_case_joint" type="fixed">
+      <parent link="right/arm_0_bottom" />
+      <child link="right/arm_0_bottom_case" />
+      <origin rpy="0 0 0" xyz="-0.017 0 0" />
+   </joint>
+
+   
+   <link name="right/arm_1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_1.stl"  />
+         </geometry>
+         <origin rpy="0 0 ${pi}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_1_joint" type="continuous">
+      <parent link="right/arm_0_bottom_case" />
+      <child link="right/arm_1" />
+      <origin xyz="0 0 0" rpy="0 ${3*pi/2} 0" />
+   </joint>
+
+
+ <link name="right/arm_1_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_1_case.stl"  />
+         </geometry>
+         <origin rpy="${pi/2} 0 0" xyz="-0.02 -0.01 -0.035" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_1_case_joint" type="fixed">
+      <parent link="right/arm_1" />
+      <child link="right/arm_1_case" />
+      <origin xyz="0 0 0.145" rpy="0 0 0" />
+   </joint>
+   
+   
+   <link name="right/arm_2_microservo">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_2_microservo.stl" />
+         </geometry>
+         <origin rpy="0 0 ${pi}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_2_microservo_joint" type="continuous">
+      <parent link="right/arm_1_case" />
+      <child link="right/arm_2_microservo" />
+      <origin xyz="0 0 0.0085" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/arm_2_microservo_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_2_microservo_case.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.027 -0.006 0" />
+      </visual>
+
+
+          <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+   </link>
+   <joint name="right/arm_2_microservo_case_joint" type="fixed">
+      <parent link="right/arm_2_microservo" />
+      <child link="right/arm_2_microservo_case" />
+      <origin xyz="0 0 0.057" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/arm_2_case_bearing">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/arm_2_case_bearing.stl" />
+         </geometry>
+         <origin rpy="${pi/2} ${pi} ${pi/2}" xyz="0.027 -0.013 0.01" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/arm_2_case_bearing_joint" type="fixed">
+      <parent link="right/arm_2_microservo_case" />
+      <child link="right/arm_2_case_bearing" />
+      <origin xyz="0 0 0.072" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/end_effector_connector">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/end_effector_connector.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0 0 -0.09" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/end_effector_connector_joint" type="fixed">
+      <parent link="right/arm_2_case_bearing" />
+      <child link="right/end_effector_connector" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+
+
+<link name="right/core_structure">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/core_structure.stl" />
+         </geometry>
+         <origin rpy="0 0 ${pi/2}" xyz="0.01 -0.01 0.018" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/core_structure_joint" type="fixed">
+      <parent link="right/end_effector_connector" />
+      <child link="right/core_structure" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+   <link name="right/base_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/base_gripper.stl" />
+         </geometry>
+         <origin rpy="0 0 ${-pi/2}" xyz="-0.02 0.0098 0.0171" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/base_gripper_joint" type="continuous">
+      <parent link="right/core_structure" />
+      <child link="right/base_gripper" />
+      <origin xyz="0 0 0.041" rpy="0 0 ${-pi/2}"/>
+   </joint>
+
+
+<link name="right/microservo_FT">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/microservo_FT.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.0061 -0.032 0.008" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/microservo_FT_joint" type="fixed">
+      <parent link="right/base_gripper" />
+      <child link="right/microservo_FT" />
+      <origin xyz="0 0 0.057" rpy="${pi/2} 0 ${pi/2}"/>
+   </joint>
+
+<link name="right/ScrewActuatorGripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripper.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="0.001 0 -0.0045" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/ScrewActuatorGripper_joint" type="fixed">
+      <parent link="right/microservo_FT" />
+      <child link="right/ScrewActuatorGripper" />
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 0"/>
+   </joint>
+
+<link name="right/base_gripper_case">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/base_gripper_case.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi}" xyz="-0.0145 0.02 0.004" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/base_gripper_case_joint" type="fixed">
+      <parent link="right/ScrewActuatorGripper" />
+      <child link="right/base_gripper_case" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+   <link name="right/ScrewActuatorGripperCenter">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/ScrewActuatorGripperCenter.stl" />
+         </geometry>
+         <origin rpy="0 0 0" xyz="-0.01 0.01 0.018" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/ScrewActuatorGripperCenter_joint" type="fixed">
+      <parent link="right/ScrewActuatorGripper" />
+      <child link="right/ScrewActuatorGripperCenter" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint>
+
+
+
+<link name="right/holdBar_left">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/holdBar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.017 0.02" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/holdBar_left_joint" type="fixed">
+      <parent link="right/base_gripper" />
+      <child link="right/holdBar_left" />
+      <origin xyz="0 -0.02 0.057" rpy="0 0 0"/>
+   </joint>
+
+   <link name="right/holdBar_right">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/holdBar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${-pi/2}" xyz="0.005 0.017 0.02" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/holdBar_right_joint" type="fixed">
+      <parent link="right/base_gripper" />
+      <child link="right/holdBar_right" />
+      <origin xyz="0 0.02 0.057" rpy="0 0 0"/>
+   </joint>
+
+
+   <link name="right/left_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/left_bar1_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar1" />
+      <origin xyz="0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="right/left_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/left_bar2_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar2" />
+      <origin xyz="0.005 -0.022 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/left_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/left_bar3_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar3" />
+      <origin xyz="-0.005 -0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/left_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/left_bar4_joint" type="fixed">
+      <parent link="right/holdBar_left" />
+      <child link="right/left_bar4" />
+      <origin xyz="-0.005 -0.022 0.0265" rpy="0 0 0"/>
+</joint>
+
+<link name="right/right_bar1">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/right_bar1_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar1" />
+      <origin xyz="0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/right_bar2">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/right_bar2_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar2" />
+      <origin xyz="0.005 0.022 0.0265" rpy="0 0 0"/>
+   </joint> 
+
+<link name="right/right_bar3">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/right_bar3_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar3" />
+      <origin xyz="-0.005 0.012 0.0265" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/right_bar4">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/bar.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/right_bar4_joint" type="fixed">
+      <parent link="right/holdBar_right" />
+      <child link="right/right_bar4" />
+      <origin xyz="-0.005 0.022 0.0265" rpy="0 0 0"/>
+</joint>     
+
+
+<link name="right/left_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/left_barMini_joint" type="fixed">
+      <parent link="right/left_bar1" />
+      <child link="right/left_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint> 
+
+<link name="right/right_barMini">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/barMini.stl" />
+         </geometry>
+         <origin rpy="${pi/2} -2.2 ${pi/2}" xyz="0 0 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/right_barMini_joint" type="fixed">
+      <parent link="right/right_bar1" />
+      <child link="right/right_barMini" />
+      <origin xyz="-0.0043 0 0.0155" rpy="0 0 0"/>
+   </joint>
+
+<link name="right/left_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="0 -0.005 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/left_gripper_joint" type="continuous">
+      <parent link="right/left_barMini" />
+      <child link="right/left_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 0"/>
+</joint> 
+
+
+<link name="right/right_gripper">
+      <visual>
+         <geometry>
+            <mesh filename="package://arm_description/meshes/new_meshes/gripper/gripper.stl" />
+         </geometry>
+         <origin rpy="${pi/2} 0 ${pi/2}" xyz="-0.005 -0.005 0" />
+      </visual>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0" />
+      <mass value="${mass}"/>
+      <inertia
+	  ixx="${mass / 12.0 * (width*width + height1*height1)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass / 12.0 * (height1*height1 + width*width)}" iyz="0.0"
+	  izz="${mass / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+
+   </link>
+   <joint name="right/right_gripper_joint" type="continuous">
+      <parent link="right/right_barMini" />
+      <child link="right/right_gripper" />
+      <origin xyz="0 0 0.025" rpy="0 0 ${pi}"/>
+</joint>
+
+
+
+<transmission name="tran_left/arm_0_bottom_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left/arm_0_bottom_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_left/arm_0_bottom_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_left/arm_1_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left/arm_1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_left/arm_1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+ <transmission name="tran_left/arm_2_microservo_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left/arm_2_microservo_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_left/arm_2_microservo_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+   <transmission name="tran_left/base_gripper_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left/base_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_left/base_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+   <transmission name="tran_left/left_gripper_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left/left_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_left/left_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+   <transmission name="tran_left/right_gripper_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="left/right_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_left/right_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+<!--Right arm-->
+
+<transmission name="tran_right/arm_0_bottom_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right/arm_0_bottom_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_right/arm_0_bottom_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="tran_right/arm_1_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right/arm_1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_right/arm_1_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+ <transmission name="tran_right/arm_2_microservo_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right/arm_2_microservo_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_right/arm_2_microservo_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+   <transmission name="tran_right/base_gripper_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right/base_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_right/base_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+   <transmission name="tran_right/left_gripper_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right/left_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_right/left_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+   <transmission name="tran_right/right_gripper_joint">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="right/right_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_right/right_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+
+
+</robot>
