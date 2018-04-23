@@ -72,6 +72,12 @@ catkin_package(
 	INCLUDE_DIRS ./include
 	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
 )
+## Load Eigen
+find_package(Eigen3 REQUIRED)
+if(${Eigen3_FOUND})
+	MESSAGE( STATUS "Eigen FOUND")
+endif()
+
 
 ## Load PCL
 find_package(PCL QUIET)
@@ -111,6 +117,8 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${SERIAL_LIBRARIES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${catkin_LIBRARIES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC "/usr/include/eigen3")
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 

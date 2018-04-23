@@ -92,7 +92,7 @@ namespace hecatonquiros{
         }else if(_action == 1){
             if(mServoDriver->isConnected()){
                 std::cout << "Stop claw!" << std::endl;
-                int pos = servoDriver->ReadPos(mArmId*10 + 7);
+                int pos = mServoDriver->ReadPos(mArmId*10 + 7);
                 mServoDriver->WritePos(mArmId*10 + 7, pos, mSpeed);
                 return true;
             }else{
