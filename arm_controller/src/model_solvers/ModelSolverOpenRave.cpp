@@ -210,8 +210,6 @@ namespace hecatonquiros{
                 return false;
             }
 
-            std::cout << "Getting ready for computing IK" << std::endl;
-
             OpenRAVE::IkParameterization ikParam;
             if(_type == IK_TYPE::IK_3D){
                 ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
@@ -227,11 +225,14 @@ namespace hecatonquiros{
                 mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
             }else if (_type == IK_TYPE::IK_6D){
                 RaveTransformMatrix<float> matT;
-                for(unsigned i = 0; i < 4; i++){
-                    for(unsigned j = 0; j < 4; j++){
-                        matT.m[j*4 + i] = _pose(i,j);
-                    }
-                }
+                
+                matT.rotfrommat(_pose(0,0), _pose(0,1), _pose(0,2),
+                                _pose(1,0), _pose(1,1), _pose(1,2),
+                                _pose(2,0), _pose(2,1), _pose(2,2));
+                
+                matT.trans.x = matT.m[3] = _pose(0,3);
+                matT.trans.y = matT.m[7] = _pose(1,3);
+                matT.trans.z = matT.m[11] = _pose(2,3);
 
                 OpenRAVE::Transform T(matT);
                 ikParam.SetTransform6D(T);
@@ -241,7 +242,6 @@ namespace hecatonquiros{
 
             std::vector<dReal> vsolution;
             if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
-                std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
                     _joints[i] = vsolution[i];
@@ -249,8 +249,6 @@ namespace hecatonquiros{
                 return true;
             }
             else {
-                std::cout << "NOT FOUND SOLUTION" << std::endl;
-                // could fail due to collisions, etc
                 return false;
             }
         #else
@@ -314,11 +312,14 @@ namespace hecatonquiros{
                 mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
             }else if (_type == IK_TYPE::IK_6D){
                 RaveTransformMatrix<float> matT;
-                for(unsigned i = 0; i < 4; i++){
-                    for(unsigned j = 0; j < 4; j++){
-                        matT.m[j*4 + i] = _pose(i,j);
-                    }
-                }
+                
+                matT.rotfrommat(_pose(0,0), _pose(0,1), _pose(0,2),
+                                _pose(1,0), _pose(1,1), _pose(1,2),
+                                _pose(2,0), _pose(2,1), _pose(2,2));
+                
+                matT.trans.x = matT.m[3] = _pose(0,3);
+                matT.trans.y = matT.m[7] = _pose(1,3);
+                matT.trans.z = matT.m[11] = _pose(2,3);
 
                 OpenRAVE::Transform T(matT);
                 ikParam.SetTransform6D(T);
@@ -396,6 +397,13 @@ namespace hecatonquiros{
         #endif
 
     }
+
+
+    #ifdef HAS_OPENRAVE
+        OpenRAVE::RobotBasePtr ModelSolverOpenRave::robot(){
+            return mEnvironment->GetRobot(mConfig.robotName);
+        }
+    #endif
 
     #ifdef HAS_OPENRAVE
         //-----------------------------------------------------------------------------------------------------------------
