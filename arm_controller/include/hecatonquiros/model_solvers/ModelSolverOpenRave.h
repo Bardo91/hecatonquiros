@@ -66,6 +66,10 @@ namespace hecatonquiros{
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
 
     #ifdef HAS_OPENRAVE
+        OpenRAVE::RobotBasePtr robot();
+    #endif
+
+    #ifdef HAS_OPENRAVE
     public: // Specific interface for OpenRave access
         /// Get copy of environment
         static OpenRAVE::EnvironmentBasePtr cloneEnvironment();

@@ -398,6 +398,13 @@ namespace hecatonquiros{
 
     }
 
+
+    #ifdef HAS_OPENRAVE
+        OpenRAVE::RobotBasePtr ModelSolverOpenRave::robot(){
+            return mEnvironment->GetRobot(mConfig.robotName);
+        }
+    #endif
+
     #ifdef HAS_OPENRAVE
         //-----------------------------------------------------------------------------------------------------------------
         OpenRAVE::EnvironmentBasePtr ModelSolverOpenRave::cloneEnvironment(){
