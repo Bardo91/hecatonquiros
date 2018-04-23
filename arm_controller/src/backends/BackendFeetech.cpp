@@ -80,7 +80,39 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::claw(const int _action){
-        return false;
+        if(_action == 0){
+            if(mServoDriver->isConnected()){
+                std::cout << "Close claw!" << std::endl;
+                mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
+                return true;
+            }else{
+                std::cout << "ServoDriver not connected!" << std::endl;
+                return false;
+            }
+        }else if(_action == 1){
+            if(mServoDriver->isConnected()){
+                std::cout << "Stop claw!" << std::endl;
+                int pos = servoDriver->ReadPos(mArmId*10 + 7);
+                mServoDriver->WritePos(mArmId*10 + 7, pos, mSpeed);
+                return true;
+            }else{
+                std::cout << "ServoDriver not connected!" << std::endl;
+                return false;
+            }
+        }else if(_action == 2){
+            if(mServoDriver->isConnected()){
+                std::cout << "Open claw!" << std::endl;
+                mServoDriver->WritePos(mArmId*10 + 7, 1023, mSpeed);
+                return true;
+            }else{
+                std::cout << "ServoDriver not connected!" << std::endl;
+                return false;
+            }
+        }else{
+            std::cout << "Unrecognized command!" << std::endl;
+            return false;
+        }
+        
     }
 
     //-----------------------------------------------------------------------------------------------------------------
