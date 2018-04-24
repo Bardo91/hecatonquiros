@@ -124,6 +124,7 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_gene
 
 
 if(${OpenRAVE_FOUND})
+	MESSAGE(STATUS "OpenRAVE FOUND")
 	target_include_directories(${PROJECT_NAME} PUBLIC ${OpenRAVE_INCLUDE_DIRS})
 	target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenRAVE_CORE_LIBRARIES})
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXX_FLAGS}")

@@ -2,7 +2,7 @@
     <!--wirst_1-->
     <Body name="wirst_1" type="dynamic">
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/attachment.stl</render>
+            <render>../model/gripper3dof/attachment.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -12,7 +12,7 @@
         <Translation>0 0 0.115</Translation>
         <rotationaxis>0 1 0 -90</rotationaxis>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/middle_joint.stl</render>
+            <render>../model/gripper3dof/middle_joint.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -31,7 +31,7 @@
         <rotationaxis>0 1 0 90</rotationaxis>
         <Translation>0.04 0 0 </Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/gripper3dof/base_gripper.stl</render>
+            <render>../model/gripper3dof/base_gripper.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
