@@ -83,8 +83,9 @@ namespace hecatonquiros{
         float   mHome1 = 0*M_PI/180.0,
                 mHome2 = 0*M_PI/180.0,
                 mHome3 = 90*M_PI/180.0,
-                mHome4 = 0*M_PI/180.0,
-                mHome5 = 0*M_PI/180.0;
+                mHome4 = -90*M_PI/180.0,
+                mHome5 = 0*M_PI/180.0,
+                mHome6 = 0*M_PI/180.0;
 
         int mArmId = 1;
     };
