@@ -22,6 +22,7 @@
 
 #include <serial/serial.h> 
 #include <hecatonquiros/backends/BackendFeetech.h>
+#include "hecatonquiros/third_party/tinyxml2.h"
 
 #include <iostream>
 #include <chrono>
@@ -29,8 +30,18 @@
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::init(const Config &_config){
-        changeValues(_config.valuesMinMax);
-        mOffsetJoints = _config.jointsOffsets;
+        if(_config.configXML != ""){
+            //std::cout << "Path Config XML " <<  _config.configXML << std::endl;
+            bool result = extractDataXML(_config.configXML);
+            if(result == false){
+                return false;
+            }
+
+        }else{
+            changeValues(_config.valuesMinMax);
+            mOffsetJoints = _config.jointsOffsets;
+        }
+        
         mSerialPort = _config.port;
         mArmId = _config.armId;
         mServoDriver =  new SCServo(mSerialPort);
@@ -122,6 +133,86 @@ namespace hecatonquiros{
             mMinMaxValues[i].second = _newvalues[i].second/180.0*M_PI;
         }
         return true;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::extractDataXML(std::string _pathXML){
+
+        tinyxml2::XMLDocument xml_doc;
+        //std::cout << "XML Path: " << _pathXML << std::endl; 
+        tinyxml2::XMLError resultXML = xml_doc.LoadFile(_pathXML.c_str());
+        if(resultXML != tinyxml2::XML_SUCCESS){ 
+            std::cout << "Error loading file" << std::endl; 
+            std::cout << resultXML << std::endl; 
+            return false;
+        }
+
+        std::vector<std::pair<float, float> > extractedValues;
+        std::vector<float> extractedOffsets;
+
+        tinyxml2::XMLNode* rootConfig = xml_doc.FirstChildElement("Config");
+        if(rootConfig == nullptr){
+            std::cout << "Error NO Config root" << std::endl; 
+            return false;
+        }
+        else{   
+            for (tinyxml2::XMLElement* childValues = rootConfig->FirstChildElement("MinMaxValues"); childValues != NULL; childValues = childValues->NextSiblingElement("MinMaxValues")){         
+                for(int i = 1; i < 7; i++ ){
+                    std::string childSearch = "Joint" + std::to_string(i) + "E1";
+                    tinyxml2::XMLElement* itemValues = childValues->FirstChildElement(childSearch.c_str());
+                    float valueJointE1;
+                    resultXML = itemValues->QueryFloatText(&valueJointE1);
+                    if(resultXML != tinyxml2::XML_SUCCESS){
+                        std::cout << "Error extracting value of Joint " << i << " E1" << std::endl;   
+                        return false;
+                    }
+                    else{
+                        childSearch = "Joint" + std::to_string(i) + "E2";
+                        itemValues = childValues->FirstChildElement(childSearch.c_str());
+                        float valueJointE2;
+                        resultXML = itemValues->QueryFloatText(&valueJointE2);
+                        if(resultXML != tinyxml2::XML_SUCCESS){
+                            std::cout << "Error extracting value of Joint " << i << " E2" << std::endl;
+                            return false;
+                        }
+                        else{
+                            extractedValues.push_back(std::make_pair( valueJointE1, valueJointE2));
+                        }
+                    }
+                }
+            }
+            for (tinyxml2::XMLElement* childOffsets = rootConfig->FirstChildElement("Offsets"); childOffsets != NULL; childOffsets = childOffsets->NextSiblingElement("Offsets")){  
+                for(int i = 1; i < 7; i++ ){
+                    std::string childSearch = "Joint" + std::to_string(i);
+                    tinyxml2::XMLElement* itemOffsets = childOffsets->FirstChildElement(childSearch.c_str());
+                    float valueJoint;
+                    resultXML = itemOffsets->QueryFloatText(&valueJoint);
+                    if(resultXML != tinyxml2::XML_SUCCESS){
+                        std::cout << "Error extracting value of Joint " << i << std::endl;   
+                        return false;
+                    }
+                    else{
+                        extractedOffsets.push_back(valueJoint);
+                        
+                    }
+                }   
+            }
+        }
+
+        changeValues(extractedValues);
+        mOffsetJoints = extractedOffsets;
+        
+        //std::cout << "MinMaxValues: " << std::endl;
+        //for(int i = 0; i < extractedValues.size(); i++){
+        //    std::cout << extractedValues[i].first << " | " << extractedValues[i].second << std::endl;
+        //}
+        //std::cout << "Offsets: " << std::endl;
+        //for(int i = 0; i < extractedOffsets.size(); i++){
+        //    std::cout << extractedOffsets[i] << std::endl;
+        //}
+
+        return true;
+        
     }
 
     //-----------------------------------------------------------------------------------------------------------------

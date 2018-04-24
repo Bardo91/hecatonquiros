@@ -56,6 +56,9 @@ namespace hecatonquiros{
             /// MinMaxValues for feetech servos
             std::vector<std::pair<float, float> > valuesMinMax;
 
+            /// File directory configuration of MinMaxValues and Offsets
+            std::string configXML = "";
+
         };
 
         static Backend* create(const Config &_config);
