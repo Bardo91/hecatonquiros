@@ -58,6 +58,11 @@ namespace hecatonquiros{
         /// Change MinMaxValues
         /// \param _newvalues: vector containing the MinMaxValues
         virtual bool changeValues(std::vector<std::pair<float, float> > _newvalues);
+
+        /// Extract MinMaxValues and Offsets from XML
+        /// \param _dir: dir of XML file
+        virtual bool extractDataXML(std::string _pathXML);
+
     private:
         std::string mSerialPort;
         int mArmId;
@@ -71,8 +76,6 @@ namespace hecatonquiros{
                                                                 {-135.0/180.0*M_PI, 135/180.0*M_PI},
                                                                 {-135.0/180.0*M_PI, 135/180.0*M_PI}};
         
-        std::vector<float> mOffsets = {};   /// 666 TODO: do it
-
         std::thread mLoadChecker;
         std::vector<int> mUsedJoints;
         std::vector<float> mOffsetJoints;

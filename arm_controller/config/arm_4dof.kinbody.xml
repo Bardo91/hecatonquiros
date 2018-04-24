@@ -1,7 +1,7 @@
 <KinBody name ="arm_gripper_5dof">
     <Body name="arm_0_attachment" type="dynamic">
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_attachment.stl</render>
+            <render>../model/arm4dof/arm_0_attachment.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -12,7 +12,7 @@
         <Translation>0 0 0.02</Translation>
         
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_top.stl</render>
+            <render>../model/arm4dof/arm_0_top.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -28,7 +28,7 @@
         <offsetfrom>arm_0_top</offsetfrom>
         <Translation>0 0.0 0.03</Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_0_bottom.stl</render>
+            <render>../model/arm4dof/arm_0_bottom.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -49,7 +49,7 @@
         <rotationaxis>0 1 0 -90</rotationaxis>
         <rotationaxis>0 0 1 180</rotationaxis>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_1.stl</render>
+            <render>../model/arm4dof/arm_1.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -66,7 +66,7 @@
         <offsetfrom>arm_1</offsetfrom>
         <Translation>0.148 0 0</Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/arm_2_microservo.stl</render>
+            <render>../model/arm4dof/arm_2_microservo.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
@@ -84,7 +84,7 @@
         <rotationaxis>0 1 0 90</rotationaxis>
         <Translation>0.06 0 0 </Translation>
         <Geom type="trimesh">
-            <render>/home/bardo91/programming/catkin_positioner/src/PositionerEndTool/hecatonquiros/arm_controller/model/arm4dof/end_effector_connector.stl</render>
+            <render>../model/arm4dof/end_effector_connector.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
