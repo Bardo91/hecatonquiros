@@ -26,8 +26,6 @@ endmacro()
 
 GroupSources(src)
 
-set(BUILD_TOOLS ON)
-
 #########################################
 ###### Loading 3rd party libraries.######
 #########################################
@@ -144,11 +142,5 @@ if(DOXYGEN_FOUND)
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	COMMENT "Generating API documentation with Doxygen" VERBATIM )
 endif(DOXYGEN_FOUND)
-
-### TESTS  AND  TOOLS
-if(${BUILD_TOOLS})
-	add_subdirectory(tools/arm_tester)
-	add_subdirectory(tools/calibration_feetech)
-endif(${BUILD_TOOLS})
 
 ### INSTALL TARGET
