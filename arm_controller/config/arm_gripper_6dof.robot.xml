@@ -5,6 +5,7 @@
     <kinbody>
         <body name="wirst_1">
             <offsetfrom>effector_connector</offsetfrom>
+       	    <rotationaxis>0 0 1 0</rotationaxis>
         </body>
         <joint name="dummyhand" type="hinge" enable="false">
             <offsetfrom>wirst_1</offsetfrom>

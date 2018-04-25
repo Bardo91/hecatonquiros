@@ -92,7 +92,7 @@
         <offsetfrom>effector_connector</offsetfrom>
         <body>arm_2</body>
         <body>effector_connector</body>
-        <Axis>0 0 1</Axis>
+        <Axis>0 0 -1</Axis>
         <limitsdeg>-110 110</limitsdeg>
     </joint>
 
