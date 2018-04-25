@@ -22,7 +22,7 @@
 
 #include <serial/serial.h> 
 #include <hecatonquiros/backends/BackendFeetech.h>
-#include "hecatonquiros/third_party/tinyxml2.h"
+#include <tinyxml2.h>
 
 #include <iostream>
 #include <chrono>

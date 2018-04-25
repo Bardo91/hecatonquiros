@@ -35,6 +35,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODUL
 ## Load serial
 find_package(Serial REQUIRED)
 
+## Load tinyxml2
+find_package(tinyxml2 REQUIRED)
+
 ## Load opencv
 find_package(OpenCV 3 REQUIRED)
 set_target_properties(${OpenCV_LIBS} PROPERTIES MAP_IMPORTED_CONFIG_RELWITHDEBINFO RELEASE)
@@ -117,6 +120,9 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${SERIAL_LIBRARIES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${catkin_LIBRARIES})
+
+#target_include_directories(${PROJECT_NAME} PUBLIC tinyxml2:tinyxml2)
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC tinyxml2)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "/usr/include/eigen3")
 

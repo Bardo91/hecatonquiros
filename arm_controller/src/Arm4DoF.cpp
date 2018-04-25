@@ -56,13 +56,15 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::joints(std::vector<float> _q) {
+    void Arm4DoF::joints(std::vector<float> _q, bool _actuateBackend) {
         if(mModelSolver != nullptr){
             mModelSolver->joints(_q);
         }
 
-        if(mBackend != nullptr){
-            mBackend->joints(_q);
+        if(_actuateBackend){
+            if(mBackend != nullptr){
+                mBackend->joints(_q);
+            }
         }
     }
 

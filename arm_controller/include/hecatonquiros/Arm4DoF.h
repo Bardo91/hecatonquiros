@@ -53,7 +53,7 @@ namespace hecatonquiros{
         }
 
         /// Joints in radians
-        void joints(std::vector<float>);
+        void joints(std::vector<float>, bool _actuateBackend = false);
         std::vector<float> joints() const;
 
         /// Position in cartesian coordinates (meters)
