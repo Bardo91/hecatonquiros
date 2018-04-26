@@ -84,8 +84,8 @@ int main(int _argc, char **_argv) {
 		backendConfig2.jointsOffsets = { 0,	0,	0, 0,	0,	0};
 		*/
 
-		backendConfig1.configXML = "src/Arm_tester/hecatonquiros/arm_controller/config/config_arm1.xml";
-		backendConfig2.configXML = "src/Arm_tester/hecatonquiros/arm_controller/config/config_arm2.xml";
+		backendConfig1.configXML = "src/hecatonquiros/arm_controller/config/config_arm2.xml";
+		backendConfig2.configXML = "src/hecatonquiros/arm_controller/config/config_arm1.xml";
 
 		backendConfig1.type = hecatonquiros::Backend::Config::eType::Feetech; backendConfig1.port = serialPort; backendConfig1.armId =1;
 		backendConfig2.type = hecatonquiros::Backend::Config::eType::Feetech; backendConfig2.port = serialPort; backendConfig2.armId =2;
@@ -206,7 +206,7 @@ int main(int _argc, char **_argv) {
 					std::vector<float> joints;
 					auto start = std::chrono::high_resolution_clock::now();
 					if(armInUse->checkIk(pose, joints, type)){
-						armInUse->joints(joints);
+						armInUse->joints(joints, true);
 					}else{
 						std::cout << "Not found IK" << std::endl;
 					}
@@ -230,7 +230,7 @@ int main(int _argc, char **_argv) {
 							* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*0.1, 	Eigen::Vector3f::UnitZ());
 						pose.block<3,3>(0,0) = m*pose.block<3,3>(0,0);
 						if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
-							armInUse->joints(joints);
+							armInUse->joints(joints, true);
 							std::cout << "Tries: " << counter << std::endl;
 							std::cout << incTrans << std::endl;
 							std::cout << m << std::endl;	
@@ -270,10 +270,10 @@ int main(int _argc, char **_argv) {
 						std::vector<float> joints;
 						std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 						if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
-							armInUse->joints(joints);
+							armInUse->joints(joints, true);
 						}else{
 							if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
-								armInUse->joints(joints);
+								armInUse->joints(joints, true);
 							}else{
 								std::cout << "Not found IK" << std::endl;
 							}
@@ -296,10 +296,10 @@ int main(int _argc, char **_argv) {
 						pose.block<3,1>(0,3) = circle_points[i];
 						std::vector<float>joints;
 						if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
-							armInUse->joints(joints);
+							armInUse->joints(joints, true);
 						}else{
 							if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
-								armInUse->joints(joints);
+								armInUse->joints(joints, true);
 							}else{
 								std::cout << "Not found IK" << std::endl;
 							}
@@ -319,7 +319,7 @@ int main(int _argc, char **_argv) {
 					std::cin >> joint;
 					
 					joints[n] = joint/180.0*M_PI;
-					armInUse->joints(joints);
+					armInUse->joints(joints, true);
 					break;
 				}
 				case 'J':
@@ -335,7 +335,7 @@ int main(int _argc, char **_argv) {
 						std::cin >> joint;
 						joints.push_back(joint/180.0*M_PI);
 					}
-					armInUse->joints(joints);
+					armInUse->joints(joints, true);
 					break;
 				}
 				case 'i':
@@ -377,7 +377,7 @@ int main(int _argc, char **_argv) {
 						std::vector<float> joints;
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 						if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
-							armInUse->joints(joints);
+							armInUse->joints(joints, true);
 						}else{
 							std::cout << "Not found IK" << std::endl;
 						}

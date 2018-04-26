@@ -47,7 +47,7 @@ namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
         std::vector<float> angles = {mHome1, mHome2, mHome3, mHome4, mHome5, mHome6};
-        joints(angles);
+        joints(angles, true);
 
         if(mModelSolver != nullptr){  /// 666 Just for visualizing transforms in joints in ModelSolverOpenRave
             std::vector<Eigen::Matrix4f> transforms;
