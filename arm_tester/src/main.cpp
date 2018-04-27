@@ -84,8 +84,8 @@ int main(int _argc, char **_argv) {
 		backendConfig2.jointsOffsets = { 0,	0,	0, 0,	0,	0};
 		*/
 
-		backendConfig1.configXML = "src/hecatonquiros/arm_controller/config/config_arm2.xml";
-		backendConfig2.configXML = "src/hecatonquiros/arm_controller/config/config_arm1.xml";
+		backendConfig1.configXML = "src/hecatonquiros/arm_controller/config/config_arm1.xml";
+		backendConfig2.configXML = "src/hecatonquiros/arm_controller/config/config_arm2.xml";
 
 		backendConfig1.type = hecatonquiros::Backend::Config::eType::Feetech; backendConfig1.port = serialPort; backendConfig1.armId =1;
 		backendConfig2.type = hecatonquiros::Backend::Config::eType::Feetech; backendConfig2.port = serialPort; backendConfig2.armId =2;
