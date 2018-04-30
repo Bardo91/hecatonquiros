@@ -22,7 +22,7 @@
 
 #include <serial/serial.h> 
 #include <hecatonquiros/backends/BackendFeetech.h>
-#include "hecatonquiros/third_party/tinyxml2.h"
+#include <tinyxml2.h>
 
 #include <iostream>
 #include <chrono>
@@ -94,7 +94,7 @@ namespace hecatonquiros{
         if(_action == 0){
             if(mServoDriver->isConnected()){
                 std::cout << "Close claw!" << std::endl;
-                mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
+                mServoDriver->WritePos(mArmId*10 + 7, 0, mSpeed);
                 return true;
             }else{
                 std::cout << "ServoDriver not connected!" << std::endl;

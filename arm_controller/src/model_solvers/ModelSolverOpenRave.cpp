@@ -437,11 +437,15 @@ namespace hecatonquiros{
             if(mInstance != nullptr){
                 auto object = mEnvironment->GetKinBody(_name);
                 RaveTransformMatrix<float> matT;
-                for(unsigned i = 0; i < 4; i++){
-                    for(unsigned j = 0; j < 4; j++){
-                        matT.m[j*4 + i] = _T(i,j);
+                for(unsigned i = 0; i < 3; i++){
+                    for(unsigned j = 0; j < 3; j++){
+                        matT.m[j*4 + i] = _T(j,i);
                     }
                 }
+                matT.trans.x = _T(0,3); matT.m[3] = _T(0,3);
+                matT.trans.y = _T(1,3); matT.m[7] = _T(1,3);
+                matT.trans.z = _T(2,3); matT.m[11] = _T(2,3);
+
 
                 OpenRAVE::Transform T(matT);
                 object->SetTransform(T);
