@@ -68,9 +68,16 @@ namespace hecatonquiros{
         /// Pose in cartesian coordinates (meters)
         bool checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D);
 
+        /// Actions for claw
         void closeClaw();
         void openClaw();
         void stopClaw();
+
+        /// Read position value joint
+        int readPos(int _joint);
+
+        /// Read load value joint
+        int readLoad(int _joint);
 
         bool isInit() const;
 

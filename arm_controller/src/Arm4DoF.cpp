@@ -166,4 +166,22 @@ namespace hecatonquiros{
     bool Arm4DoF::isInit() const{
         return mBackend != nullptr;
     }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    int Arm4DoF::readPos(int _joint){
+        if(mBackend != nullptr){
+            return mBackend->jointPos(_joint);
+        }else{
+            return 0;
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    int Arm4DoF::readLoad(int _joint){
+        if(mBackend != nullptr){
+            return mBackend->jointLoad(_joint);
+        }else{
+            return 0;
+        }
+    }
 }

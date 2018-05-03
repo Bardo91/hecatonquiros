@@ -136,6 +136,16 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::jointPos(const int _id){
+        return mServoDriver->ReadPos(mArmId*10 + _id + 1);
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::jointLoad(const int _id){
+        return mServoDriver->ReadLoadH(mArmId*10 + _id + 1);
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::extractDataXML(std::string _pathXML){
 
         tinyxml2::XMLDocument xml_doc;
