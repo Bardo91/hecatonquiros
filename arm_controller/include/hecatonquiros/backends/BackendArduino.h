@@ -43,6 +43,15 @@ namespace hecatonquiros{
         /// Method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action);
+
+        /// \brief abstract method for read position of a servo
+        /// \param _id: id joint to read
+        virtual int jointPos(const int _id);
+
+        /// \brief abstract method for read Load of a servo
+        /// \param _id: id joint to read
+        virtual int jointLoad(const int _id);
+
     private:
         // Initialize communication with the arduino with the given configuration.
         // \param _config: Configuration file. Either port and baudrate or sharedSerial port must be filled

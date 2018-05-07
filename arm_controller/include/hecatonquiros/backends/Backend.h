@@ -73,6 +73,14 @@ namespace hecatonquiros{
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action) = 0;
 
+        /// \brief abstract method for read position of a servo
+        /// \param _action: 0 close, 1 stop, 2 open;
+        virtual int jointPos(const int _id) = 0;
+
+        /// \brief abstract method for read Load of a servo
+        /// \param _action: 0 close, 1 stop, 2 open;
+        virtual int jointLoad(const int _id) = 0;
+
         /// \brief Request for particular information of the hardware.
         /// Each backend might have a different behaviour.
         /// \param _cmd: command sent to the backend for requesting something
@@ -88,6 +96,8 @@ namespace hecatonquiros{
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false){return true;}
         virtual bool joints(const std::vector<float> &_joints, bool _blocking = false){return true;}
         virtual bool claw(const int _action){return true;}
+        virtual int jointPos(const int _id){return 0;}
+        virtual int jointLoad(const int _id){return 0;}
     private:
         virtual bool init(const Config &_config){return true;}
     };
