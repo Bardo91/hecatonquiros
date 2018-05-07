@@ -454,6 +454,19 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    void ModelSolverOpenRave::setTransparencyObject(std::string _name, float _val){
+        #ifdef HAS_OPENRAVE
+            auto object = mEnvironment->GetKinBody(_name);
+            auto links = object->GetLinks();
+            for(auto&link : links){
+                for(auto &geo: link->GetGeometries()){
+                    geo->SetTransparency(_val);
+                }
+            }	
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     OpenRAVE::GraphHandlePtr ModelSolverOpenRave::drawLine(Eigen::Vector3f _init, Eigen::Vector3f _end, float _width, float _r, float  _g, float  _b, float  _a){
         #ifdef HAS_OPENRAVE
             return mEnvironment->drawarrow	(	RaveVector< float >(_init[0], _init[1], _init[2], 1),
