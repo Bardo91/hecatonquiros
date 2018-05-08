@@ -16,12 +16,12 @@
         <Joint6E2>143.960</Joint6E2>
     </MinMaxValues>
     <Offsets>
-        <Joint1>0</Joint1>
+        <Joint1>0.0</Joint1>
         <Joint2>0.087266463</Joint2>
         <Joint3>0.087266463</Joint3>
-        <Joint4>0.174532925</Joint4>
-        <Joint5>0.087266463</Joint5>
-        <Joint6>0</Joint6>
+        <Joint4>0.087266463</Joint4>
+        <Joint5>0.0</Joint5>
+        <Joint6>0.0</Joint6>
     </Offsets>
     
 </Config>
