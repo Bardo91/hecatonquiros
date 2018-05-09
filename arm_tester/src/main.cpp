@@ -155,6 +155,68 @@ int main(int _argc, char **_argv) {
 					std::cout << "home" <<std::endl;
 					armInUse->home();
 					break;
+				case 't':
+				{
+					bool finGetPoints = false;
+					std::vector<std::vector<float>> WayPoints;
+					while(!finGetPoints){
+						float x, y, z;
+						std::cout << "Enter new Point for trajectory" << std::endl;
+						std::cout << "X: ";
+						std::cin >> x;
+						std::cout << "Y: ";
+						std::cin >> y;
+						std::cout << "Z: ";
+						std::cin >> z;
+
+						std::vector<float> xyz = {x, y, z};
+						WayPoints.push_back(xyz);
+
+						std::cout << "Add more points? 1 -> to break: ";
+						bool fin;
+						std::cin >> fin;
+						if(fin){
+							finGetPoints = true;
+						}
+					}
+
+					std::vector<Eigen::Matrix4f> poses;
+        			for(int i = 0; i < WayPoints.size(); i++){
+        			    Eigen::Matrix4f pose;
+        			    pose = Eigen::Matrix4f::Identity();
+        			    pose(0,3) = WayPoints[i][0];
+        			    pose(1,3) = WayPoints[i][1];
+        			    pose(2,3) = WayPoints[i][2];
+						std::cout << "Save in POSES: " << pose(0,3) << " , " << pose(1,3) << " , " << pose(2,3) << std::endl;
+        			    poses.push_back(pose);
+        			}
+
+        			std::vector<std::vector<double>> jointsTraj;
+        			float timeTraj;
+        			if(armInUse->getSmoothTraj( poses, jointsTraj, timeTraj)){
+						std::cout << "Time Trajectory: " << timeTraj << std::endl;
+        			    for(int i = 0; i < jointsTraj.size(); i++){
+        			        std::vector<float> auxJoints;
+        			        for(auto &v:jointsTraj[i]){
+        			            auxJoints.push_back(v);
+        			        }
+						
+						std::cout << "auxJoints:"; 
+						for(int i = 0; i < auxJoints.size(); i++){
+							std::cout << "  " << auxJoints.at(i);
+						}
+						std::cout << std::endl;
+                		armInUse->joints(auxJoints, true);
+
+                		int timeToWait = (timeTraj/jointsTraj.size())*10000;
+                		std::this_thread::sleep_for(std::chrono::milliseconds(timeToWait));
+        			    }
+        			}
+        			else{
+        			    std::cout << "Error in Smooth Trajectory" << std::endl;
+        			}
+					break;
+				}
 				case 'p':
 				{
 					float x, y, z;

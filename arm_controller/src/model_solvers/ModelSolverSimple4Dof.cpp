@@ -55,7 +55,7 @@ namespace hecatonquiros{
             return Eigen::Matrix4f::Identity();
         }
     }
-
+    
     //-----------------------------------------------------------------------------------------------------------------
     bool ModelSolverSimple4Dof::checkIk(const Eigen::Matrix4f &_pose, std::vector<float> &_joints, IK_TYPE _type){
         _joints.resize(mJoints.size());

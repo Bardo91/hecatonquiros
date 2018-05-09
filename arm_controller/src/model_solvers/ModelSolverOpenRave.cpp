@@ -478,6 +478,62 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    bool ModelSolverOpenRave::getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){
+        #ifdef HAS_OPENRAVE
+            EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+
+            auto robot = mEnvironment->GetRobot(mConfig.robotName);
+            TrajectoryBasePtr trajectory = RaveCreateTrajectory(mEnvironment, "");
+            trajectory->Init(robot->GetActiveConfigurationSpecification());
+
+            hecatonquiros::ModelSolver::IK_TYPE type;
+            type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+
+            std::vector<std::vector<float>> joints;
+            //joints.resize(_pose.size());
+            for(int i = 0; i < _pose.size(); i++){
+                std::vector<float> auxJoint;
+                std::cout << "(getPointsTrajectory) Check Point: " << _pose[i](0,3) << " , " << _pose[i](1,3) << " , " << _pose[i](2,3) << std::endl;
+                if(checkIk(_pose[i], auxJoint, type)){
+                    joints.push_back(auxJoint);
+                }else{
+                    std::cout << "Not FOUND IK (getPointsTrajectory)" << std::endl;
+                }
+                
+            } 
+
+            for(int i = 0; i < joints.size(); i++){
+                std::vector<OpenRAVE::dReal> auxJoints;
+                for(auto &v:joints[i]){
+                    auxJoints.push_back(v);
+                }
+                trajectory->Insert(i, auxJoints, false);
+            }
+            
+            planningutils::SmoothActiveDOFTrajectory(trajectory, robot);
+
+            for(int i = 0; i < trajectory->GetNumWaypoints(); i++){
+                std::vector<double> traj;
+                trajectory->GetWaypoints(i, i+1, traj);
+
+                std::vector<double> auxTraj;
+                for(int j = 0; j < 4; j++){
+                    auxTraj.push_back(traj.at(j));
+
+                }
+                _traj.push_back( std::vector<double>() );
+                _traj[i].swap(auxTraj);
+            }
+
+
+
+            _time = trajectory->GetDuration();
+
+            return true;
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     bool ModelSolverOpenRave::initSingleton(bool _enableVis){
         #ifdef HAS_OPENRAVE
             if(mInstance == nullptr){

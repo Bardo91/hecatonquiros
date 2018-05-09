@@ -56,6 +56,12 @@ namespace hecatonquiros{
         /// Five end effector pose given joints without moving the arm
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints){return Eigen::Matrix4f::Identity(); };
+
+        /// Get the points of the desired trajectory
+        /// \param _pose: desired points that the trajectory must have
+        /// \param _traj: list of possible solutions joints for given poses
+        /// \param _time: total time of the trajectory
+        virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){return false; }
     protected:
         virtual bool init(const ModelSolver::Config &_config) { return false;}
 

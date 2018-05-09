@@ -27,10 +27,13 @@
 
 #ifdef HAS_OPENRAVE
     #include <openrave-core.h>
+    #include <openrave/planningutils.h>
 #endif
 
 #include <string>
 #include <thread>
+#include <vector>
+#include <iostream>
 
 namespace hecatonquiros{
     class ModelSolverOpenRave: public ModelSolver{
@@ -65,10 +68,16 @@ namespace hecatonquiros{
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
 
+        /// Get the points of the desired trajectory
+        /// \param _pose: desired points that the trajectory must have
+        /// \param _traj: list of possible solutions joints for given poses
+        /// \param _time: total time of the trajectory
+        virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time);
+
     #ifdef HAS_OPENRAVE
         OpenRAVE::RobotBasePtr robot();
     #endif
-
+    
     #ifdef HAS_OPENRAVE
     public: // Specific interface for OpenRave access
         /// Get copy of environment
