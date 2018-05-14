@@ -68,7 +68,6 @@ namespace hecatonquiros{
         #endif         
     }
 
-
     //-----------------------------------------------------------------------------------------------------------------
     std::vector<float> ModelSolverRos::joints() const{
         #ifdef HAS_ROS

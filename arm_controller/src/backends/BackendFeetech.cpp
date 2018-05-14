@@ -46,17 +46,17 @@ namespace hecatonquiros{
         mArmId = _config.armId;
         mServoDriver =  new SCServo(mSerialPort);
         if(mServoDriver->isConnected()){
-            mLoadChecker = std::thread([&](){
-                while(mServoDriver->isConnected()){
-                    //for(auto &id:mUsedJoints){
-                    //    int load = mServoDriver->ReadLoadH(mArmId*10 + id + 1);
-                    //    if(load > 200)
-                    //        std::cout << "WARNING: Load of servo " << mArmId*10 + id + 1 << " is " << load <<std::endl;
-                    //    // 666 TODO do something with it;
-                    //}
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                }
-            });
+            //mLoadChecker = std::thread([&](){
+            //    while(mServoDriver->isConnected()){
+            //        //for(auto &id:mUsedJoints){
+            //        //    int load = mServoDriver->ReadLoadH(mArmId*10 + id + 1);
+            //        //    if(load > 200)
+            //        //        std::cout << "WARNING: Load of servo " << mArmId*10 + id + 1 << " is " << load <<std::endl;
+            //        //    // 666 TODO do something with it;
+            //        //}
+            //        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            //    }
+            //});
             return true;
         }else{
             return false;
@@ -136,6 +136,16 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::jointPos(const int _id){
+        return mServoDriver->ReadPos(mArmId*10 + _id + 1);
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::jointLoad(const int _id){
+        return mServoDriver->ReadLoadH(mArmId*10 + _id + 1);
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::extractDataXML(std::string _pathXML){
 
         tinyxml2::XMLDocument xml_doc;
@@ -160,41 +170,35 @@ namespace hecatonquiros{
                 for(int i = 1; i < 7; i++ ){
                     std::string childSearch = "Joint" + std::to_string(i) + "E1";
                     tinyxml2::XMLElement* itemValues = childValues->FirstChildElement(childSearch.c_str());
+                    std::string sValueJointE1;
+                    sValueJointE1 = itemValues->GetText();
                     float valueJointE1;
-                    resultXML = itemValues->QueryFloatText(&valueJointE1);
-                    if(resultXML != tinyxml2::XML_SUCCESS){
-                        std::cout << "Error extracting value of Joint " << i << " E1" << std::endl;   
-                        return false;
-                    }
-                    else{
-                        childSearch = "Joint" + std::to_string(i) + "E2";
-                        itemValues = childValues->FirstChildElement(childSearch.c_str());
-                        float valueJointE2;
-                        resultXML = itemValues->QueryFloatText(&valueJointE2);
-                        if(resultXML != tinyxml2::XML_SUCCESS){
-                            std::cout << "Error extracting value of Joint " << i << " E2" << std::endl;
-                            return false;
-                        }
-                        else{
-                            extractedValues.push_back(std::make_pair( valueJointE1, valueJointE2));
-                        }
-                    }
+                    std::stringstream ssValueJointE1;
+                    ssValueJointE1 << sValueJointE1; ssValueJointE1 >> valueJointE1;
+
+                    childSearch = "Joint" + std::to_string(i) + "E2";
+                    itemValues = childValues->FirstChildElement(childSearch.c_str());
+                    std::string sValueJointE2;
+                    sValueJointE2 = itemValues->GetText();
+                    float valueJointE2;
+                    std::stringstream ssValueJointE2;
+                    ssValueJointE2 << sValueJointE2; ssValueJointE2 >> valueJointE2;
+            
+                    extractedValues.push_back(std::make_pair( valueJointE1, valueJointE2));
                 }
             }
             for (tinyxml2::XMLElement* childOffsets = rootConfig->FirstChildElement("Offsets"); childOffsets != NULL; childOffsets = childOffsets->NextSiblingElement("Offsets")){  
                 for(int i = 1; i < 7; i++ ){
                     std::string childSearch = "Joint" + std::to_string(i);
                     tinyxml2::XMLElement* itemOffsets = childOffsets->FirstChildElement(childSearch.c_str());
+
+                    std::string sValueJoint;
+                    sValueJoint = itemOffsets->GetText();
                     float valueJoint;
-                    resultXML = itemOffsets->QueryFloatText(&valueJoint);
-                    if(resultXML != tinyxml2::XML_SUCCESS){
-                        std::cout << "Error extracting value of Joint " << i << std::endl;   
-                        return false;
-                    }
-                    else{
-                        extractedOffsets.push_back(valueJoint);
-                        
-                    }
+                    std::stringstream ssValueJoint;
+                    ssValueJoint << sValueJoint; ssValueJoint >> valueJoint;
+
+                    extractedOffsets.push_back(valueJoint);
                 }   
             }
         }
@@ -202,14 +206,14 @@ namespace hecatonquiros{
         changeValues(extractedValues);
         mOffsetJoints = extractedOffsets;
         
-        //std::cout << "MinMaxValues: " << std::endl;
-        //for(int i = 0; i < extractedValues.size(); i++){
-        //    std::cout << extractedValues[i].first << " | " << extractedValues[i].second << std::endl;
-        //}
-        //std::cout << "Offsets: " << std::endl;
-        //for(int i = 0; i < extractedOffsets.size(); i++){
-        //    std::cout << extractedOffsets[i] << std::endl;
-        //}
+        std::cout << "MinMaxValues: " << std::endl;
+        for(int i = 0; i < extractedValues.size(); i++){
+            std::cout << extractedValues[i].first << " | " << extractedValues[i].second << std::endl;
+        }
+        std::cout << "Offsets: " << std::endl;
+        for(int i = 0; i < mOffsetJoints.size(); i++){
+            std::cout << mOffsetJoints[i] << std::endl;
+        }
 
         return true;
         

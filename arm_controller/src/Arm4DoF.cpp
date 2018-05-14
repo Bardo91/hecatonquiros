@@ -118,6 +118,16 @@ namespace hecatonquiros{
         }
     }
 
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::getSmoothTraj(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){
+        if(mModelSolver != nullptr){
+            return mModelSolver->getPointsTrajectory(_pose, _traj, _time); 
+            return false;
+        }else{
+            std::cout << "No model solver OPENRAVE instantiated" << std::endl;
+            return false;
+        }
+    }
 
     //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type){
@@ -165,5 +175,23 @@ namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::isInit() const{
         return mBackend != nullptr;
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    int Arm4DoF::readPos(int _joint){
+        if(mBackend != nullptr){
+            return mBackend->jointPos(_joint);
+        }else{
+            return 0;
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    int Arm4DoF::readLoad(int _joint){
+        if(mBackend != nullptr){
+            return mBackend->jointLoad(_joint);
+        }else{
+            return 0;
+        }
     }
 }
