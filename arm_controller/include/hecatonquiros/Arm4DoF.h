@@ -63,7 +63,7 @@ namespace hecatonquiros{
         Eigen::Matrix4f pose() const;
 
         /// Smooth Trajectory
-        bool getSmoothTraj(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time);
+        bool getSmoothTraj(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, std::vector<float> &_time);
         
         /// Position in cartesian coordinates (meters)
         bool checkIk(Eigen::Vector3f _position, std::vector<float> &_angles);

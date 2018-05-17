@@ -61,7 +61,7 @@ namespace hecatonquiros{
         /// \param _pose: desired points that the trajectory must have
         /// \param _traj: list of possible solutions joints for given poses
         /// \param _time: total time of the trajectory
-        virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){return false; }
+        virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, std::vector<float> &_time){return false; }
     protected:
         virtual bool init(const ModelSolver::Config &_config) { return false;}
 

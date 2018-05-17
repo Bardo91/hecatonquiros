@@ -23,6 +23,7 @@
         <limitsdeg>-110 110</limitsdeg>
         <Axis>0 0 1</Axis>
         <initial>0</initial>
+        <maxveldeg>10</maxveldeg>
     </joint>
 
     <!--wirst_3-->
@@ -42,6 +43,7 @@
         <limitsdeg>-110 110</limitsdeg>
         <Axis>0 0 -1</Axis>
         <initial>0</initial>
+        <maxveldeg>10</maxveldeg>
     </joint>
 
     <!--bar_00-->

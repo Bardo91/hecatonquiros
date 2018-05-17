@@ -192,24 +192,24 @@ int main(int _argc, char **_argv) {
         			}
 
         			std::vector<std::vector<double>> jointsTraj;
-        			float timeTraj;
+        			std::vector<float> timeTraj;
         			if(armInUse->getSmoothTraj( poses, jointsTraj, timeTraj)){
-						std::cout << "Time Trajectory: " << timeTraj << std::endl;
         			    for(int i = 0; i < jointsTraj.size(); i++){
+							std::cout << "Time Trajectory: " << timeTraj.at(i) << std::endl;
         			        std::vector<float> auxJoints;
         			        for(auto &v:jointsTraj[i]){
         			            auxJoints.push_back(v);
         			        }
 						
-						std::cout << "auxJoints:"; 
-						for(int i = 0; i < auxJoints.size(); i++){
-							std::cout << "  " << auxJoints.at(i);
-						}
-						std::cout << std::endl;
-                		armInUse->joints(auxJoints, true);
+							std::cout << "auxJoints:"; 
+							for(int i = 0; i < auxJoints.size(); i++){
+								std::cout << "  " << auxJoints.at(i);
+							}
+							std::cout << std::endl;
+                			armInUse->joints(auxJoints, true);
 
-                		int timeToWait = (timeTraj/jointsTraj.size())*10000;
-                		std::this_thread::sleep_for(std::chrono::milliseconds(timeToWait));
+                			int timeToWait = timeTraj.at(i);
+                			std::this_thread::sleep_for(std::chrono::milliseconds(timeToWait));
         			    }
         			}
         			else{

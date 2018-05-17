@@ -119,7 +119,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool Arm4DoF::getSmoothTraj(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){
+    bool Arm4DoF::getSmoothTraj(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, std::vector<float> &_time){
         if(mModelSolver != nullptr){
             return mModelSolver->getPointsTrajectory(_pose, _traj, _time); 
             return false;

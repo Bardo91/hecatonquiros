@@ -478,7 +478,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool ModelSolverOpenRave::getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){
+    bool ModelSolverOpenRave::getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, std::vector<float> &_time){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
 
@@ -510,24 +510,49 @@ namespace hecatonquiros{
                 trajectory->Insert(i, auxJoints, false);
             }
             
-            planningutils::SmoothActiveDOFTrajectory(trajectory, robot);
+            OpenRAVE::PlannerStatus status = planningutils::SmoothActiveDOFTrajectory(trajectory, robot);
+            switch(status){
+                case OpenRAVE::PlannerStatus::PS_Failed:
+                    std::cout << "Planer failed" << std::endl;
+                    return false;
+                    break;
+                case OpenRAVE::PlannerStatus::PS_HasSolution:
+                    std::cout << "Planer PS_HasSolution" << std::endl;
+                    break;
+                case OpenRAVE::PlannerStatus::PS_Interrupted:
+                    std::cout << "Planer PS_Interrupted " << std::endl;
+                    return false;
+                    break;
+                case OpenRAVE::PlannerStatus::PS_InterruptedWithSolution:
+                    std::cout << "Planer PS_InterruptedWithSolution" << std::endl;
+                    return false;
+                    break;
+            }
+
+
+            OpenRAVE::ConfigurationSpecification configTraj = trajectory->GetConfigurationSpecification();
+            std::vector<OpenRAVE::ConfigurationSpecification::Group> groups = configTraj._vgroups;
+
+            int timeOffset;
+            for(int i = 0; i <   groups.size(); i++){
+                if(groups[i].name == "deltatime"){
+                    timeOffset = groups[i].offset;
+                    break;
+                }
+            }
+
 
             for(int i = 0; i < trajectory->GetNumWaypoints(); i++){
                 std::vector<double> traj;
                 trajectory->GetWaypoints(i, i+1, traj);
 
                 std::vector<double> auxTraj;
-                for(int j = 0; j < 4; j++){
-                    auxTraj.push_back(traj.at(j));
-
+                for(int j = 0; j < 6; j++){
+                    auxTraj.push_back(traj[j]);
                 }
-                _traj.push_back( std::vector<double>() );
-                _traj[i].swap(auxTraj);
+                _time.push_back(traj[timeOffset]);
+                _traj.push_back(auxTraj);
             }
-
-
-
-            _time = trajectory->GetDuration();
 
             return true;
         #endif
