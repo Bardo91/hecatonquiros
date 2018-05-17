@@ -20,7 +20,7 @@
         <offsetfrom>wirst_2</offsetfrom>
         <body>wirst_1</body>
         <body>wirst_2</body>
-        <limitsdeg>-110 110</limitsdeg>
+        <limitsdeg>-100 100</limitsdeg>
         <Axis>0 0 1</Axis>
         <initial>0</initial>
     </joint>
@@ -39,7 +39,7 @@
         <offsetfrom>wirst_3</offsetfrom>
         <body>wirst_2</body>
         <body>wirst_3</body>
-        <limitsdeg>-110 110</limitsdeg>
+        <limitsdeg>-100 100</limitsdeg>
         <Axis>0 0 -1</Axis>
         <initial>0</initial>
     </joint>
