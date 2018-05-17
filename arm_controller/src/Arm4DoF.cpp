@@ -140,6 +140,16 @@ namespace hecatonquiros{
     }
     
     //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::checkIk(Eigen::Matrix4f _pose, std::vector<std::vector<float>> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type){
+        if(mModelSolver != nullptr){
+            return mModelSolver->checkIk(_pose, _angles, _type);
+        }else{
+            std::cout << "No model solver instantiated" << std::endl;
+            return false;
+        }
+    }
+    
+    //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::pose() const {
         if(mModelSolver != nullptr){
             std::vector<Eigen::Matrix4f> transforms;

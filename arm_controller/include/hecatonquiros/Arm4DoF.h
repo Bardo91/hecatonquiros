@@ -70,6 +70,8 @@ namespace hecatonquiros{
 
         /// Pose in cartesian coordinates (meters)
         bool checkIk(Eigen::Matrix4f _pose, std::vector<float> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D);
+        /// Pose in cartesian coordinates (meters)
+        bool checkIk(Eigen::Matrix4f _pose, std::vector<std::vector<float>> &_angles, hecatonquiros::ModelSolver::IK_TYPE _type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D);
 
         /// Actions for claw
         void closeClaw();
