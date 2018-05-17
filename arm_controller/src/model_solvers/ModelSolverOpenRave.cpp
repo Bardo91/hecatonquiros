@@ -184,9 +184,6 @@ namespace hecatonquiros{
             if(_type == IK_TYPE::IK_3D){
                 stringType = "Translation3D";
                 intType = IKP_Translation3D;
-            }else if (_type == IK_TYPE::IK_4D){
-                stringType = "TranslationZAxisAngle4D";
-                intType = IKP_TranslationZAxisAngle4D;
             }else if (_type == IK_TYPE::IK_5D){
                 stringType = "TranslationDirection5D";
                 intType = IKP_TranslationDirection5D;
@@ -219,9 +216,6 @@ namespace hecatonquiros{
             OpenRAVE::IkParameterization ikParam;
             if(_type == IK_TYPE::IK_3D){
                 ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
-            }else if (_type == IK_TYPE::IK_4D){
-                OpenRAVE::Vector position = {_pose(0,3), _pose(1,3), _pose(2,3)};
-                ikParam.SetTranslationZAxisAngle4D(position, 0);
             }else if (_type == IK_TYPE::IK_5D){
                 OpenRAVE::RAY ray;
                 ray.pos = {_pose(0,3), _pose(1,3), _pose(2,3)};
@@ -252,7 +246,7 @@ namespace hecatonquiros{
             }
 
             std::vector<dReal> vsolution;
-            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_CheckEnvCollisions) ) {
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
                     _joints[i] = vsolution[i];
@@ -280,9 +274,6 @@ namespace hecatonquiros{
             if(_type == IK_TYPE::IK_3D){
                 stringType = "Translation3D";
                 intType = IKP_Translation3D;
-            }else if (_type == IK_TYPE::IK_4D){
-                stringType = "TranslationZAxisAngle4D";
-                intType = IKP_TranslationZAxisAngle4D;
             }else if (_type == IK_TYPE::IK_5D){
                 stringType = "TranslationDirection5D";
                 intType = IKP_TranslationDirection5D;
@@ -314,9 +305,6 @@ namespace hecatonquiros{
             OpenRAVE::IkParameterization ikParam;
             if(_type == IK_TYPE::IK_3D){
                 ikParam.SetTranslation3D({_pose(0,3), _pose(1,3), _pose(2,3)});
-            }else if (_type == IK_TYPE::IK_4D){
-                OpenRAVE::Vector position = {_pose(0,3), _pose(1,3), _pose(2,3)};
-                ikParam.SetTranslationZAxisAngle4D(position, 0);
             }else if (_type == IK_TYPE::IK_5D){
                 OpenRAVE::RAY ray;
                 ray.pos = {_pose(0,3), _pose(1,3), _pose(2,3)};
@@ -345,7 +333,7 @@ namespace hecatonquiros{
             }
 
             std::vector<std::vector<dReal>> vsolutions;
-            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_CheckEnvCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolutions.size());
                 for(size_t i = 0; i < vsolutions.size(); ++i) {
