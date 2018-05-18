@@ -57,7 +57,7 @@
         <offsetfrom>arm_1</offsetfrom>
         <body>arm_0_bottom</body>
         <body>arm_1</body>
-        <limitsdeg>-110 110</limitsdeg>
+        <limitsdeg>-100 100</limitsdeg>
         <Axis>0 0 1</Axis>
     </joint>
 
@@ -75,7 +75,7 @@
         <body>arm_1</body>
         <body>arm_2</body>
         <Axis>0 0 1</Axis>
-        <limitsdeg>-110 110</limitsdeg>
+        <limitsdeg>-100 100</limitsdeg>
     </joint>
 
     <!-- Joint 3 wirst-->

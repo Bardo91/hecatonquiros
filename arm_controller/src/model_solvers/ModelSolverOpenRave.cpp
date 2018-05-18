@@ -75,18 +75,18 @@ namespace hecatonquiros{
             std::vector<Eigen::Matrix4f> transforms;
             jointsTransform(transforms);
             
-            for(auto &pose:transforms){
-                RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
-                RaveVector<float> dir = {pose(0,0),pose(1,0), pose(2,0)};
-                p2 = p1 + dir*0.05;
-                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1)));
-                dir = {pose(0,1),pose(1,1), pose(2,1)};
-                p2 = p1 + dir*0.05;
-                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1)));
-                dir = {pose(0,2),pose(1,2), pose(2,2)};
-                p2 = p1 + dir*0.05;
-                poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1)));
-            }
+            //for(auto &pose:transforms){
+            //    RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
+            //    RaveVector<float> dir = {pose(0,0),pose(1,0), pose(2,0)};
+            //    p2 = p1 + dir*0.05;
+            //    poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1)));
+            //    dir = {pose(0,1),pose(1,1), pose(2,1)};
+            //    p2 = p1 + dir*0.05;
+            //    poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1)));
+            //    dir = {pose(0,2),pose(1,2), pose(2,2)};
+            //    p2 = p1 + dir*0.05;
+            //    poses.push_back(mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1)));
+            //}
         #else
             std::cout << "OpenRAVE not installed, cannot use ModelSolverOpenRAVE" << std::endl;
         #endif 
@@ -190,6 +190,9 @@ namespace hecatonquiros{
             }else if (_type == IK_TYPE::IK_6D){
                 stringType = "Transform6D";
                 intType = IKP_Transform6D;
+            }else if (_type == IK_TYPE::LOOK){
+                stringType = "Lookat3D";
+                intType = IKP_Lookat3D;
             }else{
                 assert(false);
             }
@@ -222,7 +225,7 @@ namespace hecatonquiros{
                 RaveVector<float> p1 = ray.pos, p2;
                 RaveVector<float> dir = ray.dir;
                 p2 = p1 + dir*0.05;
-                mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
+                //mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.005,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
             }else if (_type == IK_TYPE::IK_6D){
                 RaveTransformMatrix<float> matT;
                 
@@ -236,12 +239,14 @@ namespace hecatonquiros{
 
                 OpenRAVE::Transform T(matT);
                 ikParam.SetTransform6D(T);
+            }else if(_type == IK_TYPE::LOOK){
+                ikParam.SetLookat3D({_pose(0,3), _pose(1,3), _pose(2,3)});
             }else{
                 assert(false);
             }
 
             std::vector<dReal> vsolution;
-            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_CheckEnvCollisions) ) {
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
                     _joints[i] = vsolution[i];
@@ -328,7 +333,7 @@ namespace hecatonquiros{
             }
 
             std::vector<std::vector<dReal>> vsolutions;
-            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_IgnoreSelfCollisions) ) {
+            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_CheckEnvCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolutions.size());
                 for(size_t i = 0; i < vsolutions.size(); ++i) {
@@ -377,19 +382,19 @@ namespace hecatonquiros{
             T(2,3) = orT.trans.z;
 
 
-            std::vector<Eigen::Matrix4f> transforms;
-            jointsTransform(transforms);
-            Eigen::Matrix4f pose = transforms.back();
-            RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
-            RaveVector<float> dir = {pose(0,2),pose(1,2), pose(2,2)};
-            p2 = p1 + dir*0.05;
-            mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
-            dir = {pose(0,1),pose(1,1), pose(2,1)};
-            p2 = p1 + dir*0.05;
-            mPoseManipY = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1));
-            dir = {pose(0,0),pose(1,0), pose(2,0)};
-            p2 = p1 + dir*0.05;
-            mPoseManipX = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1));
+            //std::vector<Eigen::Matrix4f> transforms;
+            //jointsTransform(transforms);
+            //Eigen::Matrix4f pose = transforms.back();
+            //RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
+            //RaveVector<float> dir = {pose(0,2),pose(1,2), pose(2,2)};
+            //p2 = p1 + dir*0.05;
+            //mPoseManipZ = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 0, 1, 1));
+            //dir = {pose(0,1),pose(1,1), pose(2,1)};
+            //p2 = p1 + dir*0.05;
+            //mPoseManipY = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(0, 1, 0, 1));
+            //dir = {pose(0,0),pose(1,0), pose(2,0)};
+            //p2 = p1 + dir*0.05;
+            //mPoseManipX = mEnvironment->drawarrow(p1, p2,0.001,OpenRAVE::RaveVector< float >(1, 0, 0, 1));
 
             return T;
         #else
