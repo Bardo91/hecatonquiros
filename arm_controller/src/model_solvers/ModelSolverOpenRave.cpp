@@ -62,9 +62,9 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
-            std::vector<dReal> joints(_joints.size());
-            std::vector<int> indices(_joints.size());
-            for(unsigned i = 0; i < _joints.size(); i++){
+            std::vector<dReal> joints(robot->GetDOF ());
+            std::vector<int> indices(robot->GetDOF ());
+            for(unsigned i = 0; i < robot->GetDOF (); i++){
                 joints[i] = _joints[i];
                 indices[i] = i;
             }
@@ -246,7 +246,7 @@ namespace hecatonquiros{
             }
 
             std::vector<dReal> vsolution;
-            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_CheckEnvCollisions) ) {
+            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
                     _joints[i] = vsolution[i];
@@ -333,7 +333,7 @@ namespace hecatonquiros{
             }
 
             std::vector<std::vector<dReal>> vsolutions;
-            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_CheckEnvCollisions) ) {
+            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_IgnoreSelfCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolutions.size());
                 for(size_t i = 0; i < vsolutions.size(); ++i) {
@@ -361,9 +361,9 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
-            std::vector<dReal> joints(_joints.size());
-            std::vector<int> indices(_joints.size());
-            for(unsigned i = 0; i < _joints.size(); i++){
+            std::vector<dReal> joints(robot->GetDOF ());
+            std::vector<int> indices(robot->GetDOF ());
+            for(unsigned i = 0; i < robot->GetDOF (); i++){
                 joints[i] = _joints[i];
                 indices[i] = i;
             }
@@ -507,7 +507,7 @@ namespace hecatonquiros{
                 
             } 
 
-            for(int i = 0; i < joints.size(); i++){
+            for(int i = 0; i < robot->GetDOF (); i++){
                 std::vector<OpenRAVE::dReal> auxJoints;
                 for(auto &v:joints[i]){
                     auxJoints.push_back(v);
@@ -544,7 +544,7 @@ namespace hecatonquiros{
             if(mInstance == nullptr){
                 mInstance = new ModelSolverOpenRave();
 
-                OpenRAVE::RaveInitialize(false, OpenRAVE::Level_Debug);
+                OpenRAVE::RaveInitialize(false, OpenRAVE::Level_Error);
 
                 std::cout << "Load Plugins" << std::endl;
 
