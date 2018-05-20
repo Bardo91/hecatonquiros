@@ -100,6 +100,8 @@ namespace hecatonquiros{
     protected:
         virtual bool init(const ModelSolver::Config &_config);
 
+        ModelSolver::IK_TYPE checkIfType(ModelSolver::IK_TYPE _type);
+
     private:
         // Singleton interface
         static bool initSingleton(bool _enableVis);
