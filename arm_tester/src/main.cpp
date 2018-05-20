@@ -155,6 +155,15 @@ int main(int _argc, char **_argv) {
 					std::cout << "home" <<std::endl;
 					armInUse->home();
 					break;
+				case 'S':
+				{
+					auto joints = armInUse->joints();
+					for(auto &v: joints){
+						std::cout << v << ", ";
+					}
+					std::cout << std::endl;
+					break;
+				}
 				case 't':
 				{
 					bool finGetPoints = false;
