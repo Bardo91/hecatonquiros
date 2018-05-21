@@ -99,6 +99,8 @@ namespace hecatonquiros{
                 mHome5 = 0*M_PI/180.0,
                 mHome6 = 0*M_PI/180.0;
 
+        bool mClawClosed = true;
+
         int mArmId = 1;
     };
 }

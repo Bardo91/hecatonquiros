@@ -35,6 +35,7 @@ namespace hecatonquiros{
         mBackend = Backend::create(_backendConfig);
         mArmId = _backendConfig.armId;
         mModelSolver = ModelSolver::create(_modelConfig);
+        openClaw();
     }
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -42,12 +43,14 @@ namespace hecatonquiros{
         mBackend = Backend::create(_backendConfig);
         mArmId = _backendConfig.armId;
         mModelSolver = nullptr;
+        openClaw();
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::home(){
         std::vector<float> angles = {mHome1, mHome2, mHome3, mHome4, mHome5, mHome6};
         joints(angles, true);
+        openClaw();
 
         if(mModelSolver != nullptr){  /// 666 Just for visualizing transforms in joints in ModelSolverOpenRave
             std::vector<Eigen::Matrix4f> transforms;
@@ -163,15 +166,17 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::closeClaw(){
-        if(mBackend != nullptr){
+        if(!mClawClosed && mBackend != nullptr){
             mBackend->claw(0);
+            mClawClosed = true;
         }
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::openClaw(){
-        if(mBackend != nullptr){
+        if(mClawClosed && mBackend != nullptr){
             mBackend->claw(2);
+            mClawClosed = false;
         }
     }
 
