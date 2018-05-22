@@ -229,7 +229,7 @@
     <!--end_effector-->
     <Body name="end_effector" type="dynamic">
         <offsetfrom>wirst_3</offsetfrom>
-        <Translation>-0.015 0 0.30</Translation>
+        <Translation>-0.015 0 0.15</Translation>
     </Body>
     <joint name="end_effector_joint_dummy" type="hinge" enable="False">
         <offsetfrom>end_effector</offsetfrom>

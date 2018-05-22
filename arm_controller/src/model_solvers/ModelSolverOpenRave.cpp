@@ -56,16 +56,71 @@ namespace hecatonquiros{
 
 
     //-----------------------------------------------------------------------------------------------------------------
+    ModelSolver::IK_TYPE ModelSolverOpenRave::checkIfType(ModelSolver::IK_TYPE _type){
+        EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+        std::vector<OpenRAVE::RobotBasePtr> robots;
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
+        int nDof = robot->GetDOF();
+        
+        hecatonquiros::ModelSolver::IK_TYPE type;
+        switch(nDof){
+            case 3:
+                if(_type == 3 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+
+                break;
+            case 4:
+                if(_type == 3 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+                break;
+            case 5:
+                if(_type <= 5 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_5D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+                break;
+            case 6:
+                if(_type <= 6 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_6D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+                break;
+        }
+        return type;
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------------
     void ModelSolverOpenRave::joints(const std::vector<float> &_joints){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
+
+            std::vector< dReal > currentJoints;
+            robot->GetDOFValues(currentJoints);
+
             std::vector<dReal> joints(robot->GetDOF ());
             std::vector<int> indices(robot->GetDOF ());
             for(unsigned i = 0; i < robot->GetDOF (); i++){
-                joints[i] = _joints[i];
+                if(i < _joints.size()){
+                    joints[i] = _joints[i];
+                }else{
+                    joints[i] = currentJoints[i];
+                }
                 indices[i] = i;
             }
             robot->SetDOFValues(joints, 1, indices);
@@ -179,6 +234,8 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
+            _type = checkIfType(_type);
+
             std::string stringType;
             OpenRAVE::IkParameterizationType intType;
             if(_type == IK_TYPE::IK_3D){
@@ -268,6 +325,8 @@ namespace hecatonquiros{
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
+
+            _type = checkIfType(_type);
 
             std::string stringType;
             OpenRAVE::IkParameterizationType intType;

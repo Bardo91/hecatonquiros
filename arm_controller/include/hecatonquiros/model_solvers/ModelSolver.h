@@ -42,7 +42,7 @@ namespace hecatonquiros{
             std::string environment;
         };
 
-        enum class IK_TYPE {IK_3D, IK_4D, IK_5D, IK_6D, LOOK};
+        enum  IK_TYPE {IK_3D=3, IK_4D=4, IK_5D=5, IK_6D=6, LOOK=31};
 
         static ModelSolver* create(const Config &_config);
 
