@@ -74,6 +74,8 @@ namespace hecatonquiros{
         /// \param _time: total time of the trajectory
         virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time);
 
+        virtual Eigen::MatrixXf jacobian();
+
     #ifdef HAS_OPENRAVE
         OpenRAVE::RobotBasePtr robot();
     #endif

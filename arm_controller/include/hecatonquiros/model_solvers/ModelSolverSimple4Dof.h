@@ -63,7 +63,7 @@ namespace hecatonquiros{
         /// \param _time: total time of the trajectory
         virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time){return false; }
     protected:
-        virtual bool init(const ModelSolver::Config &_config) { return false;}
+        virtual bool init(const ModelSolver::Config &_config);
 
     private:
         void updateTransforms();
@@ -76,8 +76,10 @@ namespace hecatonquiros{
         Eigen::Matrix<float,4,4,Eigen::DontAlign> mFinalT;
 
         float mHumerus = 0.15;
-        float mRadius = 0.09;
+        float mRadius = 0.31;
         float mBaseHeight = 0.08;
+
+        Eigen::Matrix4f mPose = Eigen::Matrix4f::Identity();
 
 
     };
