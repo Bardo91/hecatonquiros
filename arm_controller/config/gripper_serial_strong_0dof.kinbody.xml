@@ -1,0 +1,31 @@
+<KinBody name ="gripper_0dof_strong">
+    <!--wirst_1-->
+    <Body name="wirst_1" type="dynamic">
+
+        <Translation>0.0 0.000 0.020</Translation>
+        <rotationaxis>0 0 1 90</rotationaxis>
+
+        <Geom type="trimesh">
+            <render>../model/gripper0dof_strong/core_attachment.stl</render>
+            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+            
+        </Geom>
+    </Body>
+    
+    <!--end_effector-->
+    <Body name="end_effector" type="dynamic">
+        <offsetfrom>wirst_1</offsetfrom>
+        <Translation>0 0 0.215</Translation>
+        <!--Geom type="box">
+            <Extents>0.005 0.005 0.005</Extents>
+            <transparency>0.4</transparency>
+        </Geom-->
+    </Body>
+    <joint name="end_effector_joint_dummy" type="hinge" enable="False">
+        <offsetfrom>end_effector</offsetfrom>
+        <body>wirst_1</body>
+        <body>end_effector</body>
+        <Axis>0 0 1</Axis>
+        <limitsdeg>0 0</limitsdeg>
+    </joint>
+</KinBody>
