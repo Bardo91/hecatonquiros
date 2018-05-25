@@ -26,27 +26,27 @@ class SCServo{
 					return mSerial->isOpen();
 				}
 				std::string readline(){
-					std::lock_guard<std::mutex> lock(mLocker);
+					//std::lock_guard<std::mutex> lock(mLocker);
 					return mSerial->readline();
 				}
 				int read(unsigned char *_buffer, int _len){
-					std::lock_guard<std::mutex> lock(mLocker);
+					//std::lock_guard<std::mutex> lock(mLocker);
 					return mSerial->read(_buffer, _len);
 				}
 				void write(std::string &_cmd){
-					std::lock_guard<std::mutex> lock(mLocker);
+					//std::lock_guard<std::mutex> lock(mLocker);
             		mSerial->write(_cmd);
 				}
 				void write(unsigned char *_buffer, int _len){
-					std::lock_guard<std::mutex> lock(mLocker);
+					//std::lock_guard<std::mutex> lock(mLocker);
             		mSerial->write(_buffer, _len);
 				}
 				void flush(){
-					std::lock_guard<std::mutex> lock(mLocker);
+					//std::lock_guard<std::mutex> lock(mLocker);
             		mSerial->flush();
 				}
 				bool isOpen(){
-					std::lock_guard<std::mutex> lock(mLocker);
+					//std::lock_guard<std::mutex> lock(mLocker);
             		return mSerial->isOpen();
 				}
 			private:

@@ -80,45 +80,51 @@ namespace hecatonquiros{
                 mUsedJoints.push_back(i);
             }
         }
-        if(mServoDriver->isConnected()){
+        //if(mServoDriver->isConnected()){
             for(unsigned i = 0; i < _joints.size(); i++){
                 mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
             }
             return true;
-        }
+        //}
         return false;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::claw(const int _action){
         if(_action == 0){
+<<<<<<< HEAD
             if(mServoDriver->isConnected()){
                 std::cout << "Close claw!" << std::endl;
+                mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
+=======
+            //if(mServoDriver->isConnected()){
+                //std::cout << "Close claw!" << std::endl;
                 mServoDriver->WritePos(mArmId*10 + 7, 0, mSpeed);
+>>>>>>> master
                 return true;
-            }else{
-                std::cout << "ServoDriver not connected!" << std::endl;
-                return false;
-            }
+            //}else{
+            //    std::cout << "ServoDriver not connected!" << std::endl;
+            //    return false;
+            //}
         }else if(_action == 1){
-            if(mServoDriver->isConnected()){
-                std::cout << "Stop claw!" << std::endl;
+            //if(mServoDriver->isConnected()){
+                //std::cout << "Stop claw!" << std::endl;
                 int pos = mServoDriver->ReadPos(mArmId*10 + 7);
                 mServoDriver->WritePos(mArmId*10 + 7, pos, mSpeed);
                 return true;
-            }else{
-                std::cout << "ServoDriver not connected!" << std::endl;
-                return false;
-            }
+            //}else{
+            //    std::cout << "ServoDriver not connected!" << std::endl;
+            //    return false;
+            //}
         }else if(_action == 2){
-            if(mServoDriver->isConnected()){
-                std::cout << "Open claw!" << std::endl;
+            //if(mServoDriver->isConnected()){
+                //std::cout << "Open claw!" << std::endl;
                 mServoDriver->WritePos(mArmId*10 + 7, 1023, mSpeed);
                 return true;
-            }else{
-                std::cout << "ServoDriver not connected!" << std::endl;
-                return false;
-            }
+            //}else{
+            //    std::cout << "ServoDriver not connected!" << std::endl;
+            //    return false;
+            //}
         }else{
             std::cout << "Unrecognized command!" << std::endl;
             return false;

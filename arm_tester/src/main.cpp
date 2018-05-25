@@ -155,6 +155,15 @@ int main(int _argc, char **_argv) {
 					std::cout << "home" <<std::endl;
 					armInUse->home();
 					break;
+				case 'S':
+				{
+					auto joints = armInUse->joints();
+					for(auto &v: joints){
+						std::cout << v << ", ";
+					}
+					std::cout << std::endl;
+					break;
+				}
 				case 't':
 				{
 					bool finGetPoints = false;
@@ -282,6 +291,22 @@ int main(int _argc, char **_argv) {
 					std::vector<float> joints;
 					auto pose = armInUse->pose();
 					int counter = 0;
+					int nDof = armInUse->joints().size();
+					hecatonquiros::ModelSolver::IK_TYPE type;
+					switch(nDof){
+						case 3:
+							type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+							break;
+						case 4:
+							type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+							break;
+						case 5:
+							type = hecatonquiros::ModelSolver::IK_TYPE::IK_5D;
+							break;
+						case 6:
+							type = hecatonquiros::ModelSolver::IK_TYPE::IK_6D;
+							break;
+					}
 					for(;;){
 						counter++;
 						Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.005;
@@ -291,7 +316,7 @@ int main(int _argc, char **_argv) {
 							* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*0.1,  	Eigen::Vector3f::UnitY())
 							* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*0.1, 	Eigen::Vector3f::UnitZ());
 						pose.block<3,3>(0,0) = m*pose.block<3,3>(0,0);
-						if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
+						if(armInUse->checkIk(pose, joints, type)){
 							armInUse->joints(joints, true);
 							std::cout << "Tries: " << counter << std::endl;
 							std::cout << incTrans << std::endl;

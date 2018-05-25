@@ -56,16 +56,71 @@ namespace hecatonquiros{
 
 
     //-----------------------------------------------------------------------------------------------------------------
+    ModelSolver::IK_TYPE ModelSolverOpenRave::checkIfType(ModelSolver::IK_TYPE _type){
+        EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+        std::vector<OpenRAVE::RobotBasePtr> robots;
+        auto robot = mEnvironment->GetRobot(mConfig.robotName);
+        int nDof = robot->GetDOF();
+        
+        hecatonquiros::ModelSolver::IK_TYPE type;
+        switch(nDof){
+            case 3:
+                if(_type == 3 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+
+                break;
+            case 4:
+                if(_type == 3 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_3D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+                break;
+            case 5:
+                if(_type <= 5 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_5D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+                break;
+            case 6:
+                if(_type <= 6 || _type == 31)
+                    type = _type;
+                else{
+                    type = hecatonquiros::ModelSolver::IK_TYPE::IK_6D;
+                    //std::cout << "Sending IK of type "<<  _type << " but n dof is " << nDof << " using Ik type " << type << std::endl; 
+                }
+                break;
+        }
+        return type;
+    }
+
+
+    //-----------------------------------------------------------------------------------------------------------------
     void ModelSolverOpenRave::joints(const std::vector<float> &_joints){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
-            std::vector<dReal> joints(_joints.size());
-            std::vector<int> indices(_joints.size());
-            for(unsigned i = 0; i < _joints.size(); i++){
-                joints[i] = _joints[i];
+
+            std::vector< dReal > currentJoints;
+            robot->GetDOFValues(currentJoints);
+
+            std::vector<dReal> joints(robot->GetDOF ());
+            std::vector<int> indices(robot->GetDOF ());
+            for(unsigned i = 0; i < robot->GetDOF (); i++){
+                if(i < _joints.size()){
+                    joints[i] = _joints[i];
+                }else{
+                    joints[i] = currentJoints[i];
+                }
                 indices[i] = i;
             }
             robot->SetDOFValues(joints, 1, indices);
@@ -179,6 +234,8 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
+            _type = checkIfType(_type);
+
             std::string stringType;
             OpenRAVE::IkParameterizationType intType;
             if(_type == IK_TYPE::IK_3D){
@@ -246,7 +303,7 @@ namespace hecatonquiros{
             }
 
             std::vector<dReal> vsolution;
-            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_CheckEnvCollisions) ) {
+            if( pmanip->FindIKSolution(ikParam,vsolution,IKFO_IgnoreSelfCollisions) ) {
                 _joints.resize(vsolution.size());
                 for(size_t i = 0; i < vsolution.size(); ++i) {
                     _joints[i] = vsolution[i];
@@ -268,6 +325,8 @@ namespace hecatonquiros{
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
+
+            _type = checkIfType(_type);
 
             std::string stringType;
             OpenRAVE::IkParameterizationType intType;
@@ -333,7 +392,7 @@ namespace hecatonquiros{
             }
 
             std::vector<std::vector<dReal>> vsolutions;
-            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_CheckEnvCollisions) ) {
+            if( pmanip->FindIKSolutions(ikParam,vsolutions,IKFO_IgnoreSelfCollisions) ) {
                 std::cout << "FOUND SOLUTION" << std::endl;
                 _joints.resize(vsolutions.size());
                 for(size_t i = 0; i < vsolutions.size(); ++i) {
@@ -361,9 +420,9 @@ namespace hecatonquiros{
             std::vector<OpenRAVE::RobotBasePtr> robots;
             auto robot = mEnvironment->GetRobot(mConfig.robotName);
 
-            std::vector<dReal> joints(_joints.size());
-            std::vector<int> indices(_joints.size());
-            for(unsigned i = 0; i < _joints.size(); i++){
+            std::vector<dReal> joints(robot->GetDOF ());
+            std::vector<int> indices(robot->GetDOF ());
+            for(unsigned i = 0; i < robot->GetDOF (); i++){
                 joints[i] = _joints[i];
                 indices[i] = i;
             }
@@ -507,7 +566,7 @@ namespace hecatonquiros{
                 
             } 
 
-            for(int i = 0; i < joints.size(); i++){
+            for(int i = 0; i < robot->GetDOF (); i++){
                 std::vector<OpenRAVE::dReal> auxJoints;
                 for(auto &v:joints[i]){
                     auxJoints.push_back(v);
@@ -544,7 +603,7 @@ namespace hecatonquiros{
             if(mInstance == nullptr){
                 mInstance = new ModelSolverOpenRave();
 
-                OpenRAVE::RaveInitialize(false, OpenRAVE::Level_Debug);
+                OpenRAVE::RaveInitialize(false, OpenRAVE::Level_Error);
 
                 std::cout << "Load Plugins" << std::endl;
 
