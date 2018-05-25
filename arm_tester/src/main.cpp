@@ -7,12 +7,33 @@
 
 
 #include <hecatonquiros/Arm4DoF.h>
-
+#include <Eigen/QR>
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include <ros/ros.h>
 #include <serial/serial.h> 
+template <class MatT>
+Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
+pseudoinverse(const MatT &mat, typename MatT::Scalar tolerance = typename MatT::Scalar{1e-4}) // choose appropriately
+{
+    typedef typename MatT::Scalar Scalar;
+    auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+    const auto &singularValues = svd.singularValues();
+    Eigen::Matrix<Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> singularValuesInv(mat.cols(), mat.rows());
+    singularValuesInv.setZero();
+    for (unsigned int i = 0; i < singularValues.size(); ++i) {
+        if (singularValues(i) > tolerance)
+        {
+            singularValuesInv(i, i) = Scalar{1} / singularValues(i);
+        }
+        else
+        {
+            singularValuesInv(i, i) = Scalar{0};
+        }
+    }
+    return svd.matrixV() * singularValuesInv * svd.matrixU().adjoint();
+}
 
 //--------------------------------------------------------------------------------------------------------------------
 void pointsInCircleNU(double _radius, Eigen::Vector3f _center, Eigen::Vector3f n, Eigen::Vector3f u, unsigned _nPoints, std::vector<Eigen::Vector3f> &_poses){
@@ -100,6 +121,7 @@ int main(int _argc, char **_argv) {
 	
     hecatonquiros::ModelSolver::Config modelSolverConfig1;
     modelSolverConfig1.type = hecatonquiros::ModelSolver::Config::eType::OpenRave;
+    // modelSolverConfig1.type = hecatonquiros::ModelSolver::Config::eType::Simple4DoF;
     modelSolverConfig1.robotName = "left_arm";
     modelSolverConfig1.manipulatorName = "manipulator";
     modelSolverConfig1.robotFile = _argv[1];
@@ -114,6 +136,7 @@ int main(int _argc, char **_argv) {
 
     hecatonquiros::ModelSolver::Config modelSolverConfig2;
     modelSolverConfig2.type = hecatonquiros::ModelSolver::Config::eType::OpenRave;
+    // modelSolverConfig2.type = hecatonquiros::ModelSolver::Config::eType::Simple4DoF;
     modelSolverConfig2.robotName = "right_arm";
     modelSolverConfig2.manipulatorName = "manipulator";
     modelSolverConfig2.robotFile = _argv[1];
@@ -442,6 +465,44 @@ int main(int _argc, char **_argv) {
 						std::cout << "USING RIGHT ARM" << std::endl;
 					}
 					break;
+				case 'g':
+				{
+					float x, y, z;
+					std::cout << "position" <<std::endl;
+					std::cout << "x: " <<std::endl;
+					std::cin >> x;
+					std::cout << "y: " <<std::endl;
+					std::cin >> y;
+					std::cout << "z: " <<std::endl;
+					std::cin >> z;
+					float step;
+					std::cout << "step:  " << std::endl;
+					std::cin >> step;
+
+					Eigen::Vector3f position = {x,y,z};
+					float error = 1;
+					while(error > 0.005){
+						Eigen::MatrixXf jacobian = armInUse->modelSolver()->jacobian();
+
+						Eigen::Vector3f errVec = position - armInUse->pose().block<3,1>(0,3);
+						Eigen::VectorXf incJoints = 
+								(jacobian.transpose()*jacobian + Eigen::Matrix4f::Identity()*0.1).inverse()*jacobian.transpose()*errVec;
+
+						std::cout << incJoints << std::endl;
+						if(std::isnan(incJoints[0]))
+							return true;
+
+						std::vector<float> joints = armInUse->joints();
+						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i]*step;
+						armInUse->joints(joints);
+						errVec = position - armInUse->pose().block<3,1>(0,3);
+						error = errVec.norm();
+						std::this_thread::sleep_for(std::chrono::milliseconds(30));
+						std::cout << armInUse->pose().block<3,1>(0,3).transpose() << std::endl;
+						std::cout << error << std::endl;
+					}
+					break;
+				}
 				case 'l':
 				{
 					float dx, dy, dz, distance, step_size;

@@ -81,6 +81,9 @@ namespace hecatonquiros{
         /// \param _time: total time of the trajectory
         virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time) = 0;
 
+        /// compute jacobian
+        virtual Eigen::MatrixXf jacobian() {return Eigen::MatrixXf();};
+
     protected:
         ModelSolver(){};
         virtual bool init(const ModelSolver::Config &_config) = 0;
