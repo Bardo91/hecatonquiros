@@ -509,6 +509,29 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    Eigen::MatrixXf  ModelSolverOpenRave::angularRotationJacobian(){
+        #ifdef HAS_OPENRAVE
+            EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+            auto robot = mEnvironment->GetRobot(mConfig.robotName);
+            OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->GetActiveManipulator();
+
+            boost::multi_array< dReal, 2 > rotationJacobian;
+            pmanip->CalculateAngularVelocityJacobian (rotationJacobian);
+
+            auto shape = rotationJacobian.shape();
+            Eigen::MatrixXf eigenJacob(shape[0], shape[1]);
+            for(unsigned i = 0; i < shape[0]; i++){
+                for(unsigned j = 0; j < shape[1]; j++){
+                    eigenJacob(i,j) = rotationJacobian[i][j];
+                }
+            }
+            return eigenJacob;
+        #else
+            return Eigen::MatrixXf();
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     #ifdef HAS_OPENRAVE
         OpenRAVE::RobotBasePtr ModelSolverOpenRave::robot(){
             return mEnvironment->GetRobot(mConfig.robotName);

@@ -78,6 +78,8 @@ namespace hecatonquiros{
 
         virtual Eigen::MatrixXf rotationJacobian();
 
+        virtual Eigen::MatrixXf angularRotationJacobian();
+
     #ifdef HAS_OPENRAVE
         OpenRAVE::RobotBasePtr robot();
     #endif
