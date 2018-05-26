@@ -464,21 +464,48 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     Eigen::MatrixXf  ModelSolverOpenRave::jacobian(){
-        EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
-        auto robot = mEnvironment->GetRobot(mConfig.robotName);
-        OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->GetActiveManipulator();
+        #ifdef HAS_OPENRAVE
+            EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+            auto robot = mEnvironment->GetRobot(mConfig.robotName);
+            OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->GetActiveManipulator();
 
-        boost::multi_array< dReal, 2 > jacobian;
-        pmanip->CalculateJacobian (jacobian);
+            boost::multi_array< dReal, 2 > jacobian;
+            pmanip->CalculateJacobian (jacobian);
 
-        auto shape = jacobian.shape();
-        Eigen::MatrixXf eigenJacob(shape[0], shape[1]);
-        for(unsigned i = 0; i < shape[0]; i++){
-            for(unsigned j = 0; j < shape[0]; j++){
-                eigenJacob(i,j) = jacobian[i][j];
+            auto shape = jacobian.shape();
+            Eigen::MatrixXf eigenJacob(shape[0], shape[1]);
+            for(unsigned i = 0; i < shape[0]; i++){
+                for(unsigned j = 0; j < shape[1]; j++){
+                    eigenJacob(i,j) = jacobian[i][j];
+                }
             }
-        }
-        return eigenJacob;
+            return eigenJacob;
+        #else
+            return Eigen::MatrixXf();
+        #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    Eigen::MatrixXf  ModelSolverOpenRave::rotationJacobian(){
+        #ifdef HAS_OPENRAVE
+            EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+            auto robot = mEnvironment->GetRobot(mConfig.robotName);
+            OpenRAVE::RobotBase::ManipulatorPtr pmanip = robot->GetActiveManipulator();
+
+            boost::multi_array< dReal, 2 > rotationJacobian;
+            pmanip->CalculateRotationJacobian (rotationJacobian);
+
+            auto shape = rotationJacobian.shape();
+            Eigen::MatrixXf eigenJacob(shape[0], shape[1]);
+            for(unsigned i = 0; i < shape[0]; i++){
+                for(unsigned j = 0; j < shape[1]; j++){
+                    eigenJacob(i,j) = rotationJacobian[i][j];
+                }
+            }
+            return eigenJacob;
+        #else
+            return Eigen::MatrixXf();
+        #endif
     }
 
     //-----------------------------------------------------------------------------------------------------------------

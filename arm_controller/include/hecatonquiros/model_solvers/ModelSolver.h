@@ -83,6 +83,7 @@ namespace hecatonquiros{
 
         /// compute jacobian
         virtual Eigen::MatrixXf jacobian() {return Eigen::MatrixXf();};
+        virtual Eigen::MatrixXf rotationJacobian() {return Eigen::MatrixXf();};
 
     protected:
         ModelSolver(){};
