@@ -1,0 +1,24 @@
+<Robot name="arm_6dof">
+    <kinbody file="arm_4dof.kinbody.xml"/>
+    <kinbody file="gripper_serial_strong_0dof.kinbody.xml"/>
+
+    <kinbody>
+        <body name="wirst_1">
+            <offsetfrom>effector_connector</offsetfrom>
+       	    <rotationaxis>0 0 1 0</rotationaxis>
+        </body>
+        <joint name="dummyhand" type="hinge" enable="false">
+            <offsetfrom>wirst_1</offsetfrom>
+            <body>effector_connector</body>
+            <body>wirst_1</body>
+            <limits>0 0</limits>
+        </joint>
+    </kinbody>
+
+    <manipulator name="manipulator">
+        <base>arm_0_top</base>
+        <effector>end_effector</effector>
+        <direction>0 0 1</direction>
+    </manipulator>
+
+</Robot>

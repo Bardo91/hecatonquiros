@@ -128,4 +128,13 @@ namespace hecatonquiros{
         }*/
     }
 
+    bool ModelSolverSimple4Dof::init(const ModelSolver::Config &_config){
+        mPose(0,3) = _config.offset[0];
+        mPose(1,3) = _config.offset[1];
+        mPose(2,3) = _config.offset[2];
+        Eigen::Quaternionf q(_config.rotation[0], _config.rotation[1], _config.rotation[2], _config.rotation[3]);
+        mPose.block<3,3>(0,0) = q.matrix();
+
+    }
+
 }
