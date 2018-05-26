@@ -485,8 +485,10 @@ int main(int _argc, char **_argv) {
 						Eigen::MatrixXf jacobian = armInUse->modelSolver()->jacobian();
 
 						Eigen::Vector3f errVec = position - armInUse->pose().block<3,1>(0,3);
+						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+						I.setIdentity();
 						Eigen::VectorXf incJoints = 
-								(jacobian.transpose()*jacobian + Eigen::Matrix4f::Identity()*0.1).inverse()*jacobian.transpose()*errVec;
+								(jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
 
 						std::cout << incJoints << std::endl;
 						if(std::isnan(incJoints[0]))
@@ -500,6 +502,58 @@ int main(int _argc, char **_argv) {
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 						std::cout << armInUse->pose().block<3,1>(0,3).transpose() << std::endl;
 						std::cout << error << std::endl;
+					}
+					break;
+				}
+				case 'G':
+				{
+					// float x, y, z;
+					// std::cout << "position" <<std::endl;
+					// std::cout << "x: " <<std::endl;
+					// std::cin >> x;
+					// std::cout << "y: " <<std::endl;
+					// std::cin >> y;
+					// std::cout << "z: " <<std::endl;
+					// std::cin >> z;
+					// float step;
+					// std::cout << "step:  " << std::endl;
+					// std::cin >> step;
+					// Eigen::Vector3f position = {x,y,z};
+					float step = 0.1;
+					float error = 1;
+					Eigen::Matrix3f targetRot;
+					targetRot = Eigen::AngleAxisf(0, Eigen::Vector3f::UnitX());
+					Eigen::Quaternionf qTarget(targetRot); 
+
+					while(error > 0.005){
+						Eigen::MatrixXf jacobian = armInUse->modelSolver()->rotationJacobian();
+						std::cout << jacobian << std::endl;
+						Eigen::Quaternionf errQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0)).inverse()*qTarget;
+						Eigen::Vector4f errVec = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
+						std::cout <<"errVec: " << errVec.transpose() << std::endl;
+						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+						I.setIdentity();
+						Eigen::VectorXf incJoints = 
+								(jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+
+						std::cout << "incJoinst" << incJoints.transpose() << std::endl;
+						if(std::isnan(incJoints[0]))
+							return true;
+
+						std::vector<float> joints = armInUse->joints();
+						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i]*step;
+						armInUse->joints(joints);
+
+						errQuat = Eigen::Quaternionf(armInUse->pose().block<3,3>(0,0)).inverse()*qTarget;
+						errVec = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
+						error = errVec.norm();
+
+						std::this_thread::sleep_for(std::chrono::milliseconds(30));
+						Eigen::Quaternionf currentQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						Eigen::Vector4f currentVec = {currentQuat.x(), currentQuat.y(), currentQuat.z(), currentQuat.w()};
+						std::cout << "targetvec: " << qTarget.x()<<", "<< qTarget.y()<<", "<< qTarget.z()<<", "<< qTarget.w()<<", " << std::endl;
+						std::cout << "currentvect: " << currentVec.transpose() << std::endl;
+						std::cout << "error: " << error << std::endl;
 					}
 					break;
 				}
