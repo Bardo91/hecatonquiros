@@ -519,16 +519,26 @@ int main(int _argc, char **_argv) {
 					// std::cout << "step:  " << std::endl;
 					// std::cin >> step;
 					// Eigen::Vector3f position = {x,y,z};
-					float step = 0.1;
+					float step = 0.01;
 					float error = 1;
 					Eigen::Matrix3f targetRot;
-					targetRot = Eigen::AngleAxisf(0, Eigen::Vector3f::UnitX());
+					targetRot = Eigen::AngleAxisf(5*M_PI/6, Eigen::Vector3f::UnitY());
 					Eigen::Quaternionf qTarget(targetRot); 
 
 					while(error > 0.005){
 						Eigen::MatrixXf jacobian = armInUse->modelSolver()->rotationJacobian();
 						std::cout << jacobian << std::endl;
-						Eigen::Quaternionf errQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0)).inverse()*qTarget;
+						
+						Eigen::Quaternionf currentQuat((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						//if( (qTarget.x()*currentQuat.x()+ qTarget.y()*currentQuat.y()+ qTarget.z()*currentQuat.z()+ qTarget.w()*currentQuat.w()) < 0 ) { 
+						//	qTarget.x() = -qTarget.x();
+						//	qTarget.y() = -qTarget.y();
+						//	qTarget.z() = -qTarget.z();
+						//	qTarget.w() = -qTarget.w(); 
+						//} 
+
+
+						Eigen::Quaternionf errQuat = currentQuat.inverse()*qTarget;
 						Eigen::Vector4f errVec = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
 						std::cout <<"errVec: " << errVec.transpose() << std::endl;
 						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
@@ -549,7 +559,7 @@ int main(int _argc, char **_argv) {
 						error = errVec.norm();
 
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
-						Eigen::Quaternionf currentQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						currentQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
 						Eigen::Vector4f currentVec = {currentQuat.x(), currentQuat.y(), currentQuat.z(), currentQuat.w()};
 						std::cout << "targetvec: " << qTarget.x()<<", "<< qTarget.y()<<", "<< qTarget.z()<<", "<< qTarget.w()<<", " << std::endl;
 						std::cout << "currentvect: " << currentVec.transpose() << std::endl;
