@@ -653,10 +653,15 @@ int main(int _argc, char **_argv) {
 						auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,1)*0.07, 0.001,0,1,0);
 						auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,2)*0.07, 0.001,0,0,1);
 
+						float accumIncs = 0;
+						for(int i=0; i < joints.size(); i++) accumIncs += fabs(incJoints[i]);
+						std::cout << "Accum inc of joints: " << accumIncs <<std::endl;
+						if(accumIncs < 0.001){
+							break;
+						}
 
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 					}
-					getchar();
 					getchar();
 					break;
 				}
