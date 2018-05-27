@@ -7,6 +7,8 @@
 
 
 #include <hecatonquiros/Arm4DoF.h>
+#define HAS_OPENRAVE
+#include <hecatonquiros/model_solvers/ModelSolverOpenRave.h>
 #include <Eigen/QR>
 #include <iostream>
 #include <thread>
@@ -564,6 +566,75 @@ int main(int _argc, char **_argv) {
 						std::cout << "targetvec: " << qTarget.x()<<", "<< qTarget.y()<<", "<< qTarget.z()<<", "<< qTarget.w()<<", " << std::endl;
 						std::cout << "currentvect: " << currentVec.transpose() << std::endl;
 						std::cout << "error: " << error << std::endl;
+					}
+					break;
+				}
+				case 'K':
+				{
+					
+					float step = 0.1;
+					float errorPos = 1, errorQ = 1;
+					Eigen::Matrix4f pose = armInUse->pose();;
+					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
+					pose.block<3,1>(0,3) += incTrans;
+					Eigen::Matrix3f m;
+					m = Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*1, 	Eigen::Vector3f::UnitX())
+						* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*1,  	Eigen::Vector3f::UnitY())
+						* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*1, 	Eigen::Vector3f::UnitZ());
+					pose.block<3,3>(0,0) = m*pose.block<3,3>(0,0);
+
+					Eigen::Vector3f positionTarget = pose.block<3,1>(0,3);
+					Eigen::Quaternionf qTarget(pose.block<3,3>(0,0)); 
+					auto handleX = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,0)*0.05, 0.002,1,0,0);
+					auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,1)*0.05, 0.002,0,1,0);
+					auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,2)*0.05, 0.002,0,0,1);
+
+					while(errorPos > 0.002 || errorQ > 0.1){
+						Eigen::MatrixXf positionJacobian = armInUse->modelSolver()->jacobian();
+						Eigen::MatrixXf rotationJacobian = armInUse->modelSolver()->rotationJacobian();
+
+						Eigen::MatrixXf jacobian(positionJacobian.rows()+rotationJacobian.rows(), positionJacobian.cols());
+						jacobian << positionJacobian, rotationJacobian;
+
+						Eigen::VectorXf errVec(7);
+
+						Eigen::Quaternionf currentQuat((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						Eigen::Quaternionf errQuat(	qTarget.w() - currentQuat.w(),
+													qTarget.x() - currentQuat.x(),
+													qTarget.y() - currentQuat.y(),
+													qTarget.z() - currentQuat.z());
+						Eigen::Vector4f errVecRot = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
+
+						errVec <<  (positionTarget - armInUse->pose().block<3,1>(0,3)), errVecRot;
+						
+						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+						I.setIdentity();
+						Eigen::VectorXf incJoints =  (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+
+						if(std::isnan(incJoints[0]))
+							return true;
+
+						std::vector<float> joints = armInUse->joints();
+						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i]*step;
+						armInUse->joints(joints);
+						errorPos  = errVec.head(3).norm();
+						errorQ = errVec.tail(4).norm();
+
+						std::cout << "targetPosition: " << positionTarget.transpose() << std::endl;
+						std::cout << "currentPosition: " << armInUse->pose().block<3,1>(0,3).transpose() << std::endl;
+						std::cout << "targetOri: " << qTarget.w() << ", "<< qTarget.x() << ", "<< qTarget.y() << ", "<< qTarget.z() << ", " << std::endl;
+						currentQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						std::cout << "currentOri: " << currentQuat.w() << ", "<< currentQuat.x() << ", "<< currentQuat.y() << ", "<< currentQuat.z() << ", " << std::endl;
+						std::cout << "errorPor: " << errorPos<<". errorQ: " <<  errorQ << std::endl;
+
+						auto currentPose = armInUse->pose();
+						auto handleX = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,0)*0.07, 0.001,1,0,0);
+						auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,1)*0.07, 0.001,0,1,0);
+						auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,2)*0.07, 0.001,0,0,1);
+
+
+						// getchar();
+						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 					}
 					break;
 				}
