@@ -571,7 +571,7 @@ int main(int _argc, char **_argv) {
 				}
 				case 'K':
 				{
-					//srand(time(NULL));
+					srand(time(NULL));
 					float stepPosition = 0.1;
 					float stepRotation = 0.1;
 					float errorPos = 1, errorQ = 1;
@@ -590,7 +590,7 @@ int main(int _argc, char **_argv) {
 					auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,1)*0.05, 0.002,0,1,0);
 					auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,2)*0.05, 0.002,0,0,1);
 
-					while(errorPos > 0.002 || errorQ > 0.01){
+					while(errorPos > 0.005 || errorQ > 0.01){
 						Eigen::MatrixXf positionJacobian = armInUse->modelSolver()->jacobian();
 						Eigen::MatrixXf rotationJacobian = armInUse->modelSolver()->rotationJacobian();
 
