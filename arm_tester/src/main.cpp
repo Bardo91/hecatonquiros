@@ -571,8 +571,9 @@ int main(int _argc, char **_argv) {
 				}
 				case 'K':
 				{
-					srand(time(NULL));
-					float step = 0.3;
+					//srand(time(NULL));
+					float stepPosition = 0.1;
+					float stepRotation = 0.1;
 					float errorPos = 1, errorQ = 1;
 					Eigen::Matrix4f pose = armInUse->pose();;
 					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
@@ -589,7 +590,7 @@ int main(int _argc, char **_argv) {
 					auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,1)*0.05, 0.002,0,1,0);
 					auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,2)*0.05, 0.002,0,0,1);
 
-					while(errorPos > 0.002 || errorQ > 0.1){
+					while(errorPos > 0.002 || errorQ > 0.01){
 						Eigen::MatrixXf positionJacobian = armInUse->modelSolver()->jacobian();
 						Eigen::MatrixXf rotationJacobian = armInUse->modelSolver()->rotationJacobian();
 
@@ -599,26 +600,46 @@ int main(int _argc, char **_argv) {
 						Eigen::VectorXf errVec(7);
 
 						Eigen::Quaternionf currentQuat((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
-						Eigen::Quaternionf errQuat(	qTarget.w() - currentQuat.w(),
-													qTarget.x() - currentQuat.x(),
-													qTarget.y() - currentQuat.y(),
-													qTarget.z() - currentQuat.z());
-						Eigen::Vector4f errVecRot = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
 
-						errVec <<  (positionTarget - armInUse->pose().block<3,1>(0,3)), errVecRot;
+						Eigen::Vector4f qdiff = {	qTarget.x() - currentQuat.x(),
+													qTarget.y() - currentQuat.y(),
+													qTarget.z() - currentQuat.z(),
+													qTarget.w() - currentQuat.w()};
+
+						Eigen::Vector4f qsum = {	qTarget.x() + currentQuat.x(),
+													qTarget.y() + currentQuat.y(),
+													qTarget.z() + currentQuat.z(),
+													qTarget.w() + currentQuat.w()};
+
+						Eigen::Vector4f errVecRot;						
+						//if(qdiff.norm() > qsum.norm()){	// improvement from http://openrave-users-list.185357.n3.nabble.com/Manipulator-CalculateRotationJacobian-td2873122.html#a2873146
+						//	errVecRot =  {	-qTarget.x() - currentQuat.x(),
+						//					-qTarget.y() - currentQuat.y(),
+						//					-qTarget.z() - currentQuat.z(),
+						//					-qTarget.w() - currentQuat.w()};
+						//}else{
+							errVecRot =  {	qTarget.x() - currentQuat.x(),
+											qTarget.y() - currentQuat.y(),
+											qTarget.z() - currentQuat.z(),
+											qTarget.w() - currentQuat.w()};
+						//}
+
+						errVec <<  (positionTarget - armInUse->pose().block<3,1>(0,3))*stepPosition, errVecRot*stepRotation;
 						
 						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
 						I.setIdentity();
 						Eigen::VectorXf incJoints =  (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+						// Eigen::MatrixXf pinv = pseudoinverse(jacobian);
+						// Eigen::VectorXf incJoints = pinv*errVec;
 
 						if(std::isnan(incJoints[0]))
 							return true;
 
 						std::vector<float> joints = armInUse->joints();
-						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i]*step;
+						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i];
 						armInUse->joints(joints);
-						errorPos  = errVec.head(3).norm();
-						errorQ = errVec.tail(4).norm();
+						errorPos  = errVec.head(3).norm()/stepPosition;
+						errorQ = errVec.tail(4).norm()/stepRotation;
 
 						std::cout << "targetPosition: " << positionTarget.transpose() << std::endl;
 						std::cout << "currentPosition: " << armInUse->pose().block<3,1>(0,3).transpose() << std::endl;
@@ -635,6 +656,7 @@ int main(int _argc, char **_argv) {
 
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 					}
+					getchar();
 					getchar();
 					break;
 				}
