@@ -571,8 +571,8 @@ int main(int _argc, char **_argv) {
 				}
 				case 'K':
 				{
-					
-					float step = 0.1;
+					srand(time(NULL));
+					float step = 0.3;
 					float errorPos = 1, errorQ = 1;
 					Eigen::Matrix4f pose = armInUse->pose();;
 					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
@@ -633,9 +633,9 @@ int main(int _argc, char **_argv) {
 						auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,2)*0.07, 0.001,0,0,1);
 
 
-						// getchar();
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 					}
+					getchar();
 					break;
 				}
 				case 'l':
