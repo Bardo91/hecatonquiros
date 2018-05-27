@@ -581,73 +581,16 @@ int main(int _argc, char **_argv) {
 						break;
 					}
 
-					while(errorPos > 0.005 || errorQ > 0.01){
-						Eigen::MatrixXf positionJacobian = armInUse->modelSolver()->jacobian();
-						Eigen::MatrixXf rotationJacobian = armInUse->modelSolver()->rotationJacobian();
-
-						Eigen::MatrixXf jacobian(positionJacobian.rows()+rotationJacobian.rows(), positionJacobian.cols());
-						jacobian << positionJacobian, rotationJacobian;
-
-						Eigen::VectorXf errVec(7);
-
-						Eigen::Quaternionf currentQuat((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
-
-						Eigen::Vector4f qdiff = {	qTarget.w() - currentQuat.w(),		//x w
-													qTarget.x() - currentQuat.x(),		//y x
-													qTarget.y() - currentQuat.y(),		//z y
-													qTarget.z() - currentQuat.z()};		//w z
-
-						Eigen::Vector4f qsum = {	qTarget.w() + currentQuat.w(),
-													qTarget.x() + currentQuat.x(),
-													qTarget.y() + currentQuat.y(),
-													qTarget.z() + currentQuat.z()};
-
-						Eigen::Vector4f errVecRot;						
-						if(qdiff.norm() > qsum.norm()){	// improvement from http://openrave-users-list.185357.n3.nabble.com/Manipulator-CalculateRotationJacobian-td2873122.html#a2873146
-							errVecRot =  {	-qTarget.x() - currentQuat.x(),
-											-qTarget.y() - currentQuat.y(),
-											-qTarget.z() - currentQuat.z(),
-											-qTarget.w() - currentQuat.w()};
-						}else{
-							errVecRot =  qdiff;
-						}
-
-						errVec <<  (positionTarget - armInUse->pose().block<3,1>(0,3))*stepPosition, errVecRot*stepRotation;
-						
-						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
-						I.setIdentity();
-						Eigen::VectorXf incJoints =  (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
-						// Eigen::MatrixXf pinv = pseudoinverse(jacobian);
-						// Eigen::VectorXf incJoints = pinv*errVec;
-
-						if(std::isnan(incJoints[0]))
-							return true;
-
-						std::vector<float> joints = armInUse->joints();
-						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i];
+					while(errorPos > 0.01){
+						std::vector<float> joints;
+						armInUse->jacobianStep(pose, joints, stepPosition, stepRotation);
 						armInUse->joints(joints);
-						errorPos  = errVec.head(3).norm()/stepPosition;
-						errorQ = errVec.tail(4).norm()/stepRotation;
-
-						std::cout << "targetPosition: " << positionTarget.transpose() << std::endl;
-						std::cout << "currentPosition: " << armInUse->pose().block<3,1>(0,3).transpose() << std::endl;
-						std::cout << "targetOri: " << qTarget.w() << ", "<< qTarget.x() << ", "<< qTarget.y() << ", "<< qTarget.z() << ", " << std::endl;
-						currentQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
-						std::cout << "currentOri: " << currentQuat.w() << ", "<< currentQuat.x() << ", "<< currentQuat.y() << ", "<< currentQuat.z() << ", " << std::endl;
-						std::cout << "errorPor: " << errorPos<<". errorQ: " <<  errorQ << std::endl;
 
 						auto currentPose = armInUse->pose();
 						auto handleX = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,0)*0.07, 0.001,1,0,0);
 						auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,1)*0.07, 0.001,0,1,0);
 						auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,2)*0.07, 0.001,0,0,1);
-
-						float accumIncs = 0;
-						for(int i=0; i < joints.size(); i++) accumIncs += fabs(incJoints[i]);
-						std::cout << "Accum inc of joints: " << accumIncs <<std::endl;
-						if(accumIncs < 0.001){
-							break;
-						}
-
+						errorPos = (currentPose.block<3,1>(0,3) - positionTarget).norm();
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
 					}
 					getchar();
