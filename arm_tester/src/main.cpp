@@ -571,8 +571,8 @@ int main(int _argc, char **_argv) {
 				}
 				case 'K':
 				{
-					float stepPosition = 0.3;
-					float stepRotation = 0.3;
+					float stepPosition = 0.5;
+					float stepRotation = 0.2;
 					float errorPos = 1, errorQ = 1;
 					Eigen::Matrix4f pose = armInUse->pose();;
 					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
@@ -616,17 +616,14 @@ int main(int _argc, char **_argv) {
 													qTarget.z() + currentQuat.z()};
 
 						Eigen::Vector4f errVecRot;						
-						//if(qdiff.norm() > qsum.norm()){	// improvement from http://openrave-users-list.185357.n3.nabble.com/Manipulator-CalculateRotationJacobian-td2873122.html#a2873146
-						//	errVecRot =  {	-qTarget.x() - currentQuat.x(),
-						//					-qTarget.y() - currentQuat.y(),
-						//					-qTarget.z() - currentQuat.z(),
-						//					-qTarget.w() - currentQuat.w()};
-						//}else{
-							errVecRot =  {	qTarget.w() - currentQuat.w(),
-											qTarget.x() - currentQuat.x(),
-											qTarget.y() - currentQuat.y(),
-											qTarget.z() - currentQuat.z()};
-						//}
+						if(qdiff.norm() > qsum.norm()){	// improvement from http://openrave-users-list.185357.n3.nabble.com/Manipulator-CalculateRotationJacobian-td2873122.html#a2873146
+							errVecRot =  {	-qTarget.x() - currentQuat.x(),
+											-qTarget.y() - currentQuat.y(),
+											-qTarget.z() - currentQuat.z(),
+											-qTarget.w() - currentQuat.w()};
+						}else{
+							errVecRot =  qdiff;
+						}
 
 						errVec <<  (positionTarget - armInUse->pose().block<3,1>(0,3))*stepPosition, errVecRot*stepRotation;
 						
