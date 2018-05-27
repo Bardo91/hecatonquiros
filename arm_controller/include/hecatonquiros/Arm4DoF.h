@@ -86,6 +86,12 @@ namespace hecatonquiros{
 
         bool isInit() const;
 
+        /// Performs a movement step towards a position (just cartesian motion) using jacobian. 
+        bool jacobianStep(Eigen::Vector3f &_position, std::vector<float> &_joints, float _alpha=0.5);
+
+        /// Performs a movement step towards a pose (6DoF) using jacobian. 
+        bool jacobianStep(Eigen::Matrix4f &_pose, std::vector<float> &_joints, float _alphaPosition=0.5, float _alphaRotation=0.3);
+
         Backend * backend(){return mBackend;};
         ModelSolver * modelSolver(){return mModelSolver;};
     private:

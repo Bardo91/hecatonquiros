@@ -192,6 +192,34 @@ namespace hecatonquiros{
         return mBackend != nullptr;
     }
 
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::jacobianStep(Eigen::Vector3f &_position, std::vector<float> &_joints, float _alpha){
+        if(mModelSolver != nullptr){
+            Eigen::MatrixXf jacobian = mModelSolver->jacobian();
+
+            Eigen::Vector3f errVec = _position - pose().block<3,1>(0,3);
+            Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+            I.setIdentity();
+            Eigen::VectorXf incJoints = 
+                    (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+
+            // std::cout << incJoints << std::endl;
+            if(std::isnan(incJoints[0]))
+                return true;
+
+            _joints = joints();
+            for(int i=0; i < _joints.size(); i++) _joints[i] += incJoints[i]*_alpha;
+        }else{
+            return false;
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::jacobianStep(Eigen::Matrix4f &_pose, std::vector<float> &_joints, float _alphaPosition, float _alphaRotation){
+
+    }
+
     //---------------------------------------------------------------------------------------------------------------------
     int Arm4DoF::readPos(int _joint){
         if(mBackend != nullptr){
