@@ -592,6 +592,7 @@ int main(int _argc, char **_argv) {
 					std::vector<float> ikJoints;
 					if(!armInUse->checkIk(pose, ikJoints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
 						std::cout << "Point is not reachable" << std::endl;
+						break;
 					}
 
 					while(errorPos > 0.005 || errorQ > 0.01){
