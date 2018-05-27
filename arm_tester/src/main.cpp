@@ -572,8 +572,8 @@ int main(int _argc, char **_argv) {
 				case 'K':
 				{
 					srand(time(NULL));
-					float stepPosition = 0.1;
-					float stepRotation = 0.1;
+					float stepPosition = 0.3;
+					float stepRotation = 0.3;
 					float errorPos = 1, errorQ = 1;
 					Eigen::Matrix4f pose = armInUse->pose();;
 					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
@@ -590,6 +590,11 @@ int main(int _argc, char **_argv) {
 					auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,1)*0.05, 0.002,0,1,0);
 					auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,2)*0.05, 0.002,0,0,1);
 
+					std::vector<float> ikJoints;
+					if(!armInUse->checkIk(pose, ikJoints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
+						std::cout << "Point is not reachable" << std::endl;
+					}
+
 					while(errorPos > 0.005 || errorQ > 0.01){
 						Eigen::MatrixXf positionJacobian = armInUse->modelSolver()->jacobian();
 						Eigen::MatrixXf rotationJacobian = armInUse->modelSolver()->rotationJacobian();
@@ -601,15 +606,15 @@ int main(int _argc, char **_argv) {
 
 						Eigen::Quaternionf currentQuat((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
 
-						Eigen::Vector4f qdiff = {	qTarget.x() - currentQuat.x(),
-													qTarget.y() - currentQuat.y(),
-													qTarget.z() - currentQuat.z(),
-													qTarget.w() - currentQuat.w()};
+						Eigen::Vector4f qdiff = {	qTarget.w() - currentQuat.w(),		//x w
+													qTarget.x() - currentQuat.x(),		//y x
+													qTarget.y() - currentQuat.y(),		//z y
+													qTarget.z() - currentQuat.z()};		//w z
 
-						Eigen::Vector4f qsum = {	qTarget.x() + currentQuat.x(),
+						Eigen::Vector4f qsum = {	qTarget.w() + currentQuat.w(),
+													qTarget.x() + currentQuat.x(),
 													qTarget.y() + currentQuat.y(),
-													qTarget.z() + currentQuat.z(),
-													qTarget.w() + currentQuat.w()};
+													qTarget.z() + currentQuat.z()};
 
 						Eigen::Vector4f errVecRot;						
 						//if(qdiff.norm() > qsum.norm()){	// improvement from http://openrave-users-list.185357.n3.nabble.com/Manipulator-CalculateRotationJacobian-td2873122.html#a2873146
@@ -618,10 +623,10 @@ int main(int _argc, char **_argv) {
 						//					-qTarget.z() - currentQuat.z(),
 						//					-qTarget.w() - currentQuat.w()};
 						//}else{
-							errVecRot =  {	qTarget.x() - currentQuat.x(),
+							errVecRot =  {	qTarget.w() - currentQuat.w(),
+											qTarget.x() - currentQuat.x(),
 											qTarget.y() - currentQuat.y(),
-											qTarget.z() - currentQuat.z(),
-											qTarget.w() - currentQuat.w()};
+											qTarget.z() - currentQuat.z()};
 						//}
 
 						errVec <<  (positionTarget - armInUse->pose().block<3,1>(0,3))*stepPosition, errVecRot*stepRotation;
