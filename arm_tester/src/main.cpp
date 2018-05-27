@@ -571,8 +571,8 @@ int main(int _argc, char **_argv) {
 				}
 				case 'K':
 				{
-					float stepPosition = 0.5;
-					float stepRotation = 0.2;
+					float stepPosition = 0.7;
+					float stepRotation = 0.4;
 					float errorPos = 1, errorQ = 1;
 					Eigen::Matrix4f pose = armInUse->pose();;
 					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
