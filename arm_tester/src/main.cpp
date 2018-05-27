@@ -120,7 +120,7 @@ int main(int _argc, char **_argv) {
 		std::cout << "unrecognized mode, exiting" << std::endl;
         return -1;
 	}
-	
+	srand(time(NULL));
     hecatonquiros::ModelSolver::Config modelSolverConfig1;
     modelSolverConfig1.type = hecatonquiros::ModelSolver::Config::eType::OpenRave;
     // modelSolverConfig1.type = hecatonquiros::ModelSolver::Config::eType::Simple4DoF;
@@ -571,7 +571,6 @@ int main(int _argc, char **_argv) {
 				}
 				case 'K':
 				{
-					srand(time(NULL));
 					float stepPosition = 0.3;
 					float stepRotation = 0.3;
 					float errorPos = 1, errorQ = 1;
