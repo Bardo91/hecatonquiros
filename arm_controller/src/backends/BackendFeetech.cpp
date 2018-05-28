@@ -93,7 +93,7 @@ namespace hecatonquiros{
     bool BackendFeetech::claw(const int _action){
         if(_action == 0){
             //if(mServoDriver->isConnected()){
-                std::cout << "Close claw!" << std::endl;
+                //std::cout << "Close claw!" << std::endl;
                 mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
                 return true;
             //}else{
