@@ -166,7 +166,7 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::closeClaw(){
-        if(!mClawClosed && mBackend != nullptr){
+        if(/*!mClawClosed && */mBackend != nullptr){
             mBackend->claw(0);
             mClawClosed = true;
         }
@@ -174,7 +174,7 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Arm4DoF::openClaw(){
-        if(mClawClosed && mBackend != nullptr){
+        if(/*mClawClosed && */mBackend != nullptr){
             mBackend->claw(2);
             mClawClosed = false;
         }
