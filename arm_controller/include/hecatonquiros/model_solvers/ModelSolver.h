@@ -81,8 +81,14 @@ namespace hecatonquiros{
         /// \param _time: total time of the trajectory
         virtual bool getPointsTrajectory(std::vector<Eigen::Matrix4f> _pose, std::vector<std::vector<double>> &_traj, float &_time) = 0;
 
-        /// compute jacobian
+        /// Get cartesian jacobian
         virtual Eigen::MatrixXf jacobian() {return Eigen::MatrixXf();};
+
+        /// Get rotation jacobian in quaternions (X, Y, Z, W)
+        virtual Eigen::MatrixXf rotationJacobian() {return Eigen::MatrixXf();};
+        
+        /// Get rotation jacobian in angle axis (unknown angle order!! WARNING)
+        virtual Eigen::MatrixXf angularRotationJacobian() {return Eigen::MatrixXf();};
 
     protected:
         ModelSolver(){};

@@ -7,6 +7,8 @@
 
 
 #include <hecatonquiros/Arm4DoF.h>
+#define HAS_OPENRAVE
+#include <hecatonquiros/model_solvers/ModelSolverOpenRave.h>
 #include <Eigen/QR>
 #include <iostream>
 #include <thread>
@@ -118,7 +120,7 @@ int main(int _argc, char **_argv) {
 		std::cout << "unrecognized mode, exiting" << std::endl;
         return -1;
 	}
-	
+	srand(time(NULL));
     hecatonquiros::ModelSolver::Config modelSolverConfig1;
     modelSolverConfig1.type = hecatonquiros::ModelSolver::Config::eType::OpenRave;
     // modelSolverConfig1.type = hecatonquiros::ModelSolver::Config::eType::Simple4DoF;
@@ -482,25 +484,116 @@ int main(int _argc, char **_argv) {
 					Eigen::Vector3f position = {x,y,z};
 					float error = 1;
 					while(error > 0.005){
-						Eigen::MatrixXf jacobian = armInUse->modelSolver()->jacobian();
-
+						std::vector<float> joints;
+						armInUse->jacobianStep(position, joints, step);
+						armInUse->joints(joints);
 						Eigen::Vector3f errVec = position - armInUse->pose().block<3,1>(0,3);
-						Eigen::VectorXf incJoints = 
-								(jacobian.transpose()*jacobian + Eigen::Matrix4f::Identity()*0.1).inverse()*jacobian.transpose()*errVec;
+						error = errVec.norm();
+						std::this_thread::sleep_for(std::chrono::milliseconds(30));
+					}
+					break;
+				}
+				case 'G':
+				{
+					// float x, y, z;
+					// std::cout << "position" <<std::endl;
+					// std::cout << "x: " <<std::endl;
+					// std::cin >> x;
+					// std::cout << "y: " <<std::endl;
+					// std::cin >> y;
+					// std::cout << "z: " <<std::endl;
+					// std::cin >> z;
+					// float step;
+					// std::cout << "step:  " << std::endl;
+					// std::cin >> step;
+					// Eigen::Vector3f position = {x,y,z};
+					float step = 0.01;
+					float error = 1;
+					Eigen::Matrix3f targetRot;
+					targetRot = Eigen::AngleAxisf(5*M_PI/6, Eigen::Vector3f::UnitY());
+					Eigen::Quaternionf qTarget(targetRot); 
 
-						std::cout << incJoints << std::endl;
+					while(error > 0.005){
+						Eigen::MatrixXf jacobian = armInUse->modelSolver()->rotationJacobian();
+						std::cout << jacobian << std::endl;
+						
+						Eigen::Quaternionf currentQuat((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						//if( (qTarget.x()*currentQuat.x()+ qTarget.y()*currentQuat.y()+ qTarget.z()*currentQuat.z()+ qTarget.w()*currentQuat.w()) < 0 ) { 
+						//	qTarget.x() = -qTarget.x();
+						//	qTarget.y() = -qTarget.y();
+						//	qTarget.z() = -qTarget.z();
+						//	qTarget.w() = -qTarget.w(); 
+						//} 
+
+
+						Eigen::Quaternionf errQuat = currentQuat.inverse()*qTarget;
+						Eigen::Vector4f errVec = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
+						std::cout <<"errVec: " << errVec.transpose() << std::endl;
+						Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+						I.setIdentity();
+						Eigen::VectorXf incJoints = 
+								(jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+
+						std::cout << "incJoinst" << incJoints.transpose() << std::endl;
 						if(std::isnan(incJoints[0]))
 							return true;
 
 						std::vector<float> joints = armInUse->joints();
 						for(int i=0; i < joints.size(); i++) joints[i] += incJoints[i]*step;
 						armInUse->joints(joints);
-						errVec = position - armInUse->pose().block<3,1>(0,3);
+
+						errQuat = Eigen::Quaternionf(armInUse->pose().block<3,3>(0,0)).inverse()*qTarget;
+						errVec = {errQuat.x(), errQuat.y(), errQuat.z(), errQuat.w()};
 						error = errVec.norm();
+
 						std::this_thread::sleep_for(std::chrono::milliseconds(30));
-						std::cout << armInUse->pose().block<3,1>(0,3).transpose() << std::endl;
-						std::cout << error << std::endl;
+						currentQuat = Eigen::Quaternionf((Eigen::Matrix3f)armInUse->pose().block<3,3>(0,0));
+						Eigen::Vector4f currentVec = {currentQuat.x(), currentQuat.y(), currentQuat.z(), currentQuat.w()};
+						std::cout << "targetvec: " << qTarget.x()<<", "<< qTarget.y()<<", "<< qTarget.z()<<", "<< qTarget.w()<<", " << std::endl;
+						std::cout << "currentvect: " << currentVec.transpose() << std::endl;
+						std::cout << "error: " << error << std::endl;
 					}
+					break;
+				}
+				case 'K':
+				{
+					float stepPosition = 0.7;
+					float stepRotation = 0.4;
+					float errorPos = 1, errorQ = 1;
+					Eigen::Matrix4f pose = armInUse->pose();;
+					Eigen::Vector3f incTrans = Eigen::MatrixXf::Random(3,1)*0.05;
+					pose.block<3,1>(0,3) += incTrans;
+					Eigen::Matrix3f m;
+					m = Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*1, 	Eigen::Vector3f::UnitX())
+						* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*1,  	Eigen::Vector3f::UnitY())
+						* Eigen::AngleAxisf	((double(rand())/RAND_MAX - 0.5)*1, 	Eigen::Vector3f::UnitZ());
+					pose.block<3,3>(0,0) = m*pose.block<3,3>(0,0);
+
+					Eigen::Vector3f positionTarget = pose.block<3,1>(0,3);
+					Eigen::Quaternionf qTarget(pose.block<3,3>(0,0)); 
+					auto handleX = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,0)*0.05, 0.002,1,0,0);
+					auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,1)*0.05, 0.002,0,1,0);
+					auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(positionTarget,positionTarget+pose.block<3,1>(0,2)*0.05, 0.002,0,0,1);
+
+					std::vector<float> ikJoints;
+					if(!armInUse->checkIk(pose, ikJoints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
+						std::cout << "Point is not reachable" << std::endl;
+						break;
+					}
+
+					while(errorPos > 0.01){
+						std::vector<float> joints;
+						armInUse->jacobianStep(pose, joints, stepPosition, stepRotation);
+						armInUse->joints(joints);
+
+						auto currentPose = armInUse->pose();
+						auto handleX = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,0)*0.07, 0.001,1,0,0);
+						auto handleY = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,1)*0.07, 0.001,0,1,0);
+						auto handleZ = hecatonquiros::ModelSolverOpenRave::drawLine(currentPose.block<3,1>(0,3),currentPose.block<3,1>(0,3)+currentPose.block<3,1>(0,2)*0.07, 0.001,0,0,1);
+						errorPos = (currentPose.block<3,1>(0,3) - positionTarget).norm();
+						std::this_thread::sleep_for(std::chrono::milliseconds(30));
+					}
+					getchar();
 					break;
 				}
 				case 'l':

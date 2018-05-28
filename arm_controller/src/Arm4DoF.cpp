@@ -192,6 +192,84 @@ namespace hecatonquiros{
         return mBackend != nullptr;
     }
 
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::jacobianStep(Eigen::Vector3f &_position, std::vector<float> &_joints, float _alpha){
+        if(mModelSolver != nullptr){
+            Eigen::MatrixXf jacobian = mModelSolver->jacobian();
+
+            Eigen::Vector3f errVec = _position - pose().block<3,1>(0,3);
+            Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+            I.setIdentity();
+            Eigen::VectorXf incJoints = 
+                    (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+
+            // std::cout << incJoints << std::endl;
+            if(std::isnan(incJoints[0]))
+                return true;
+
+            _joints = joints();
+            for(int i=0; i < _joints.size(); i++) _joints[i] += incJoints[i]*_alpha;
+        }else{
+            return false;
+        }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    bool Arm4DoF::jacobianStep(Eigen::Matrix4f &_pose, std::vector<float> &_joints, float _alphaPosition, float _alphaRotation){
+        // Get current jacobians
+        Eigen::MatrixXf positionJacobian = mModelSolver->jacobian();
+        Eigen::MatrixXf rotationJacobian = mModelSolver->rotationJacobian();
+
+        Eigen::MatrixXf jacobian(positionJacobian.rows()+rotationJacobian.rows(), positionJacobian.cols());
+        jacobian << positionJacobian, rotationJacobian;
+
+
+        // Compute the errors
+        Eigen::Vector3f positionTarget = _pose.block<3,1>(0,3);
+        Eigen::Quaternionf qTarget(_pose.block<3,3>(0,0));
+
+        Eigen::VectorXf errVec(7);
+
+        Eigen::Matrix4f currentPose = pose();
+        Eigen::Quaternionf currentQuat((Eigen::Matrix3f)currentPose.block<3,3>(0,0));
+
+        Eigen::Vector4f qdiff = { qTarget.w() - currentQuat.w(), qTarget.x() - currentQuat.x(), qTarget.y() - currentQuat.y(), qTarget.z() - currentQuat.z()};	
+        Eigen::Vector4f qsum =  { qTarget.w() + currentQuat.w(), qTarget.x() + currentQuat.x(), qTarget.y() + currentQuat.y(), qTarget.z() + currentQuat.z()};
+
+        Eigen::Vector4f errVecRot;						
+        if(qdiff.norm() > qsum.norm()){	// improvement from http://openrave-users-list.185357.n3.nabble.com/Manipulator-CalculateRotationJacobian-td2873122.html#a2873146
+            errVecRot =  {	-qTarget.x() - currentQuat.x(),
+                            -qTarget.y() - currentQuat.y(),
+                            -qTarget.z() - currentQuat.z(),
+                            -qTarget.w() - currentQuat.w()};
+        }else{
+            errVecRot =  qdiff;
+        }
+
+        errVec <<  (positionTarget - currentPose.block<3,1>(0,3))*_alphaPosition, errVecRot*_alphaRotation;
+        
+        // Perform the step
+        Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
+        I.setIdentity();
+        Eigen::VectorXf incJoints =  (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+        // Eigen::MatrixXf pinv = pseudoinverse(jacobian);
+        // Eigen::VectorXf incJoints = pinv*errVec;
+
+        // Check if result is numerically stable
+        if(std::isnan(incJoints[0]))
+            return false;
+
+        _joints = joints();
+        for(int i=0; i < _joints.size(); i++) _joints[i] += incJoints[i];
+
+        float accumIncs = 0;
+        for(int i=0; i < _joints.size(); i++) accumIncs += fabs(incJoints[i]);
+        if(accumIncs < 0.001){
+            return false;
+        }
+    }
+
     //---------------------------------------------------------------------------------------------------------------------
     int Arm4DoF::readPos(int _joint){
         if(mBackend != nullptr){
