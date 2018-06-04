@@ -10,3 +10,8 @@
 
 *.pyc
 /cad_models/tools/gripper/serial_model_6DoF/OldVersions
+/cad_models/tools/gripper/serial_model_0dof/OldVersions
+/cad_models/tools/gripper/serial_model_bearing_6DoF/OldVersions
+/cad_models/tools/gripper/serial_model_0dof/gripper_2/OldVersions
+/cad_models/tools/gripper/two_fingers_tensor/OldVersions
+/cad_models/tools/gripper/pwm_model/OldVersions
