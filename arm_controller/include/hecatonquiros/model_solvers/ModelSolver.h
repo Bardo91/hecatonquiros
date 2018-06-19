@@ -37,7 +37,7 @@ namespace hecatonquiros{
             std::string manipulatorName;
             std::string robotFile;
             std::vector<float> offset = {0,0,0};    /// {x, y, z}
-            std::vector<float> rotation = {0,0,0,1};     /// {x, y, z,w}
+            std::vector<float> rotation = {0,0,0,1};     /// {W, x, y, z}
             bool visualizer = false;
             std::string environment;
         };
