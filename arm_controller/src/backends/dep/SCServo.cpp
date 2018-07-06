@@ -150,8 +150,8 @@ int SCServo::writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun) {
 	Host2SCS(buf+2, buf+3, Time);
 	Host2SCS(buf+4, buf+5, Speed);
 	writeBuf(ID, P_GOAL_POSITION_L, buf, 6, Fun);
-	//return Ack(ID);
-	return 1;
+	return Ack(ID);
+	//return 1;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

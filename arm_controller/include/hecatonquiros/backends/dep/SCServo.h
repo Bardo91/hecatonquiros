@@ -22,7 +22,7 @@ class SCServo{
 		class SafeSerial{
 			public:
 				bool init(std::string &_port){
-					mSerial = new serial::Serial(_port, 1000000, serial::Timeout::simpleTimeout(1000));
+					mSerial = new serial::Serial(_port, 1000000, serial::Timeout::simpleTimeout(100));
 					return mSerial->isOpen();
 				}
 				std::string readline(){
