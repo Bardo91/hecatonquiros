@@ -94,7 +94,7 @@ int SCServo::regWrite(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void SCServo::snycWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat, u8 nLen) {
+void SCServo::syncWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat[], u8 nLen) {
 	u8 mesLen = ((nLen+1)*IDN+4);
 	u8 Sum = 0;
 	u8 bBuf[7];
@@ -108,13 +108,15 @@ void SCServo::snycWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat, u8 nLen) {
 	mSerialConnection->write(bBuf, 7);
 
 	Sum = 0xfe + mesLen + INST_SYNC_WRITE + MemAddr + nLen;
-	u8 i, j;
+	u8 i, j, k;
 	for(i=0; i<IDN; i++){
 		mSerialConnection->write(&ID[i],1);
-		mSerialConnection->write(nDat, nLen);
+		mSerialConnection->write(nDat[i], nLen);
+		//std::cout << "nDat: " << (int) *nDat[i] << std::endl;
+
 		Sum += ID[i];
 		for(j=0; j<nLen; j++){
-			Sum += nDat[j];
+				Sum += nDat[i][j];
 		}
 	}
 	u8 negSum = ~Sum;
@@ -149,6 +151,11 @@ int SCServo::writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun) {
 	Host2SCS(buf+0, buf+1, Position);
 	Host2SCS(buf+2, buf+3, Time);
 	Host2SCS(buf+4, buf+5, Speed);
+	std::cout << "buf: ";
+	//for(int j = 0; j<6; j++){
+	//	std::cout << (int)buf[j];
+	//}
+	std::cout << std::endl;
 	writeBuf(ID, P_GOAL_POSITION_L, buf, 6, Fun);
 	return Ack(ID);
 	//return 1;
@@ -170,12 +177,33 @@ void SCServo::RegWriteAction() {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void SCServo::SyncWritePos(u8 ID[], u8 IDN, u16 Position, u16 Time, u16 Speed) {
+void SCServo::SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]) {
+	mSerialConnection->flush();
+	u8 *buf_send[6];
 	u8 buf[6];
-	Host2SCS(buf+0, buf+1, Position);
-	Host2SCS(buf+2, buf+3, Time);
-	Host2SCS(buf+4, buf+5, Speed);
-	snycWrite(ID, IDN, P_GOAL_POSITION_L, buf, 6);
+	for (int i = 0; i<IDN; i++){
+		Host2SCS(buf+0, buf+1, Position[i]);
+		Host2SCS(buf+2, buf+3, Time[i]);
+		Host2SCS(buf+4, buf+5, Speed[i]);
+		//buf_send[i] = (u8 *)std::malloc( sizeof(u8)*6 );
+		buf_send[i] = new u8 [6];
+		std::memcpy(buf_send[i], buf, sizeof(u8)*6);
+		//std::cout << "Pos: " << (int) Position[i] << std::endl;
+		//std::cout << "Time: " << (int) Time[i] << std::endl;
+		//std::cout << "Speed: " << (int) Speed[i] << std::endl;
+		//std::cout << "Sync buf: ";
+		//for(int j = 0; j<6; j++){
+		//	std::cout << (int)buf[j];
+		//}
+		//std::cout << std::endl;
+		//std::cout << "Sync buf_send: ";
+		//for(int k = 0; k<6; k++){
+		//	std::cout << (int)buf_send[i][k];
+		//}
+		//std::cout << std::endl;
+		
+	}
+	syncWrite(ID, IDN, P_GOAL_POSITION_L, buf_send, 6);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

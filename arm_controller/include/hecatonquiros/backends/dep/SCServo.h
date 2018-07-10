@@ -12,6 +12,8 @@
 #include <string>
 #include <mutex>
 #include <map>
+#include <iostream>
+#include <stdio.h>
 
 #include <serial/serial.h>
 
@@ -87,14 +89,14 @@ class SCServo{
 
 		int genWrite(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen);//��ͨдָ��
 		int regWrite(u8 ID, u8 MemAddr,u8 *nDat, u8 nLen);//�첽дָ��
-		void snycWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat, u8 nLen);//ͬ��дָ��
+		void syncWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat[], u8 nLen);//ͬ��дָ��
 		int writeByte(u8 ID, u8 MemAddr, u8 bDat);//д1���ֽ�
 		int writeWord(u8 ID, u8 MemAddr, u16 wDat);//д2���ֽ�
 		int EnableTorque(u8 ID, u8 Enable);//Ť������ָ��
 		int WritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//��ͨдλ��ָ��
 		int RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//�첽дλ��ָ��
 		void RegWriteAction();//ִ���첽дָ��
-		void SyncWritePos(u8 ID[], u8 IDN, u16 Position, u16 Time, u16 Speed = 0);//ͬ��дλ��ָ��
+		void SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[] = 0);//ͬ��дλ��ָ��
 		int WriteSpe(u8 ID, s16 Speed);//��Ȧ����ָ��
 		int Read(u8 ID, u8 MemAddr, u8 *nData, u8 nLen);//��ָ��
 		int readByte(u8 ID, u8 MemAddr);//��1���ֽ�
