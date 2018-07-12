@@ -151,7 +151,7 @@ int SCServo::writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun) {
 	Host2SCS(buf+0, buf+1, Position);
 	Host2SCS(buf+2, buf+3, Time);
 	Host2SCS(buf+4, buf+5, Speed);
-	std::cout << "buf: ";
+	//std::cout << "buf: ";
 	//for(int j = 0; j<6; j++){
 	//	std::cout << (int)buf[j];
 	//}
