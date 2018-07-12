@@ -81,9 +81,19 @@ namespace hecatonquiros{
             }
         }
         //if(mServoDriver->isConnected()){
+            //for(unsigned i = 0; i < _joints.size(); i++){
+            //    mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
+            //}
+            unsigned char idn = _joints.size();
+            unsigned char id[idn];
+            unsigned short pos[idn], tim[idn], spee[idn];
             for(unsigned i = 0; i < _joints.size(); i++){
-                mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
+		        id[i] = mArmId*10 + i + 1;
+		        pos[i] = mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]);
+		        tim[i] = mSpeed;
+		        spee[i] = 0;
             }
+            mServoDriver->SyncWritePos(id, idn, pos, tim, spee);
             return true;
         //}
         return false;
