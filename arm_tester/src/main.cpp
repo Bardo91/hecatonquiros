@@ -625,6 +625,35 @@ int main(int _argc, char **_argv) {
 					}
 					break;
 				}
+				case '+':
+				{
+					auto poseInit = armInUse->pose();
+					std::cout << "how much time in seconds: ";
+					float totalTime = 5000;
+					std::cin >> totalTime;
+					totalTime *= 1000;
+					auto t0 = std::chrono::high_resolution_clock::now();
+					for(;;){
+						auto t1 = std::chrono::high_resolution_clock::now();
+						float incT = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+						if(incT > totalTime)
+							break;
+
+						auto pose = poseInit;
+
+						pose(0,3) += sin(incT*0.0/1000)*0.15;
+						pose(1,3) += cos(incT*0.5/1000)*0.15;
+						pose(2,3) += sin(incT*0.5/1000)*0.15;
+						std::vector<float> joints;
+						std::this_thread::sleep_for(std::chrono::milliseconds(30));
+						if(armInUse->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
+							armInUse->joints(joints, true);
+						}else{
+							std::cout << "Not found IK" << std::endl;
+						}
+					}
+					break;
+				}
 			}	
 		}	
 	}
