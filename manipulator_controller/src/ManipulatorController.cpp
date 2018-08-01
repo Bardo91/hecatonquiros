@@ -76,9 +76,9 @@ bool ManipulatorController::init(int _argc, char** _argv){
     // ROS publishers and subscribers.
     ros::NodeHandle nh;
     
-    mStatePublisher = nh.advertise<std_msgs::String>("/aeroarms/manipulator_controller/state", 1);  
+    mStatePublisher = nh.advertise<std_msgs::String>("/manipulator_controller/state", 1);  
     
-    mLeftTargetJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/aeroarms/manipulator_controller/left/target_joints", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
+    mLeftTargetJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/hecatonquiros/left/target_joints", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
         if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
             std::vector<float> joints;
             for(auto j:_msg->position){
@@ -88,7 +88,7 @@ bool ManipulatorController::init(int _argc, char** _argv){
         }
     });
 
-    mRightTargetJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/aeroarms/manipulator_controller/right/target_joints", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
+    mRightTargetJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/hecatonquiros/right/target_joints", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
         if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
             std::vector<float> joints;
             for(auto j:_msg->position){
@@ -98,37 +98,41 @@ bool ManipulatorController::init(int _argc, char** _argv){
         }
     });
 
-    mLeftTargetPose3DSubscriber = nh.subscribe<geometry_msgs::Point>("/aeroarms/manipulator_controller/left/target_pose3d", 1, [&](const geometry_msgs::Point::ConstPtr &_msg){
+    mLeftTargetPose3DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left/target_pose3d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
 
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-            pose(0,3) = _msg->x;
-            pose(1,3) = _msg->y;
-            pose(2,3) = _msg->z;
+            pose(0,3) = _msg->pose.position.x;
+            pose(1,3) = _msg->pose.position.y;
+            pose(2,3) = _msg->pose.position.z;
             
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
                 mLeftTargetJoints = joints; // 666 Thread safe?
-            }
+            }else{
+		std::cout << "Failed IK" << std::endl;
+	    }
         }
     });
 
-    mRightTargetPose3DSubscriber = nh.subscribe<geometry_msgs::Point>("/aeroarms/manipulator_controller/right/target_pose3d", 1, [&](const geometry_msgs::Point::ConstPtr &_msg){
+    mRightTargetPose3DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right/target_pose3d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
 
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-            pose(0,3) = _msg->x;
-            pose(1,3) = _msg->y;
-            pose(2,3) = _msg->z;
+            pose(0,3) = _msg->pose.position.x;
+            pose(1,3) = _msg->pose.position.y;
+            pose(2,3) = _msg->pose.position.z;
             
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
-                mLeftTargetJoints = joints; // 666 Thread safe?
-            }
+                mRightTargetJoints = joints; // 666 Thread safe?
+            }else{
+		std::cout << "Failed IK" << std::endl;
+	    }
         }
     });
 
-    mLeftTargetPose6DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/aeroarms/manipulator_controller/left/target_pose6d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
+    mLeftTargetPose6DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left/target_pose6d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
             
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
@@ -156,7 +160,7 @@ bool ManipulatorController::init(int _argc, char** _argv){
         }
     });
 
-    mRightTargetPose6DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/aeroarms/manipulator_controller/right/target_pose6d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
+    mRightTargetPose6DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right/target_pose6d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
 
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
@@ -179,14 +183,14 @@ bool ManipulatorController::init(int _argc, char** _argv){
             
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
-                mLeftTargetJoints = joints; // 666 Thread safe?
+                mRightTargetJoints = joints; // 666 Thread safe?
             }
         }
     });
 
-    mLeftClawService = nh.advertiseService("/aeroarms/manipulator_controller/left/claw", &ManipulatorController::leftClawService, this);
-    mRightClawService = nh.advertiseService("/aeroarms/manipulator_controller/right/claw", &ManipulatorController::rightClawService, this);
-    mEmergencyStopService = nh.advertiseService("/aeroarms/manipulator_controller/emergency_stop", &ManipulatorController::emergencyStopService, this);
+    mLeftClawService = nh.advertiseService("/hecatonquiros/left/claw", &ManipulatorController::leftClawService, this);
+    mRightClawService = nh.advertiseService("/hecatonquiros/right/claw", &ManipulatorController::rightClawService, this);
+    mEmergencyStopService = nh.advertiseService("/hecatonquiros/emergency_stop", &ManipulatorController::emergencyStopService, this);
 
 
     return true;
@@ -331,17 +335,34 @@ void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
     
     ros::NodeHandle nh;
     std::string armName = _arm == DualManipulator::eArm::LEFT ? "left"  : "right" ;
-    ros::Publisher jointsPublisher = nh.advertise<sensor_msgs::JointState>("/aeroarms/manipulator_controller/"+armName+"/joints_state", 1);
+    ros::Publisher jointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+armName+"/joints_state", 1);
+    ros::Publisher posePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/"+armName+"/pose", 1);
     ros::Rate rate(50);
 
     while(ros::ok()){
         std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
+	jointsMsg.header.stamp = ros::Time::now();
         joints = mManipulator.joints(_arm);
         for(auto&j:joints){
             jointsMsg.position.push_back(j);
         }
         jointsPublisher.publish(jointsMsg);
+	
+	Eigen::Matrix4f pose = mManipulator.pose(_arm);
+
+	geometry_msgs::PoseStamped poseMsg;
+	poseMsg.pose.position.x = pose(0,3);
+	poseMsg.pose.position.y = pose(1,3);
+	poseMsg.pose.position.z = pose(2,3);
+	Eigen::Quaternionf q = Eigen::Quaternionf(pose.block<3,3>(0,0).matrix());
+	poseMsg.pose.orientation.w = q.w();
+	poseMsg.pose.orientation.x = q.x();
+	poseMsg.pose.orientation.y = q.y();
+	poseMsg.pose.orientation.z = q.z();
+	poseMsg.header.frame_id = "hecatonquiros_dual";
+	poseMsg.header.stamp = poseMsg.header.stamp ;
+	posePublisher.publish(poseMsg);
         rate.sleep();
     }
 }   

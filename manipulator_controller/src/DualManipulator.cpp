@@ -56,7 +56,7 @@ bool DualManipulator::init(std::string _json){
         off1.push_back(v.GetDouble());
     }
     ms1.offset = off1;
-    ms1.rotation = {0,0,1,0};
+    ms1.rotation = {0,0,0,1};
     ms1.visualizer = visualize;
     mLeftArm = new hecatonquiros::Arm4DoF(ms1, bc1);
 
@@ -68,7 +68,7 @@ bool DualManipulator::init(std::string _json){
         off2.push_back(v.GetDouble());
     }
     ms2.offset = off2;
-    ms2.rotation = {0,0,1,0};
+    ms2.rotation = {0,0,0,1};
     mRightArm = new hecatonquiros::Arm4DoF(ms2, bc2);
 
     return true;
