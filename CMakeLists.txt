@@ -11,6 +11,10 @@ set(PROJECT_VERSION 0.4.0)
 # Load macros
 include(cmake/hecatonquiros_macros.cmake)
 
+# Common configuration
+IF(UNIX)
+	add_definitions(-std=c++11)
+ENDIF()
 
 # Add core library
 find_package(catkin REQUIRED COMPONENTS
@@ -55,7 +59,7 @@ compile_tool(calibration_feetech)
 
 file(GLOB_RECURSE TOOL_SRC_joystick_controller "tools/joystick_controller/src/*.h" "tools/joystick_controller/src/*.inl" "tools/joystick_controller/src/*.cpp")
 
-compile_tool(joystick_controller)
+compile_library_tool(joystick_controller)
 
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller "tools/manipulator_controller/src/*.h" "tools/manipulator_controller/src/*.inl" "tools/manipulator_controller/src/*.cpp")
 

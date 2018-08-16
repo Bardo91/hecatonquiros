@@ -21,8 +21,8 @@
 #include <ros/ros.h>
 #include <thread>
 
-#include <DualManipulator.h>
-#include <TopicWatchDog.h>
+#include "DualManipulator.h"
+#include "TopicWatchDog.h"
 
 #include "rapidjson/document.h"
 

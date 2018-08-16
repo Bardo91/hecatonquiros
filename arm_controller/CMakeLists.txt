@@ -75,9 +75,6 @@ find_package(Boost REQUIRED COMPONENTS chrono)
 #########################################
 ######			Executable		   ######
 #########################################
-IF(UNIX)
-	add_definitions(-std=c++11)
-ENDIF()
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
