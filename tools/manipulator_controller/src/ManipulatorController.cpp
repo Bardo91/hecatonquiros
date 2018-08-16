@@ -285,7 +285,6 @@ void ManipulatorController::movingCallback(){
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
-    
     ros::NodeHandle nh;
     std::string armName = _arm == DualManipulator::eArm::LEFT ? "left"  : "right" ;
     ros::Publisher jointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+armName+"/joints_state", 1);
@@ -314,7 +313,7 @@ void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
 	poseMsg.pose.orientation.y = q.y();
 	poseMsg.pose.orientation.z = q.z();
 	poseMsg.header.frame_id = "hecatonquiros_dual";
-	poseMsg.header.stamp = poseMsg.header.stamp ;
+	poseMsg.header.stamp = ros::Time::now() ;
 	posePublisher.publish(poseMsg);
         rate.sleep();
     }
