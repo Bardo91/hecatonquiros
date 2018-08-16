@@ -160,7 +160,6 @@ namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     std::vector<float> BackendFeetech::joints(int nJoints){
         std::vector<float> joints;
-        std::vector<int> vals;
         mComGuard.lock();
         for(unsigned i = 0; i < nJoints; i++){
             int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
@@ -168,13 +167,12 @@ namespace hecatonquiros{
                 std::cout << "Reading error from feetech backend" << std::endl;
                 return {};
             }
-            vals.push_back(val);
+            
             joints.push_back(mapValToAngle( mMinMaxValues[i].first, 
                                             mMinMaxValues[i].second,
                                             val - mOffsetJoints[i]));
         }
         mComGuard.unlock();
-        printf("%d,%d,%d,%d,%d,%d\n", vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
 
         return joints;
     }
