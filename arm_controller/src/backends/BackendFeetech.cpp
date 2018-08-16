@@ -237,14 +237,14 @@ namespace hecatonquiros{
         changeValues(extractedValues);
         mOffsetJoints = extractedOffsets;
         
-        std::cout << "MinMaxValues: " << std::endl;
-        for(int i = 0; i < extractedValues.size(); i++){
-            std::cout << extractedValues[i].first << " | " << extractedValues[i].second << std::endl;
-        }
-        std::cout << "Offsets: " << std::endl;
-        for(int i = 0; i < mOffsetJoints.size(); i++){
-            std::cout << mOffsetJoints[i] << std::endl;
-        }
+        //std::cout << "MinMaxValues: " << std::endl;
+        //for(int i = 0; i < extractedValues.size(); i++){
+        //    std::cout << extractedValues[i].first << " | " << extractedValues[i].second << std::endl;
+        //}
+        //std::cout << "Offsets: " << std::endl;
+        //for(int i = 0; i < mOffsetJoints.size(); i++){
+        //    std::cout << mOffsetJoints[i] << std::endl;
+        //}
 
         return true;
         
