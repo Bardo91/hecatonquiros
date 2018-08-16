@@ -83,7 +83,7 @@ file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
 GroupSources(src)
 add_library(${PROJECT_NAME} ${SRC_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ./include)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenCV_LIBS})
