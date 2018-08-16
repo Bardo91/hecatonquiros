@@ -39,6 +39,7 @@ generate_messages(
 )
 
 catkin_package(
+	INCLUDE_DIRS ./arm_controller/include
 	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
 )
 
