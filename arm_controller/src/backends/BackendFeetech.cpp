@@ -28,6 +28,8 @@
 #include <chrono>
 
 namespace hecatonquiros{
+    std::mutex BackendFeetech::mComGuard;
+
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::init(const Config &_config){
         if(_config.configXML != ""){
@@ -80,55 +82,49 @@ namespace hecatonquiros{
                 mUsedJoints.push_back(i);
             }
         }
+        
+        mComGuard.lock();
         //if(mServoDriver->isConnected()){
-            //for(unsigned i = 0; i < _joints.size(); i++){
-            //    mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
-            //}
-            unsigned char idn = _joints.size();
-            unsigned char id[idn];
-            unsigned short pos[idn], tim[idn], spee[idn];
-            for(unsigned i = 0; i < _joints.size(); i++){
-		        id[i] = mArmId*10 + i + 1;
-		        pos[i] = mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]);
-		        tim[i] = mSpeed;
-		        spee[i] = 0;
-            }
-            mServoDriver->SyncWritePos(id, idn, pos, tim, spee);
-            return true;
+            // unsigned char idn = _joints.size();
+            // unsigned char id[idn];
+            // unsigned short pos[idn], tim[idn], spee[idn];
+            // for(unsigned i = 0; i < _joints.size(); i++){
+		    //     id[i] = mArmId*10 + i + 1;
+		    //     pos[i] = mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]);
+		    //     tim[i] = mSpeed;
+		    //     spee[i] = 0;
+            // }
+            // mServoDriver->SyncWritePos(id, idn, pos, tim, spee);
+            // return true;
         //}
-        return false;
+        for(unsigned i = 0; i < _joints.size(); i++){
+            mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
+        }
+        mComGuard.unlock();
+
+        
+        return true;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::claw(const int _action){
         if(_action == 0){
-            //if(mServoDriver->isConnected()){
-                //std::cout << "Close claw!" << std::endl;
-                mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
-                return true;
-            //}else{
-            //    std::cout << "ServoDriver not connected!" << std::endl;
-            //    return false;
-            //}
+            mComGuard.lock();
+            mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
+            mComGuard.unlock();
+            return true;
         }else if(_action == 1){
-            //if(mServoDriver->isConnected()){
-                //std::cout << "Stop claw!" << std::endl;
-                int pos = mServoDriver->ReadPos(mArmId*10 + 7);
-                mServoDriver->WritePos(mArmId*10 + 7, pos, mSpeed);
-                return true;
-            //}else{
-            //    std::cout << "ServoDriver not connected!" << std::endl;
-            //    return false;
-            //}
+            mComGuard.lock();
+            int pos = mServoDriver->ReadPos(mArmId*10 + 7);
+            mServoDriver->WritePos(mArmId*10 + 7, pos, mSpeed);
+            mComGuard.unlock();
+            return true;
+        
         }else if(_action == 2){
-            //if(mServoDriver->isConnected()){
-                //std::cout << "Open claw!" << std::endl;
-                mServoDriver->WritePos(mArmId*10 + 7, 1023, mSpeed);
-                return true;
-            //}else{
-            //    std::cout << "ServoDriver not connected!" << std::endl;
-            //    return false;
-            //}
+            mComGuard.lock();
+            mServoDriver->WritePos(mArmId*10 + 7, 1023, mSpeed);
+            mComGuard.unlock();
+            return true;
         }else{
             std::cout << "Unrecognized command!" << std::endl;
             return false;
@@ -147,23 +143,38 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     int BackendFeetech::jointPos(const int _id){
-        return mServoDriver->ReadPos(mArmId*10 + _id + 1);
+        mComGuard.lock();
+        int pos = mServoDriver->ReadPos(mArmId*10 + _id + 1);
+        mComGuard.unlock();
+        return pos;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
     int BackendFeetech::jointLoad(const int _id){
-        return mServoDriver->ReadLoadH(mArmId*10 + _id + 1);
+        mComGuard.lock();
+        int load = mServoDriver->ReadLoadH(mArmId*10 + _id + 1);
+        mComGuard.unlock();
+        return load;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
     std::vector<float> BackendFeetech::joints(int nJoints){
         std::vector<float> joints;
+        std::vector<int> vals;
+        mComGuard.lock();
         for(unsigned i = 0; i < nJoints; i++){
             int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
+            if(val < 0 || val > 1023){
+                std::cout << "Reading error from feetech backend" << std::endl;
+                return {};
+            }
+            vals.push_back(val);
             joints.push_back(mapValToAngle( mMinMaxValues[i].first, 
                                             mMinMaxValues[i].second,
                                             val - mOffsetJoints[i]));
         }
+        mComGuard.unlock();
+        printf("%d,%d,%d,%d,%d,%d\n", vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);
 
         return joints;
     }

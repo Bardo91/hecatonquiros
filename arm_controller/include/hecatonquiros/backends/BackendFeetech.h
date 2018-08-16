@@ -92,6 +92,9 @@ namespace hecatonquiros{
         std::thread mLoadChecker;
         std::vector<int> mUsedJoints;
         std::vector<float> mOffsetJoints;
+
+        #warning This static guard only makes sense if all the devices are connecting using the same serial device, which is the case now buy might not be
+        static std::mutex mComGuard;
     };
 }
 
