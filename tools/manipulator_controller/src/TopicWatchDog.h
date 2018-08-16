@@ -75,6 +75,10 @@ public:
         mBulldog.unlock();
     }
 
+    int getNumPublishers(){
+        return mSubscriber.sub.getNumPublishers();
+    }
+
 private: 
     void dog(const typename T_::ConstPtr &_msg);
     void initTimer();
