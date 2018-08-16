@@ -75,6 +75,10 @@ namespace hecatonquiros{
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints) = 0;
 
+        /// End effector pose given joints
+        /// \param _joints: joints to test endeffector
+        virtual Eigen::Matrix4f testFK(const std::vector<float> _joints) {return Eigen::Matrix4f::Identity();};
+
         /// Get the points of the desired trajectory
         /// \param _pose: desired points that the trajectory must have
         /// \param _traj: list of possible solutions joints for given poses
