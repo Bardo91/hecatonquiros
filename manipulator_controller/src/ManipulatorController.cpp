@@ -140,23 +140,20 @@ bool ManipulatorController::init(int _argc, char** _argv){
             pose(1,3) = _msg->pose.position.y;
             pose(2,3) = _msg->pose.position.z;
 
-            float dx = _msg->pose.orientation.x;
-            float dy = _msg->pose.orientation.y;
-            float dz = _msg->pose.orientation.z;
+	    Eigen::Quaternionf q;
+	    q.x() = _msg->pose.orientation.x;
+	    q.y() = _msg->pose.orientation.y;
+	    q.z() = _msg->pose.orientation.z;
+	    q.w() = _msg->pose.orientation.w;
 
-            Eigen::Vector3f zAxis = {dx, dy, dz};
-            zAxis /=zAxis.norm();
-            // zAxis -= zAxis.dot(xAxis)*xAxis;
-
-            // Eigen::Vector3f yAxis = zAxis.cross(xAxis);
-            // pose.block<3,1>(0,0) = xAxis;
-            // pose.block<3,1>(0,1) = yAxis;
-            pose.block<3,1>(0,2) = zAxis;
+            pose.block<3,3>(0,0) = q.matrix();
             
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
                 mLeftTargetJoints = joints; // 666 Thread safe?
-            }  
+            }  else{
+		std::cout << "Failed IK" << std::endl;
+	    }
         }
     });
 
@@ -168,23 +165,20 @@ bool ManipulatorController::init(int _argc, char** _argv){
             pose(1,3) = _msg->pose.position.y;
             pose(2,3) = _msg->pose.position.z;
 
-            float dx = _msg->pose.orientation.x;
-            float dy = _msg->pose.orientation.y;
-            float dz = _msg->pose.orientation.z;
+	    Eigen::Quaternionf q;
+	    q.x() = _msg->pose.orientation.x;
+	    q.y() = _msg->pose.orientation.y;
+	    q.z() = _msg->pose.orientation.z;
+	    q.w() = _msg->pose.orientation.w;
 
-            Eigen::Vector3f zAxis = {dx, dy, dz};
-            zAxis /=zAxis.norm();
-            // zAxis -= zAxis.dot(xAxis)*xAxis;
-
-            // Eigen::Vector3f yAxis = zAxis.cross(xAxis);
-            // pose.block<3,1>(0,0) = xAxis;
-            // pose.block<3,1>(0,1) = yAxis;
-            pose.block<3,1>(0,2) = zAxis;
+            pose.block<3,3>(0,0) = q.matrix();
             
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
                 mRightTargetJoints = joints; // 666 Thread safe?
-            }
+            }else{
+		std::cout << "Failed IK" << std::endl;
+	    }
         }
     });
 
