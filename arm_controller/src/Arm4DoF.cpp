@@ -73,13 +73,20 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     std::vector<float> Arm4DoF::joints() const {
-        if(mModelSolver != nullptr){
-            return mModelSolver->joints();
+        if(mBackend == nullptr){
+            // 666 assuming 6
+            std::vector<float> joints;
+            for(unsigned i = 0; i < 6; i++){
+                joints.push_back(mBackend->jointPos(i));
+            }
         }else{
-            std::cout << "No model solver instantiated" << std::endl;
-            return {};
+            if(mModelSolver != nullptr){
+                return mModelSolver->joints();
+            }else{
+                std::cout << "No model solver instantiated" << std::endl;
+                return {};
+            }
         }
-        
     }
 
     //---------------------------------------------------------------------------------------------------------------------
