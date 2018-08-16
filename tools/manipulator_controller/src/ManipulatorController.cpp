@@ -77,6 +77,7 @@ bool ManipulatorController::init(int _argc, char** _argv){
     
     mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/controller/state", 1);  
     
+    // Direct joints access
     mLeftTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/left/target_joints", 0.2);
     WatchdogJoints::Callback wrapperLeftJointsCallback = [&](const typename sensor_msgs::JointState::ConstPtr &_msg){rightJointsCallback(_msg);};
     mLeftTargetJointsSubscriber->attachCallback(wrapperLeftJointsCallback);
@@ -85,6 +86,7 @@ bool ManipulatorController::init(int _argc, char** _argv){
     WatchdogJoints::Callback wrapperRightJointsCallback = [&](const typename sensor_msgs::JointState::ConstPtr &_msg){leftJointsCallback(_msg);};
     mRightTargetJointsSubscriber->attachCallback(wrapperRightJointsCallback);
 
+    // FAST-IK methods
     mLeftTargetPose3DSubscriber = new WatchdogPose("/hecatonquiros/left/target_pose3d", 0.2);
     WatchdogPose::Callback wrapperLeftPose3dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose3DCallback(_msg);};
     mLeftTargetPose3DSubscriber->attachCallback(wrapperLeftPose3dCallback);
@@ -101,21 +103,22 @@ bool ManipulatorController::init(int _argc, char** _argv){
     WatchdogPose::Callback wrapperRightPose6dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose6DCallback(_msg);};
     mRightTargetPose6DSubscriber->attachCallback(wrapperRightPose6dCallback);
 
+    // Jacobian methods
     mLeftTargetPose3DJacobiSubscriber = new WatchdogPose("/hecatonquiros/left/target_pose3d_jacobi", 0.2);
-    WatchdogPose::Callback wrapperLeftPose3dJacobiSCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose3DJacobiCallback(_msg);};
-    mLeftTargetPose3DSubscriber->attachCallback(wrapperLeftPose3dCallback);
+    WatchdogPose::Callback wrapperLeftPose3dJacobiCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose3DJacobiCallback(_msg);};
+    mLeftTargetPose3DJacobiSubscriber->attachCallback(wrapperLeftPose3dJacobiCallback);
 
     mRightTargetPose3DJacobiSubscriber = new WatchdogPose("/hecatonquiros/right/target_pose3d_jacobi", 0.2);
-    WatchdogPose::Callback wrapperRightPose3dJacobiSCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose3DJacobiCallback(_msg);};
-    mRightTargetPose3DSubscriber->attachCallback(wrapperRightPose3dCallback);
+    WatchdogPose::Callback wrapperRightPose3dJacobiCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose3DJacobiCallback(_msg);};
+    mRightTargetPose3DJacobiSubscriber->attachCallback(wrapperRightPose3dJacobiCallback);
 
     mLeftTargetPose6DJacobiSubscriber = new WatchdogPose("/hecatonquiros/left/target_pose6d_jacobi", 0.2);
-    WatchdogPose::Callback wrapperLeftPose6dJacobiSCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose6DJacobiCallback(_msg);};
-    mLeftTargetPose6DSubscriber->attachCallback(wrapperLeftPose6dCallback);
+    WatchdogPose::Callback wrapperLeftPose6dJacobiCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose6DJacobiCallback(_msg);};
+    mLeftTargetPose6DJacobiSubscriber->attachCallback(wrapperLeftPose6dJacobiCallback);
 
     mRightTargetPose6DJacobiSubscriber = new WatchdogPose("/hecatonquiros/right/target_pose6d_jacobi", 0.2);
-    WatchdogPose::Callback wrapperRightPose6dJacobiSCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose6DJacobiCallback(_msg);};
-    mRightTargetPose6DSubscriber->attachCallback(wrapperRightPose6dCallback);
+    WatchdogPose::Callback wrapperRightPose6dJacobiCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose6DJacobiCallback(_msg);};
+    mRightTargetPose6DJacobiSubscriber->attachCallback(wrapperRightPose6dJacobiCallback);
 
     mLeftClawService = nh.advertiseService("/hecatonquiros/left/claw", &ManipulatorController::leftClawService, this);
     mRightClawService = nh.advertiseService("/hecatonquiros/right/claw", &ManipulatorController::rightClawService, this);
@@ -370,7 +373,7 @@ void ManipulatorController::rightPose3DCallback(const geometry_msgs::PoseStamped
 	    if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
 		mRightTargetJoints = joints; // 666 Thread safe?
 	    }else{
-		std::cout << "Failed IK right" << std::endl;
+		    std::cout << "Failed IK right" << std::endl;
 	    }
 	}
 }
@@ -378,44 +381,44 @@ void ManipulatorController::rightPose3DCallback(const geometry_msgs::PoseStamped
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::leftPose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState == STATES::MOVING){	    
-	    Eigen::Matrix4f pose;
-	    rosToEigen(_msg, pose);
+            Eigen::Matrix4f pose;
+            rosToEigen(_msg, pose);
 
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
                 mLeftTargetJoints = joints; // 666 Thread safe?
             }else{
-		std::cout << "Failed IK left" << std::endl;
-	    }
+                std::cout << "Failed IK left" << std::endl;
+            }
         }
     }
 
 void ManipulatorController::rightPose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState == STATES::MOVING){
-	    Eigen::Matrix4f pose;
-	    rosToEigen(_msg, pose);
+            Eigen::Matrix4f pose;
+            rosToEigen(_msg, pose);
 
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
                 mRightTargetJoints = joints; // 666 Thread safe?
             }else{
-		std::cout << "Failed IK" << std::endl;
-	    }
+                std::cout << "Failed IK" << std::endl;
+            }
         }
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::leftPose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState == STATES::MOVING){
-	    Eigen::Matrix4f pose;
-	    rosToEigen(_msg, pose);
-            
+            Eigen::Matrix4f pose;
+            rosToEigen(_msg, pose);
+                
             std::vector<float> joints;
             if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
                 mLeftTargetJoints = joints; // 666 Thread safe?
             }  else{
-		std::cout << "Failed IK" << std::endl;
-	    }
+                std::cout << "Failed IK" << std::endl;
+            }
         }
     }
 
@@ -429,9 +432,9 @@ void ManipulatorController::rightPose3DJacobiCallback(const geometry_msgs::PoseS
 	    std::vector<float> joints;
 	    Eigen::Vector3f position = pose.block<3,1>(0,3);
 	    if(mManipulator.mRightArm->jacobianStep(position, joints)){
-		mRightTargetJoints = joints; // 666 Thread safe?
+		    mRightTargetJoints = joints; // 666 Thread safe?
 	    }else{
-		std::cout << "Failed IK right" << std::endl;
+		    std::cout << "Failed IK right" << std::endl;
 	    }
 	}
 }
@@ -439,46 +442,46 @@ void ManipulatorController::rightPose3DJacobiCallback(const geometry_msgs::PoseS
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::leftPose3DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState == STATES::MOVING){
-	    Eigen::Matrix4f pose;
-	    rosToEigen(_msg, pose);
-            
+            Eigen::Matrix4f pose;
+            rosToEigen(_msg, pose);
+
             std::vector<float> joints;
-	    Eigen::Vector3f position = pose.block<3,1>(0,3);
+            Eigen::Vector3f position = pose.block<3,1>(0,3);
             if(mManipulator.mLeftArm->jacobianStep(position, joints)){
                 mLeftTargetJoints = joints; // 666 Thread safe?
             }else{
-		std::cout << "Failed IK left" << std::endl;
-	    }
+                std::cout << "Failed IK left" << std::endl;
+            }
         }
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::rightPose6DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState == STATES::MOVING){
-	    Eigen::Matrix4f pose;
-	    rosToEigen(_msg, pose);
+            Eigen::Matrix4f pose;
+            rosToEigen(_msg, pose);
             
             std::vector<float> joints;
             if(mManipulator.mLeftArm->jacobianStep(pose, joints)){
                 mRightTargetJoints = joints; // 666 Thread safe?
             }else{
-		std::cout << "Failed IK" << std::endl;
-	    }
+                std::cout << "Failed IK" << std::endl;
+            }
         }
     }
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::leftPose6DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
         if(mState == STATES::MOVING){
-	    Eigen::Matrix4f pose;
-	    rosToEigen(_msg, pose);
-            
+            Eigen::Matrix4f pose;
+            rosToEigen(_msg, pose);
+                
             std::vector<float> joints;
             if(mManipulator.mRightArm->jacobianStep(pose, joints)){
                 mLeftTargetJoints = joints; // 666 Thread safe?
             }  else{
-		std::cout << "Failed IK" << std::endl;
-	    }
+                std::cout << "Failed IK" << std::endl;
+            }
         }
     }
 
