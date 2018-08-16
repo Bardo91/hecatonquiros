@@ -248,6 +248,6 @@ namespace hecatonquiros{
 
         //-----------------------------------------------------------------------------------------------------------------
     float BackendFeetech::mapValToAngle(float _minAngle, float _maxAngle, int _val){
-        return (_val-0)/(1023-0)*(_maxAngle-_minAngle) + _minAngle;
+        return (_val-0.0)/(1023.0-0.0)*(_maxAngle-_minAngle) + _minAngle;
     }
 }
