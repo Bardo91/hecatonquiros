@@ -353,6 +353,15 @@ void ManipulatorController::rosToEigen(const geometry_msgs::PoseStamped::ConstPt
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::eigenToRos(Eigen::Matrix4f &_pose, geometry_msgs::PoseStamped &_msg){
+	_msg.pose.position.x = _pose(0,3);
+	_msg.pose.position.y = _pose(1,3);
+	_msg.pose.position.z = _pose(2,3);
+
+	Eigen::Quaternionf q(_pose.block<3,3>(0,0));
+	_msg.pose.orientation.x = q.x();
+	_msg.pose.orientation.y = q.y();
+	_msg.pose.orientation.z = q.z();
+	_msg.pose.orientation.w = q.w();
 
 }
 
