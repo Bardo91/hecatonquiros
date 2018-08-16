@@ -190,6 +190,8 @@ void ManipulatorController::stateMachine(){
                 // 666 disable motors
                 break;
             case STATES::HOME:
+                mLeftTargetJoints = cHomeJoints;
+                mRightTargetJoints = cHomeJoints;
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mLeftArm->openClaw();
@@ -197,6 +199,8 @@ void ManipulatorController::stateMachine(){
                 mState = STATES::MOVING;
                 break;
             case STATES::IDLE:
+                mLeftTargetJoints = cHomeJoints;
+                mRightTargetJoints = cHomeJoints;
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mLeftArm->openClaw();
@@ -293,11 +297,15 @@ void ManipulatorController::movingCallback(){
 void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
     ros::NodeHandle nh;
     std::string armName = _arm == DualManipulator::eArm::LEFT ? "left"  : "right" ;
+    bool isLeft = (_arm == DualManipulator::eArm::LEFT);
     ros::Publisher jointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+armName+"/joints_state", 1);
     ros::Publisher posePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/"+armName+"/pose", 1);
+    ros::Publisher aimingJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+armName+"/aiming_joints", 1);  
+
     ros::Rate rate(50);
 
     while(ros::ok()){
+        // Publish state joints
         std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
 	    jointsMsg.header.stamp = ros::Time::now();
@@ -306,21 +314,23 @@ void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
             jointsMsg.position.push_back(j);
         }
         jointsPublisher.publish(jointsMsg);
-	
-	Eigen::Matrix4f pose = mManipulator.pose(_arm);
 
-	geometry_msgs::PoseStamped poseMsg;
-	poseMsg.pose.position.x = pose(0,3);
-	poseMsg.pose.position.y = pose(1,3);
-	poseMsg.pose.position.z = pose(2,3);
-	Eigen::Quaternionf q = Eigen::Quaternionf(pose.block<3,3>(0,0).matrix());
-	poseMsg.pose.orientation.w = q.w();
-	poseMsg.pose.orientation.x = q.x();
-	poseMsg.pose.orientation.y = q.y();
-	poseMsg.pose.orientation.z = q.z();
-	poseMsg.header.frame_id = "hecatonquiros_dual";
-	poseMsg.header.stamp = ros::Time::now() ;
-	posePublisher.publish(poseMsg);
+        // Publish aiming joints
+        sensor_msgs::JointState aimingJointsMsg;
+	    aimingJointsMsg.header.stamp = jointsMsg.header.stamp;
+        std::vector<float> aimJoints = isLeft?mLeftTargetJoints: mRightTargetJoints;
+        for(auto&j:aimJoints){
+            aimingJointsMsg.position.push_back(j);
+        }
+        aimingJointsPublisher.publish(aimingJointsMsg);
+
+        // Publish current pose
+        Eigen::Matrix4f pose = mManipulator.pose(_arm);
+        geometry_msgs::PoseStamped poseMsg;
+        eigenToRos(pose, poseMsg);
+        poseMsg.header.frame_id = "hecatonquiros_dual";
+        poseMsg.header.stamp = jointsMsg.header.stamp;
+        posePublisher.publish(poseMsg);
         rate.sleep();
     }
 }   
