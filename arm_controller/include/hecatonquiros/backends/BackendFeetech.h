@@ -42,6 +42,8 @@ namespace hecatonquiros{
         /// \param _blocking: set blocking or not blocking operation
         /// \return true if joints are send or set without errors, false if something failed.
         virtual bool joints(const std::vector<float> &_joints, bool _blocking = false);
+        
+        virtual std::vector<float> joints(int nJoints);
 
         /// Method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
@@ -62,6 +64,9 @@ namespace hecatonquiros{
 
         // Map from 0 to 1023 according to min and max angle
         int mapAngleToVal(float _minAngle, float _maxAngle, float _angle);
+
+        // Map from 0 to 1023 according to min and max angle
+        float mapValToAngle(float _minAngle, float _maxAngle, int _angle);
 
         /// Change MinMaxValues
         /// \param _newvalues: vector containing the MinMaxValues

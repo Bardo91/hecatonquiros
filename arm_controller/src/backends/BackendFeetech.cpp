@@ -156,8 +156,20 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool BackendFeetech::extractDataXML(std::string _pathXML){
+    std::vector<float> BackendFeetech::joints(int nJoints){
+        std::vector<float> joints;
+        for(unsigned i = 0; i < nJoints; i++){
+            int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
+            joints.push_back(mapValToAngle( mMinMaxValues[i].first, 
+                                            mMinMaxValues[i].second,
+                                            val - mOffsetJoints[i]));
+        }
 
+        return joints;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    bool BackendFeetech::extractDataXML(std::string _pathXML){
         tinyxml2::XMLDocument xml_doc;
         //std::cout << "XML Path: " << _pathXML << std::endl; 
         tinyxml2::XMLError resultXML = xml_doc.LoadFile(_pathXML.c_str());
@@ -232,5 +244,10 @@ namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
     int BackendFeetech::mapAngleToVal(float _minAngle, float _maxAngle, float _angle){
         return (_angle-_minAngle)/(_maxAngle-_minAngle)*(1023-0);
+    }
+
+        //-----------------------------------------------------------------------------------------------------------------
+    float BackendFeetech::mapValToAngle(float _minAngle, float _maxAngle, int _val){
+        return (_val-0)/(1023-0)*(_maxAngle-_minAngle) + _minAngle;
     }
 }

@@ -69,16 +69,19 @@ namespace hecatonquiros{
         /// \brief abstract method for moving joints of the arm to the desired angle
         virtual bool joints(const std::vector<float> &_joints, bool _blocking = false) = 0;
 
+        /// Method to get n first joints of arm 666 Improve method.
+        virtual std::vector<float> joints(int nJoints){return {};}
+
         /// \brief abstract method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
         virtual bool claw(const int _action) = 0;
 
         /// \brief abstract method for read position of a servo
-        /// \param _action: 0 close, 1 stop, 2 open;
+        /// \param _id
         virtual int jointPos(const int _id) = 0;
 
         /// \brief abstract method for read Load of a servo
-        /// \param _action: 0 close, 1 stop, 2 open;
+        /// \param _id
         virtual int jointLoad(const int _id) = 0;
 
         /// \brief Request for particular information of the hardware.
