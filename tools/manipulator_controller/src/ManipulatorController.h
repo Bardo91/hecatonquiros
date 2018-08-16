@@ -75,6 +75,7 @@ private:
     STATES mState = STATES::STOP;
     std::string mLastError ="";
     ros::Publisher mStatePublisher;
+    ros::Publisher mMovingKeepAlive;
 
     std::thread mMainThread;
     std::thread mStatePublisherThread;

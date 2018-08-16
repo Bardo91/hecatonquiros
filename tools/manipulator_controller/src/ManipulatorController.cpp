@@ -77,7 +77,8 @@ bool ManipulatorController::init(int _argc, char** _argv){
     ros::NodeHandle nh;
     
     mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/controller/state", 1);  
-    
+    mMovingKeepAlive = nh.advertise<std_msgs::String>("/hecatonquiros/moving/keep_alive", 1);  
+
     // Direct joints access
     mLeftTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/left/target_joints", 0.2);
     WatchdogJoints::Callback wrapperLeftJointsCallback = [&](const typename sensor_msgs::JointState::ConstPtr &_msg){rightJointsCallback(_msg);};
@@ -282,6 +283,10 @@ void ManipulatorController::movingCallback(){
 
     moveIncLambda(mLeftTargetJoints, DualManipulator::eArm::LEFT);
     moveIncLambda(mRightTargetJoints, DualManipulator::eArm::RIGHT);
+    
+    
+    std_msgs::String aliveMsg;  aliveMsg.data = "I am moving"; 
+    mMovingKeepAlive.publish(aliveMsg);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -295,7 +300,7 @@ void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
     while(ros::ok()){
         std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
-	jointsMsg.header.stamp = ros::Time::now();
+	    jointsMsg.header.stamp = ros::Time::now();
         joints = mManipulator.joints(_arm);
         for(auto&j:joints){
             jointsMsg.position.push_back(j);
