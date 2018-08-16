@@ -51,13 +51,22 @@ private:
     void movingCallback();
     void publisherLoop(DualManipulator::eArm _arm);
 
+    void rosToEigen(const geometry_msgs::PoseStamped::ConstPtr &_msg, Eigen::Matrix4f &_pose);
+    void eigenToRos(Eigen::Matrix4f &_pose, geometry_msgs::PoseStamped &_msg);
+
 private:
+
     void rightJointsCallback(const sensor_msgs::JointState::ConstPtr &_msg);
     void leftJointsCallback(const sensor_msgs::JointState::ConstPtr &_msg);
     void rightPose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
     void leftPose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
     void rightPose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
     void leftPose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+
+    void rightPose3DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+    void leftPose3DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+    void rightPose6DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+    void leftPose6DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
 
 private:
     ros::AsyncSpinner *mRosSpinner; // Use 4 threads
@@ -75,6 +84,9 @@ private:
     WatchdogJoints *mLeftTargetJointsSubscriber, *mRightTargetJointsSubscriber;
     WatchdogPose *mLeftTargetPose3DSubscriber, *mRightTargetPose3DSubscriber;
     WatchdogPose *mLeftTargetPose6DSubscriber, *mRightTargetPose6DSubscriber;
+    WatchdogPose *mLeftTargetPose3DJacobiSubscriber, *mRightTargetPose3DJacobiSubscriber;
+    WatchdogPose *mLeftTargetPose6DJacobiSubscriber, *mRightTargetPose6DJacobiSubscriber;
+
     ros::ServiceServer mLeftClawService, mRightClawService;
     ros::ServiceServer mEmergencyStopService;
     bool mEmergencyStop = false;
