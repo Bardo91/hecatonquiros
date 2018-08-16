@@ -20,7 +20,6 @@
 #include "ManipulatorController.h"
 
 #include <std_msgs/String.h>
-#include <sensor_msgs/JointState.h>
 #include <fstream>
 
 #include <hecatonquiros/Arm4DoF.h>
@@ -76,111 +75,31 @@ bool ManipulatorController::init(int _argc, char** _argv){
     // ROS publishers and subscribers.
     ros::NodeHandle nh;
     
-    mStatePublisher = nh.advertise<std_msgs::String>("/manipulator_controller/state", 1);  
+    mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/controller/state", 1);  
     
-    mLeftTargetJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/hecatonquiros/left/target_joints", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
-        if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
-            std::vector<float> joints;
-            for(auto j:_msg->position){
-                joints.push_back(j);
-            }
-            mLeftTargetJoints = joints; // 666 Thread safe?
-        }
-    });
+    mLeftTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/left/target_joints", 0.2);
+    WatchdogJoints::Callback wrapperLeftJointsCallback = [&](const typename sensor_msgs::JointState::ConstPtr &_msg){rightJointsCallback(_msg);};
+    mLeftTargetJointsSubscriber->attachCallback(wrapperLeftJointsCallback);
 
-    mRightTargetJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/hecatonquiros/right/target_joints", 1, [&](const sensor_msgs::JointState::ConstPtr &_msg){
-        if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
-            std::vector<float> joints;
-            for(auto j:_msg->position){
-                joints.push_back(j);
-            }
-            mRightTargetJoints = joints; // 666 Thread safe?
-        }
-    });
+    mRightTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/right/target_joints", 0.2);
+    WatchdogJoints::Callback wrapperRightJointsCallback = [&](const typename sensor_msgs::JointState::ConstPtr &_msg){leftJointsCallback(_msg);};
+    mRightTargetJointsSubscriber->attachCallback(wrapperRightJointsCallback);
 
-    mLeftTargetPose3DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left/target_pose3d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
-        if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
+    mLeftTargetPose3DSubscriber = new WatchdogPose("/hecatonquiros/left/target_pose3d", 0.2);
+    WatchdogPose::Callback wrapperLeftPose3dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose3DCallback(_msg);};
+    mLeftTargetPose3DSubscriber->attachCallback(wrapperLeftPose3dCallback);
 
-            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-            pose(0,3) = _msg->pose.position.x;
-            pose(1,3) = _msg->pose.position.y;
-            pose(2,3) = _msg->pose.position.z;
-            
-            std::vector<float> joints;
-            if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
-                mLeftTargetJoints = joints; // 666 Thread safe?
-            }else{
-		std::cout << "Failed IK" << std::endl;
-	    }
-        }
-    });
+    mRightTargetPose3DSubscriber = new WatchdogPose("/hecatonquiros/right/target_pose3d", 0.2);
+    WatchdogPose::Callback wrapperRightPose3dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose3DCallback(_msg);};
+    mRightTargetPose3DSubscriber->attachCallback(wrapperRightPose3dCallback);
 
-    mRightTargetPose3DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right/target_pose3d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
-        if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
+    mLeftTargetPose6DSubscriber = new WatchdogPose("/hecatonquiros/left/target_pose6d", 0.2);
+    WatchdogPose::Callback wrapperLeftPose6dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){leftPose6DCallback(_msg);};
+    mLeftTargetPose6DSubscriber->attachCallback(wrapperLeftPose6dCallback);
 
-            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-            pose(0,3) = _msg->pose.position.x;
-            pose(1,3) = _msg->pose.position.y;
-            pose(2,3) = _msg->pose.position.z;
-            
-            std::vector<float> joints;
-            if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
-                mRightTargetJoints = joints; // 666 Thread safe?
-            }else{
-		std::cout << "Failed IK" << std::endl;
-	    }
-        }
-    });
-
-    mLeftTargetPose6DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left/target_pose6d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
-        if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
-            
-            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-            pose(0,3) = _msg->pose.position.x;
-            pose(1,3) = _msg->pose.position.y;
-            pose(2,3) = _msg->pose.position.z;
-
-	    Eigen::Quaternionf q;
-	    q.x() = _msg->pose.orientation.x;
-	    q.y() = _msg->pose.orientation.y;
-	    q.z() = _msg->pose.orientation.z;
-	    q.w() = _msg->pose.orientation.w;
-
-            pose.block<3,3>(0,0) = q.matrix();
-            
-            std::vector<float> joints;
-            if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
-                mLeftTargetJoints = joints; // 666 Thread safe?
-            }  else{
-		std::cout << "Failed IK" << std::endl;
-	    }
-        }
-    });
-
-    mRightTargetPose6DSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right/target_pose6d", 1, [&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
-        if(mState != STATES::STOP && mState !=STATES::IDLE && mState != STATES::HOME){
-
-            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
-            pose(0,3) = _msg->pose.position.x;
-            pose(1,3) = _msg->pose.position.y;
-            pose(2,3) = _msg->pose.position.z;
-
-	    Eigen::Quaternionf q;
-	    q.x() = _msg->pose.orientation.x;
-	    q.y() = _msg->pose.orientation.y;
-	    q.z() = _msg->pose.orientation.z;
-	    q.w() = _msg->pose.orientation.w;
-
-            pose.block<3,3>(0,0) = q.matrix();
-            
-            std::vector<float> joints;
-            if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
-                mRightTargetJoints = joints; // 666 Thread safe?
-            }else{
-		std::cout << "Failed IK" << std::endl;
-	    }
-        }
-    });
+    mRightTargetPose6DSubscriber = new WatchdogPose("/hecatonquiros/right/target_pose6d", 0.2);
+    WatchdogPose::Callback wrapperRightPose6dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){rightPose6DCallback(_msg);};
+    mRightTargetPose6DSubscriber->attachCallback(wrapperRightPose6dCallback);
 
     mLeftClawService = nh.advertiseService("/hecatonquiros/left/claw", &ManipulatorController::leftClawService, this);
     mRightClawService = nh.advertiseService("/hecatonquiros/right/claw", &ManipulatorController::rightClawService, this);
@@ -270,10 +189,23 @@ void ManipulatorController::stateMachine(){
                 break;
         }
 
+	if( mLeftTargetJointsSubscriber->isValid() ||
+	    mRightTargetJointsSubscriber->isValid() ||
+	    mLeftTargetPose3DSubscriber->isValid() || 
+	    mRightTargetPose3DSubscriber->isValid() ||
+	    mLeftTargetPose6DSubscriber->isValid() ||
+	    mRightTargetPose6DSubscriber->isValid() )
+	{
+		mState = STATES::MOVING;
+	}else{		
+		mState = STATES::HOME;
+	}	
+
         std::this_thread::sleep_for(std::chrono::milliseconds(30));
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------
 
 bool ManipulatorController::leftClawService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res){
     if(_req.data)
@@ -285,6 +217,7 @@ bool ManipulatorController::leftClawService(std_srvs::SetBool::Request  &_req, s
     return true;
 };
 
+//---------------------------------------------------------------------------------------------------------------------
 bool ManipulatorController::rightClawService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res){
     if(_req.data)
         mManipulator.mRightArm->openClaw();
@@ -296,6 +229,7 @@ bool ManipulatorController::rightClawService(std_srvs::SetBool::Request  &_req, 
 };
 
 
+//---------------------------------------------------------------------------------------------------------------------
 bool ManipulatorController::emergencyStopService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res){
     mEmergencyStop = _req.data;
 
@@ -309,6 +243,7 @@ bool ManipulatorController::emergencyStopService(std_srvs::SetBool::Request  &_r
     return true;
 }
 
+//---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::movingCallback(){
     auto moveIncLambda = [&](std::vector<float> _targetJoints, DualManipulator::eArm _arm){  // INTEGRATE IN callback to limit speed
         std::vector<float> currJoints = mManipulator.joints(_arm); // 666 thread safe?
@@ -325,6 +260,7 @@ void ManipulatorController::movingCallback(){
     moveIncLambda(mRightTargetJoints, DualManipulator::eArm::RIGHT);
 }
 
+//---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
     
     ros::NodeHandle nh;
@@ -360,3 +296,115 @@ void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
         rate.sleep();
     }
 }   
+
+
+
+//---------------------------------------------------------------------------------------------------------------------
+void ManipulatorController::rightJointsCallback(const sensor_msgs::JointState::ConstPtr &_msg){
+        if(mState == STATES::MOVING){
+            std::vector<float> joints;
+            for(auto j:_msg->position){
+                joints.push_back(j);
+            }
+            mLeftTargetJoints = joints; // 666 Thread safe?
+        }
+    };
+
+//---------------------------------------------------------------------------------------------------------------------
+void ManipulatorController::leftJointsCallback(const sensor_msgs::JointState::ConstPtr &_msg){
+        if(mState == STATES::MOVING){
+            std::vector<float> joints;
+            for(auto j:_msg->position){
+                joints.push_back(j);
+            }
+            mRightTargetJoints = joints; // 666 Thread safe?
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+void ManipulatorController::rightPose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
+	if(mState == STATES::MOVING){
+
+	    Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+	    pose(0,3) = _msg->pose.position.x;
+	    pose(1,3) = _msg->pose.position.y;
+	    pose(2,3) = _msg->pose.position.z;
+	    
+	    std::vector<float> joints;
+	    if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
+		mRightTargetJoints = joints; // 666 Thread safe?
+	    }else{
+		std::cout << "Failed IK right" << std::endl;
+	    }
+	}
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void ManipulatorController::leftPose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
+        if(mState == STATES::MOVING){
+
+            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+            pose(0,3) = _msg->pose.position.x;
+            pose(1,3) = _msg->pose.position.y;
+            pose(2,3) = _msg->pose.position.z;
+            
+            std::vector<float> joints;
+            if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
+                mLeftTargetJoints = joints; // 666 Thread safe?
+            }else{
+		std::cout << "Failed IK left" << std::endl;
+	    }
+        }
+    }
+
+void ManipulatorController::rightPose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
+        if(mState == STATES::MOVING){
+            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+            pose(0,3) = _msg->pose.position.x;
+            pose(1,3) = _msg->pose.position.y;
+            pose(2,3) = _msg->pose.position.z;
+
+	    Eigen::Quaternionf q;
+	    q.x() = _msg->pose.orientation.x;
+	    q.y() = _msg->pose.orientation.y;
+	    q.z() = _msg->pose.orientation.z;
+	    q.w() = _msg->pose.orientation.w;
+
+            pose.block<3,3>(0,0) = q.matrix();
+            
+            std::vector<float> joints;
+            if(mManipulator.checkIk(DualManipulator::eArm::RIGHT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
+                mRightTargetJoints = joints; // 666 Thread safe?
+            }else{
+		std::cout << "Failed IK" << std::endl;
+	    }
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+void ManipulatorController::leftPose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
+        if(mState == STATES::MOVING){
+            
+            Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
+            pose(0,3) = _msg->pose.position.x;
+            pose(1,3) = _msg->pose.position.y;
+            pose(2,3) = _msg->pose.position.z;
+
+	    Eigen::Quaternionf q;
+	    q.x() = _msg->pose.orientation.x;
+	    q.y() = _msg->pose.orientation.y;
+	    q.z() = _msg->pose.orientation.z;
+	    q.w() = _msg->pose.orientation.w;
+
+            pose.block<3,3>(0,0) = q.matrix();
+            
+            std::vector<float> joints;
+            if(mManipulator.checkIk(DualManipulator::eArm::LEFT, pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
+                mLeftTargetJoints = joints; // 666 Thread safe?
+            }  else{
+		std::cout << "Failed IK" << std::endl;
+	    }
+        }
+    }
+
+

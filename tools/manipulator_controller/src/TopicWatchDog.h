@@ -40,6 +40,8 @@ struct SubscriberTrait{
 template<typename T_, int QueueSize_ = 10>
 class TopicWatchDog{
 public:
+    typedef std::function<void(const typename T_::ConstPtr &)> Callback;
+
     TopicWatchDog(std::string _topic, float _maxTimeout = 0.03);
 
     bool isValid(){
