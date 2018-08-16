@@ -66,6 +66,10 @@ file(GLOB_RECURSE TOOL_SRC_manipulator_controller "tools/manipulator_controller/
 
 compile_tool(manipulator_controller)
 
+file(GLOB_RECURSE TOOL_SRC_manipulator_controller_tester "tools/manipulator_controller_tester/src/*.h" "tools/manipulator_controller_tester/src/*.inl" "tools/manipulator_controller_tester/src/*.cpp")
+
+compile_tool(manipulator_controller_tester)
+
 
 
 
