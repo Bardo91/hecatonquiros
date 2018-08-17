@@ -41,7 +41,7 @@ namespace hecatonquiros{
         /// \param _joints: vector containing the joints
         /// \param _blocking: set blocking or not blocking operation
         /// \return true if joints are send or set without errors, false if something failed.
-        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false);
+        virtual bool joints(std::vector<float> &_joints, bool _blocking = false);
         
         virtual std::vector<float> joints(int nJoints);
 

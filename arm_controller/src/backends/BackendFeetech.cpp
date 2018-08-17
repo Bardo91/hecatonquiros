@@ -71,7 +71,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool BackendFeetech::joints(const std::vector<float> &_joints, bool _blocking){
+    bool BackendFeetech::joints(std::vector<float> &_joints, bool _blocking){
         if(_joints.size() > mOffsetJoints.size()){
             for(int i = mOffsetJoints.size() ; i<_joints.size(); i++){
                 mOffsetJoints.push_back(0); // Fill with zeros

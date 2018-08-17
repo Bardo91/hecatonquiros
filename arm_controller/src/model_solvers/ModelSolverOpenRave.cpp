@@ -104,7 +104,7 @@ namespace hecatonquiros{
 
 
     //-----------------------------------------------------------------------------------------------------------------
-    void ModelSolverOpenRave::joints(const std::vector<float> &_joints){
+    void ModelSolverOpenRave::joints(std::vector<float> &_joints){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
@@ -125,7 +125,10 @@ namespace hecatonquiros{
                 indices[i] = i;
             }
             robot->SetDOFValues(joints, 1, indices);
-            
+            robot->GetDOFValues(joints);
+            for(unsigned i = 0; i < _joints.size(); i++){
+                _joints[i] = joints[i];
+            }
 
             //std::vector<Eigen::Matrix4f> transforms;
             //jointsTransform(transforms);

@@ -67,7 +67,7 @@ namespace hecatonquiros{
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false) = 0;
 
         /// \brief abstract method for moving joints of the arm to the desired angle
-        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false) = 0;
+        virtual bool joints(std::vector<float> &_joints, bool _blocking = false) = 0;
 
         /// Method to get n first joints of arm 666 Improve method.
         virtual std::vector<float> joints(int nJoints){return {};}
@@ -97,7 +97,7 @@ namespace hecatonquiros{
 
     class BackendDummy: public Backend{
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false){return true;}
-        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false){return true;}
+        virtual bool joints(std::vector<float> &_joints, bool _blocking = false){return true;}
         virtual bool claw(const int _action){return true;}
         virtual int jointPos(const int _id){return 0;}
         virtual int jointLoad(const int _id){return 0;}

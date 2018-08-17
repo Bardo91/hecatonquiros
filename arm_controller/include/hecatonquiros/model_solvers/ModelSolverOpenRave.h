@@ -41,7 +41,7 @@ namespace hecatonquiros{
 
         /// Set joints of robot
         /// \param _joints: desired joints
-        virtual void joints(const std::vector<float> &_joints);
+        virtual void joints(std::vector<float> &_joints);
         
         /// Get current joints of robot
         virtual std::vector<float> joints() const;
