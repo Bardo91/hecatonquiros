@@ -16,7 +16,7 @@
         <Joint6E2>139.401</Joint6E2>
     </MinMaxValues>
     <Offsets>
-        <Joint1>0.0</Joint1>
+        <Joint1>-0.05</Joint1>
         <Joint2>0.087266463</Joint2>
         <Joint3>0.087266463</Joint3>
         <Joint4>0.0</Joint4>

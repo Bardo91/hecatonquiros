@@ -1,4 +1,4 @@
-<KinBody name ="arm_gripper_5dof">
+<KinBody name ="arm_gripper_6dof">
     <Body name="arm_0_attachment" type="dynamic">
         <Geom type="trimesh">
             <render>../model/arm4dof/arm_0_attachment.stl</render>

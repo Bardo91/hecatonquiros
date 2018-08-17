@@ -48,7 +48,7 @@ namespace hecatonquiros{
 
         /// Set joints of robot
         /// \param _joints: desired joints
-        virtual void joints(const std::vector<float> &_joints) = 0;
+        virtual void joints(std::vector<float> &_joints) = 0;
         
         /// Get current joints of robot
         virtual std::vector<float> joints() const = 0;
@@ -74,6 +74,10 @@ namespace hecatonquiros{
         /// Five end effector pose given joints without moving the arm
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints) = 0;
+
+        /// End effector pose given joints
+        /// \param _joints: joints to test endeffector
+        virtual Eigen::Matrix4f testFK(const std::vector<float> _joints) {return Eigen::Matrix4f::Identity();};
 
         /// Get the points of the desired trajectory
         /// \param _pose: desired points that the trajectory must have

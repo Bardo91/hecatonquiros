@@ -47,7 +47,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool BackendArduino::joints(const std::vector<float> &_joints, bool _blocking){
+    bool BackendArduino::joints(std::vector<float> &_joints, bool _blocking){
         if(mSerialPort != nullptr && mSerialPort->isOpen()){
             std::stringstream cmd;
             cmd << "a"<< mArmId;

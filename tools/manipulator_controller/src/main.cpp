@@ -20,45 +20,26 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
-#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDGAZEBO_H_
+#include "ManipulatorController.h"
 
-#include <hecatonquiros/backends/Backend.h>
-#include <ros/ros.h>
+int main(int _argc, char** _argv){
 
-namespace hecatonquiros{
-    class BackendGazebo: public Backend{
-    public:
-        /// Default constructor
-        BackendGazebo():Backend(){}
+    ManipulatorController controller;
 
-        /// This method is not implemented in arduino backend, it sends false by default.
-        virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
+    if(!controller.init(_argc, _argv)){
+        std::cout << "Error initializing manipulator controller" << std::endl;
+        return false;
+    }
 
-        /// This method move the joints of the arm to the desired angle.
-        /// \param _joints: vector containing the joints
-        /// \param _blocking: set blocking or not blocking operation
-        /// \return true if joints are send or set without errors, false if something failed.
-        virtual bool joints(std::vector<float> &_joints, bool _blocking = false);
+    controller.start();
 
-        /// Method for actuating to claws if implemented and attached
-        /// \param _action: 0 close, 1 stop, 2 open;
-        virtual bool claw(const int _action);
+    while(ros::ok()){
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
-        /// \brief abstract method for read position of a servo
-        /// \param _id: id joint to read
-        virtual int jointPos(const int _id);
+    controller.stop();
 
-        /// \brief abstract method for read Load of a servo
-        /// \param _id: id joint to read
-        virtual int jointLoad(const int _id);
-    private:
-        virtual bool init(const Config &_config);
+    return 0;
 
-	std::string mtopic; 
-	ros::Publisher joint_pub; 
-	int marmId;
-    };
+
 }
-
-#endif

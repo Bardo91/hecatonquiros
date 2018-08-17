@@ -1,11 +1,10 @@
 ###############################################################
 ######                                                   ######
-######			Author: Pablo R.S. (aka. Bardo91)        ######
+######		  Author: Manuel P. J. (aka. manuoso)        ######
 ######                                                   ######
 ###############################################################
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
-project(arm_tester)
 
 # Clasify sources according to folder structure.
 # This creates a nice layout for the project in visual studio
@@ -28,23 +27,22 @@ GroupSources(src)
 #########################################
 ###### Loading 3rd party libraries.######
 #########################################
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/" ${CMAKE_MODULE_PATH})
-
 find_package(catkin REQUIRED COMPONENTS
 			geometry_msgs
 			std_msgs
-                        roscpp
+			roscpp
 			hecatonquiros
-			)
-
+            )
 
 catkin_package(
-  CATKIN_DEPENDS roscpp std_msgs hecatonquiros
+	CATKIN_DEPENDS roscpp std_msgs hecatonquiros geometry_msgs
 )
 
-## Load serial
-find_package(serial REQUIRED)
+## Load Eigen
+find_package(Eigen3 REQUIRED)
+if(${Eigen3_FOUND})
+	MESSAGE( STATUS "Eigen FOUND")
+endif()
 
 #########################################
 ######			Executable		   ######
@@ -53,27 +51,19 @@ IF(UNIX)
 	add_definitions(-std=c++11)
 ENDIF()
 
-file(GLOB_RECURSE SRC_FILES "src/*.cpp" "src/*.h" "src/*.inl" )
+file(GLOB_RECURSE SRC_FILES "src/*.cpp")
+file(GLOB_RECURSE HDR_FILES "src/*.h" "src/*.inl" "include/*.h")
 
-set(PROJECT_NAME arm_tester)
-GroupSources(src)
+set(TOOL_NAME manipulator_controller)
 
-add_executable(${PROJECT_NAME} ${SRC_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+add_executable(${TOOL_NAME} ${SRC_FILES} ${HDR_FILES}) 
+include_directories(PUBLIC ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenCV_LIBS})
+target_link_libraries(${TOOL_NAME} pthread)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PCL_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${PCL_LIBRARIES})
+target_include_directories(${TOOL_NAME} PUBLIC "/usr/include/eigen3")
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${PCL_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${PCL_LIBRARIES})
+target_include_directories(${TOOL_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
+target_link_libraries(${TOOL_NAME} ${catkin_LIBRARIES} hecatonquiros)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} hecatonquiros)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${serial_INDLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${serial_LIBRARIES})
-
-target_include_directories(${PROJECT_NAME} PUBLIC "/usr/include/eigen3")
+add_dependencies(${TOOL_NAME} ${catkin_EXPORTED_TARGETS} ${TOOL_NAME}_generate_messages_cpp)
