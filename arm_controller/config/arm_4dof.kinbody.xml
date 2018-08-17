@@ -93,7 +93,7 @@
         <body>arm_2</body>
         <body>effector_connector</body>
         <Axis>0 0 -1</Axis>
-        <limitsdeg>-110 110</limitsdeg>
+        <limitsdeg>80 100</limitsdeg>
     </joint>
 
     <!-- Adjacents elements for selfcollision -->
