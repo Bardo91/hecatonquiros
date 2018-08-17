@@ -39,9 +39,6 @@ namespace hecatonquiros{
         case Backend::Config::eType::Feetech:
             bd = new BackendFeetech();
             break;
-        case Backend::Config::eType::Dummy:
-            bd = new BackendDummy();
-            break;
         default:
             return nullptr;
         }
