@@ -70,9 +70,3 @@ file(GLOB_RECURSE TOOL_SRC_manipulator_controller_tester "tools/manipulator_cont
 
 compile_tool(manipulator_controller_tester)
 
-
-
-
-
-
-
