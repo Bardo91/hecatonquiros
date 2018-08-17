@@ -644,6 +644,21 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    std::vector<OpenRAVE::GraphHandlePtr> ModelSolverOpenRave::drawCoordinates(Eigen::Matrix4f &_pose, float _size){
+        std::vector<OpenRAVE::GraphHandlePtr> handles;
+	
+	for(unsigned i = 0; i < 3; i++){
+		handles.push_back(
+					drawLine(_pose.block<3,1>(0,3), 
+						_pose.block<3,1>(0,3) + _pose.block<3,1>(0,i)*_size,
+						0.01, 	1*(i==0), 
+							1*(i==1),
+							1*(i==2)));
+	}
+	return handles;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     OpenRAVE::GraphHandlePtr ModelSolverOpenRave::drawLine(Eigen::Vector3f _init, Eigen::Vector3f _end, float _width, float _r, float  _g, float  _b, float  _a){
         #ifdef HAS_OPENRAVE
             return mEnvironment->drawarrow	(	RaveVector< float >(_init[0], _init[1], _init[2], 1),

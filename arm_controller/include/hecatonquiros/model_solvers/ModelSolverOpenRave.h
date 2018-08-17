@@ -96,6 +96,7 @@ namespace hecatonquiros{
         static bool addObject(std::string _xmlObject, std::string _name = "object");
         static void moveObject(Eigen::Matrix4f _T, std::string _name);
         static void setTransparencyObject(std::string _name, float _val);
+	static std::vector<OpenRAVE::GraphHandlePtr> drawCoordinates(Eigen::Matrix4f &_pose, float size = 0.02);
 
         /// Draw a line on the current environment. Keep returned object to keep the line
         /// \param _init: beginning of the line
