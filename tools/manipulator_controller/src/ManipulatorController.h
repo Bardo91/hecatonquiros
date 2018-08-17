@@ -97,6 +97,7 @@ private:
     std::vector<float> cHomeJoints;
 
     std::vector<float> mLeftTargetJoints, mRightTargetJoints;
+    std::vector<float> mLeftLastAimedJoints, mRightLastAimedJoints;
 
     rapidjson::Document mConfigFile;
     bool mActuateBackend = false;

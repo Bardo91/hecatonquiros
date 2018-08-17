@@ -230,7 +230,7 @@ void ManipulatorController::stateMachine(){
 		mState = STATES::HOME;
 	}	
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
 }
 
@@ -274,19 +274,20 @@ bool ManipulatorController::emergencyStopService(std_srvs::SetBool::Request  &_r
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::movingCallback(){
-    auto moveIncLambda = [&](std::vector<float> _targetJoints, DualManipulator::eArm _arm){  // INTEGRATE IN callback to limit speed
+    auto moveIncLambda = [&](std::vector<float> _targetJoints, DualManipulator::eArm _arm)->std::vector<float>{  // INTEGRATE IN callback to limit speed
         std::vector<float> currJoints = mManipulator.joints(_arm); // 666 thread safe?
-        float MAX_JOINT_DIST = 5.0*M_PI/180.0; // 666 parametrize
+        float MAX_JOINT_DIST = 10.0*M_PI/180.0; // 666 parametrize
         for(unsigned i = 0; i < _targetJoints.size();i++){
             float distJoint = (_targetJoints[i] - currJoints[i]);                  // 666 MOVE TO MANIPULATOR CONTROLLER
             distJoint = distJoint > MAX_JOINT_DIST ? MAX_JOINT_DIST:distJoint;
             _targetJoints[i] = currJoints[i] + distJoint;
         }
         mManipulator.joints(_arm,_targetJoints, mActuateBackend);
+        return _targetJoints;
     };
 
-    moveIncLambda(mLeftTargetJoints, DualManipulator::eArm::LEFT);
-    moveIncLambda(mRightTargetJoints, DualManipulator::eArm::RIGHT);
+    mLeftLastAimedJoints = moveIncLambda(mLeftTargetJoints, DualManipulator::eArm::LEFT);
+    mRightLastAimedJoints = moveIncLambda(mRightTargetJoints, DualManipulator::eArm::RIGHT);
     
     
     std_msgs::String aliveMsg;  aliveMsg.data = "I am moving"; 
@@ -318,7 +319,7 @@ void ManipulatorController::publisherLoop(DualManipulator::eArm _arm){
         // Publish aiming joints
         sensor_msgs::JointState aimingJointsMsg;
 	    aimingJointsMsg.header.stamp = jointsMsg.header.stamp;
-        std::vector<float> aimJoints = isLeft?mLeftTargetJoints: mRightTargetJoints;
+        std::vector<float> aimJoints = isLeft?mLeftLastAimedJoints: mRightLastAimedJoints;
         for(auto&j:aimJoints){
             aimingJointsMsg.position.push_back(j);
         }
