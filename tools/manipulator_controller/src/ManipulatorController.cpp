@@ -194,23 +194,17 @@ void ManipulatorController::stateMachine(){
                 mRightTargetJoints = cHomeJoints;
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
-                mManipulator.mLeftArm->openClaw();
-                mManipulator.mRightArm->openClaw();
-                mState = STATES::MOVING;
                 break;
             case STATES::IDLE:
                 mLeftTargetJoints = cHomeJoints;
                 mRightTargetJoints = cHomeJoints;
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
-                mManipulator.mLeftArm->openClaw();
-                mManipulator.mRightArm->openClaw();
                 break;
             case STATES::MOVING:
                 movingCallback();
                 break;
             case STATES::ERROR:
-            
                 break;
         }
 
@@ -227,7 +221,11 @@ void ManipulatorController::stateMachine(){
 	{
 		mState = STATES::MOVING;
 	}else{		
-		mState = STATES::HOME;
+        if(mState != STATES::HOME){
+            mManipulator.mLeftArm->openClaw();
+            mManipulator.mRightArm->openClaw();
+		    mState = STATES::HOME;
+        }
 	}	
 
         std::this_thread::sleep_for(std::chrono::milliseconds(20));

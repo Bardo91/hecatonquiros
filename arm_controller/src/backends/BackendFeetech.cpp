@@ -164,7 +164,7 @@ namespace hecatonquiros{
         for(unsigned i = 0; i < nJoints; i++){
             int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
             if(val < 0 || val > 1023){
-                std::cout << "Reading error from feetech backend" << std::endl;
+                std::cout << "Reading error from feetech backend. ID: " << mArmId*10 + i + 1 << std::endl;
                 return {};
             }
             
