@@ -69,7 +69,7 @@ bool ManipulatorController::init(int _argc, char** _argv){
     if(mNdof == 3)
         cHomeJoints = {0,-M_PI/5,M_PI/1.5};
     if(mNdof == 4)
-        cHomeJoints = {0,-M_PI/5,M_PI/1.5, -90*M_PI/180.0};
+        cHomeJoints = {0,-M_PI/5,M_PI/1.5, 0};
     if(mNdof == 6)
         cHomeJoints = {0,-M_PI/6,M_PI/1.5, -90*M_PI/180.0, /*-M_PI/1.5*/ 0,0};
 
