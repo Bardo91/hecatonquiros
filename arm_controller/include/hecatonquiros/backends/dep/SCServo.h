@@ -21,38 +21,31 @@
 /// The class takes control of the given serial port and it is thread safe
 class SCServo{
 	private: // Static methods
-		class SafeSerial{
+		class SafeSerial{	/// 666 ugly old unnecessary class, please remove asap
 			public:
 				bool init(std::string &_port){
-					mSerial = new serial::Serial(_port, 1000000, serial::Timeout::simpleTimeout(100));
+					mSerial = new serial::Serial(_port, 1000000, serial::Timeout::simpleTimeout(30));
 					return mSerial->isOpen();
 				}
 				std::string readline(){
-					//std::lock_guard<std::mutex> lock(mLocker);
 					return mSerial->readline();
 				}
 				int read(unsigned char *_buffer, int _len){
-					//std::lock_guard<std::mutex> lock(mLocker);
 					return mSerial->read(_buffer, _len);
 				}
 				void write(std::string &_cmd){
-					//std::lock_guard<std::mutex> lock(mLocker);
             		mSerial->write(_cmd);
 				}
 				void write(unsigned char *_buffer, int _len){
-					//std::lock_guard<std::mutex> lock(mLocker);
             		mSerial->write(_buffer, _len);
 				}
 				void flush(){
-					//std::lock_guard<std::mutex> lock(mLocker);
             		mSerial->flush();
 				}
 				bool isOpen(){
-					//std::lock_guard<std::mutex> lock(mLocker);
             		return mSerial->isOpen();
 				}
 			private:
-				std::mutex mLocker;
 				serial::Serial *mSerial;
 		};
 
@@ -86,26 +79,30 @@ class SCServo{
 		/// \brief _port: given serial port
 		SCServo(std::string _serialPort);
 		bool isConnected();
+		void SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[] = 0);//ͬ��дλ��ָ��
+		int ReadPos(u8 ID);//��λ��
+		int WritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//��ͨдλ��ָ��
+		int ReadLoadH(u8 ID);
+		int EnableTorque(u8 ID, u8 Enable);//Ť������ָ��
+
+
+
+	private:
 
 		int genWrite(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen);//��ͨдָ��
 		int regWrite(u8 ID, u8 MemAddr,u8 *nDat, u8 nLen);//�첽дָ��
 		void syncWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat[], u8 nLen);//ͬ��дָ��
 		int writeByte(u8 ID, u8 MemAddr, u8 bDat);//д1���ֽ�
 		int writeWord(u8 ID, u8 MemAddr, u16 wDat);//д2���ֽ�
-		int EnableTorque(u8 ID, u8 Enable);//Ť������ָ��
-		int WritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//��ͨдλ��ָ��
 		int RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed = 0);//�첽дλ��ָ��
 		void RegWriteAction();//ִ���첽дָ��
-		void SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[] = 0);//ͬ��дλ��ָ��
 		int WriteSpe(u8 ID, s16 Speed);//��Ȧ����ָ��
 		int Read(u8 ID, u8 MemAddr, u8 *nData, u8 nLen);//��ָ��
 		int readByte(u8 ID, u8 MemAddr);//��1���ֽ�
 		int readWord(u8 ID, u8 MemAddr);//��2���ֽ�
-		int ReadPos(u8 ID);//��λ��
 		int ReadVoltage(u8 ID);//����ѹ
 		int ReadTemper(u8 ID);//���¶�
 		int ReadLoadL(u8 ID);
-		int ReadLoadH(u8 ID);
 		int Ping(u8 ID);//Pingָ��
 		void reBoot(u8 ID);
 		int wheelMode(u8 ID);//��Ȧ����ģʽ
@@ -117,6 +114,7 @@ class SCServo{
 
 	private:
 		SafeSerial *mSerialConnection = nullptr;
+		std::mutex mLocker;
 		
 	private:
 		void writeBuf(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen, u8 Fun);

@@ -38,7 +38,7 @@ namespace hecatonquiros{
         /// \param _joints: vector containing the joints
         /// \param _blocking: set blocking or not blocking operation
         /// \return true if joints are send or set without errors, false if something failed.
-        virtual bool joints(const std::vector<float> &_joints, bool _blocking = false);
+        virtual bool joints(std::vector<float> &_joints, bool _blocking = false);
 
         /// Method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;

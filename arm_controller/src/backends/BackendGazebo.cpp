@@ -50,7 +50,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool BackendGazebo::joints(const std::vector<float> &_joints, bool _blocking){
+    bool BackendGazebo::joints(std::vector<float> &_joints, bool _blocking){
 	//while (ros::ok())
  	//{
 		int cnt=0;

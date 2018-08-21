@@ -5,7 +5,7 @@
 ###############################################################
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
-project(hecatonquiros)
+
 set(PROJECT_VERSION 0.4.0)
 
 # Clasify sources according to folder structure.
@@ -50,31 +50,7 @@ else(${OpenRAVE_FOUND})
 	MESSAGE(WARNING "OpenRAVE NOT FOUND")
 endif(${OpenRAVE_FOUND})
 
-find_package(catkin REQUIRED COMPONENTS
-			geometry_msgs
-			sensor_msgs
-			std_msgs
-			roscpp
-			message_generation
-			)
-if(${catkin_FOUND})
-	add_definitions(-DHAS_ROS)
-endif(${catkin_FOUND})
 
-add_service_files(
-  FILES
-  SetJoints.srv
-  SetPose.srv
-)
-
-generate_messages(
-    DEPENDENCIES std_msgs geometry_msgs sensor_msgs
-)
-
-catkin_package(
-	INCLUDE_DIRS ./include
-	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
-)
 ## Load Eigen
 find_package(Eigen3 REQUIRED)
 if(${Eigen3_FOUND})
@@ -99,15 +75,12 @@ find_package(Boost REQUIRED COMPONENTS chrono)
 #########################################
 ######			Executable		   ######
 #########################################
-IF(UNIX)
-	add_definitions(-std=c++11)
-ENDIF()
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
 GroupSources(src)
 add_library(${PROJECT_NAME} ${SRC_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ./include)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${OpenCV_LIBS})
