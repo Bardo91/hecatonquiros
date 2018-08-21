@@ -278,7 +278,7 @@ bool ManipulatorController::emergencyStopService(std_srvs::SetBool::Request  &_r
 void ManipulatorController::movingCallback(){
     auto moveIncLambda = [&](std::vector<float> _targetJoints, DualManipulator::eArm _arm)->std::vector<float>{  // INTEGRATE IN callback to limit speed
         std::vector<float> currJoints = mManipulator.joints(_arm); // 666 thread safe?
-        float MAX_JOINT_DIST = 10.0*M_PI/180.0; // 666 parametrize
+        float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
         for(unsigned i = 0; i < _targetJoints.size();i++){
             float distJoint = (_targetJoints[i] - currJoints[i]);                  // 666 MOVE TO MANIPULATOR CONTROLLER
             distJoint = distJoint > MAX_JOINT_DIST ? MAX_JOINT_DIST:distJoint;
