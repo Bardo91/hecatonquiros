@@ -192,12 +192,16 @@ void ManipulatorController::stateMachine(){
             case STATES::HOME:
                 mLeftTargetJoints = cHomeJoints;
                 mRightTargetJoints = cHomeJoints;
+                mLeftLastAimedJoints = mLeftTargetJoints;
+                mRightLastAimedJoints = mRightTargetJoints;
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
                 break;
             case STATES::IDLE:
                 mLeftTargetJoints = cHomeJoints;
                 mRightTargetJoints = cHomeJoints;
+                mLeftLastAimedJoints = mLeftTargetJoints;
+                mRightLastAimedJoints = mRightTargetJoints;
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
                 break;
