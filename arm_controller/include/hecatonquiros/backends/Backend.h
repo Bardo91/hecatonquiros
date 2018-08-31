@@ -33,7 +33,7 @@ namespace hecatonquiros{
     public:
         struct Config{
             /// Type of backend
-            enum class eType {Arduino, Gazebo, Feetech, Dummy};
+            enum class eType {Arduino, Gazebo, Feetech, ROS, Dummy};
             eType type;
 
             /// Shared Configuration
@@ -45,7 +45,6 @@ namespace hecatonquiros{
             /// Config specific for arduino
             int             baudrate = -1;
             serial::Serial *sharedSerialPort = nullptr;
-
 
             /// Config for gazebo
             std::string topic = "";
