@@ -12,9 +12,12 @@
 SCServo::SCServo(std::string _serialPort) {
 	Level = 1;
 	End = 1;
-	if(this->init(_serialPort)){
-		mSerialConnection = mSerialPorts[_serialPort];
+	if(mSerialConnection == nullptr){
+		if(this->init(_serialPort)){
+			mSerialConnection = mSerialPorts[_serialPort];
+		}
 	}
+	
 }
 
 //---------------------------------------------------------------------------------------------------------------------

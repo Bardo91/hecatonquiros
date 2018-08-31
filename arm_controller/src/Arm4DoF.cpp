@@ -66,7 +66,7 @@ namespace hecatonquiros{
 
         if(_actuateBackend){
             if(mBackend != nullptr){
-                mBackend->joints(_q);
+                mBackend->joints(_q, false);
             }
         }
     }

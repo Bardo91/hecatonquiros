@@ -24,7 +24,7 @@
 #include <hecatonquiros/backends/BackendArduino.h>
 #include <hecatonquiros/backends/BackendGazebo.h>
 #include <hecatonquiros/backends/BackendFeetech.h>
-
+#include <hecatonquiros/backends/BackendROS.h>
 
 namespace hecatonquiros{
     Backend * Backend::create(const Backend::Config &_config){
@@ -35,6 +35,9 @@ namespace hecatonquiros{
             break;
         case Backend::Config::eType::Gazebo:
             bd = new BackendGazebo();
+            break;
+        case Backend::Config::eType::ROS:
+            bd = new BackendROS();
             break;
         case Backend::Config::eType::Feetech:
             bd = new BackendFeetech();
