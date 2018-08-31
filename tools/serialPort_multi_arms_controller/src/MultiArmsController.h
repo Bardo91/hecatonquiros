@@ -41,35 +41,23 @@ public:
 //     void loop();
 
 private:
-    bool clawService1(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool jointsService1(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool jointIDService1(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool loadIDService1(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    void jointsCallback(const sensor_msgs::JointStateConstPtr& _msg);
 
-    bool clawService2(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool jointsService2(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool jointIDService2(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool loadIDService2(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    bool clawService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    bool jointsService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    bool jointIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    bool loadIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
 
 private:
     // std::thread mLoopThread;
     // bool mRun;
 
-    ros::Publisher mStatePublisher;
-    ros::Publisher mMovingKeepAlive;
+    std::vector<ros::Publisher> mJointsArmPublisher, mJointIDArmPublisher, mLoadIDArmPublisher;
+    std::vector<ros::Subscriber> mJointsArmSubscriber;
+    std::vector<ros::ServiceServer> mClawArmService, mJointsArmService, mJointIDArmService, mLoadIDArmService;
 
-    ros::Publisher mJointsArm1Publisher, mJointsArm2Publisher, mJointIDArm1Publisher, mJointIDArm2Publisher, mLoadIDArm1Publisher, mLoadIDArm2Publisher; 
+    std::vector<IndividualBackend> mArmsBackend;
+    rapidjson::Document mConfigFile;
+    std::vector<bool> mEnableBackend;
 
-    ros::ServiceServer mClawArm1Service, mClawArm2Service, mJointsArm1Service, mJointsArm2Service, mJointIDArm1Service, mJointIDArm2Service, mLoadIDArm1Service, mLoadIDArm2Service;
-
-    ros::Subscriber mJointsArm1Subscriber, mJointsArm2Subscriber;
-
-    IndividualBackend mArmsBackend1, mArmsBackend2;
-    rapidjson::Document mConfigFile1, mConfigFile2;
-
-    std::vector<IndividualBackend> *mArmsBackend;
-    std::vector<rapidjson::Document> *mConfigFiles;
-    bool mActuateBackend = false;
-
-    bool mEnableBackend1, mEnableBackend2;
 };

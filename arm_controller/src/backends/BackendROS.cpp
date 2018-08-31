@@ -72,6 +72,7 @@ namespace hecatonquiros{
 		
         sensor_msgs::JointState jointsMsg;
 	    jointsMsg.header.stamp = ros::Time::now();
+		jointsMsg.effort.push_back(mArmId);
 		for(auto&j:_joints){
             jointsMsg.position.push_back(j);
         }				
@@ -87,7 +88,8 @@ namespace hecatonquiros{
 
 		hecatonquiros::ReqData srv;
 		srv.request.req = true;
-		srv.request.id = _action;
+		srv.request.id = mArmId;
+		srv.request.data = _action;
 		if(mClawReq.call(srv)){
 			if(srv.response.success){
 				return true;
@@ -103,7 +105,8 @@ namespace hecatonquiros{
 		
 		hecatonquiros::ReqData srv;
 		srv.request.req = true;
-		srv.request.id = _id;
+		srv.request.id = mArmId;
+		srv.request.data = _id;
 		if(mJointIDReq.call(srv)){
 			if(srv.response.success){
 				return mJoint;
@@ -119,7 +122,8 @@ namespace hecatonquiros{
 
         hecatonquiros::ReqData srv;
 		srv.request.req = true;
-		srv.request.id = _id;
+		srv.request.id = mArmId;
+		srv.request.data = _id;
 		if(mLoadIDReq.call(srv)){
 			if(srv.response.success){
 				return mLoad;
@@ -135,7 +139,8 @@ namespace hecatonquiros{
 
 		hecatonquiros::ReqData srv;
 		srv.request.req = true;
-		srv.request.id = nJoints;
+		srv.request.id = mArmId;
+		srv.request.data = nJoints;
 		if(mJointsReq.call(srv)){
 			if(srv.response.success){
 				return mJoints;

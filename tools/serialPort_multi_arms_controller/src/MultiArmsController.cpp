@@ -31,116 +31,75 @@
 //---------------------------------------------------------------------------------------------------------------------
 bool MultiArmsController::init(int _argc, char** _argv){
 
-	if (_argc != 3) {
+	if (_argc != 2) {
         std::cout << "Bad input arguments, please provide only the path of a json config file with the structure detailed in the documentation" << std::endl;
         return false;
     }
 
-    // Arm 1
-    std::ifstream rawFile1(_argv[1]);
-    if (!rawFile1.is_open()) {
+    // Create Backends of desired Arms
+    std::ifstream rawFile(_argv[1]);
+    if (!rawFile.is_open()) {
         std::cout << "Error opening config file" << std::endl;
         return false;
     }
 
-    std::stringstream strStream1;
-    strStream1 << rawFile1.rdbuf(); //read the file
-    std::string json1 = strStream1.str(); //str holds the content of the file
+    std::stringstream strStream;
+    strStream << rawFile.rdbuf(); //read the file
+    std::string json = strStream.str(); //str holds the content of the file
 
-    if(mConfigFile1.Parse(json1.c_str()).HasParseError()){
+    if(mConfigFile.Parse(json.c_str()).HasParseError()){
         std::cout << "Error parsing json" << std::endl;
         return false;
     }
 
-    if(mArmsBackend1.init(json1)){
-        std::cout << "Arm 1 created"<< std::endl;
-    }else{
-        std::cout  << "Error creating arm 1" << std::endl;
-        return false;
-    }
-    
-    //////////////////////////////////////////////////
-    // Arm 2
-    std::ifstream rawFile2(_argv[2]);
-    if (!rawFile2.is_open()) {
-        std::cout << "Error opening config file" << std::endl;
-        return false;
-    }
-
-    std::stringstream strStream2;
-    strStream2 << rawFile2.rdbuf(); //read the file
-    std::string json2 = strStream2.str(); //str holds the content of the file
-
-    if(mConfigFile2.Parse(json2.c_str()).HasParseError()){
-        std::cout << "Error parsing json" << std::endl;
-        return false;
-    }
-
-    if(mArmsBackend2.init(json2)){
-        std::cout << "Arm 2 created "<< std::endl;
-    }else{
-        std::cout  << "Error creating arm 2"<< std::endl;
-        return false;
-    }
-    
-    mEnableBackend1 = mConfigFile1["enable_backend"].GetBool();
-    mEnableBackend2 = mConfigFile2["enable_backend"].GetBool();
-
-    //////////////////////////////////////////////////
-    // ROS publishers and subscribers.
     ros::NodeHandle nh;
 
-    mJointsArm1Publisher = nh.advertise<sensor_msgs::JointState>("/backendROS/arm_1/joints_sub", 1);
-    mJointsArm2Publisher = nh.advertise<sensor_msgs::JointState>("/backendROS/arm_2/joints_sub", 1);
+    int nArms = mConfigFile["nArms"].GetInt() + 1;
+    mArmsBackend.resize(nArms);
+    mEnableBackend.resize(nArms);
+    mJointsArmPublisher.resize(nArms);
+    mJointIDArmPublisher.resize(nArms);
+    mLoadIDArmPublisher.resize(nArms);
+    mJointsArmSubscriber.resize(nArms);
+    mClawArmService.resize(nArms);
+    mJointsArmService.resize(nArms);
+    mJointIDArmService.resize(nArms); 
+    mLoadIDArmService.resize(nArms);
 
-    mJointIDArm1Publisher = nh.advertise<std_msgs::Int32>("/backendROS/arm_1/jointId_sub", 1);
-    mJointIDArm2Publisher = nh.advertise<std_msgs::Int32>("/backendROS/arm_2/jointId_sub", 1);
+    for(int i = 1; i < nArms; i++){
 
-    mLoadIDArm1Publisher = nh.advertise<std_msgs::Int32>("/backendROS/arm_1/loadId_sub", 1);
-    mLoadIDArm2Publisher = nh.advertise<std_msgs::Int32>("/backendROS/arm_2/loadId_sub", 1);
+        if(mArmsBackend[i].init(json, i)){
+            std::cout << "Arm " << std::to_string(i) << " created"<< std::endl;
+        }else{
+            std::cout << "ERROR creating Arm " << std::to_string(i) << std::endl;
+            return false;
+        }
 
-    std::cout << "Created ROS Publishers" << std::endl;
+        std::string senablebc = "enable_backend"+std::to_string(i);
+        const char *cenablebc = senablebc.c_str();
+        mEnableBackend[i] = mConfigFile[cenablebc].GetBool();
 
-    //////////////////////////////////////////////////
-    mJointsArm1Subscriber = nh.subscribe<sensor_msgs::JointState>("/backendROS/arm_1/joints", 1, \
-        [this](const sensor_msgs::JointStateConstPtr& _msg) {
-            std::vector<float> jointsArm1;
-            jointsArm1.resize(_msg->position.size());
-			for(int i = 0; i < _msg->position.size(); i++){
-				jointsArm1[i] = _msg->position[i];
-			}
-            mArmsBackend1.mBackend->joints(jointsArm1, mEnableBackend1);
+        //////////////////////////////////////////////////
+        // ROS publishers
+        mJointsArmPublisher[i] = nh.advertise<sensor_msgs::JointState>("/backendROS/arm_"+std::to_string(i)+"/joints_sub", 1);
+        mJointIDArmPublisher[i] = nh.advertise<std_msgs::Int32>("/backendROS/arm_"+std::to_string(i)+"/jointId_sub", 1);
+        mLoadIDArmPublisher[i] = nh.advertise<std_msgs::Int32>("/backendROS/arm_"+std::to_string(i)+"/loadId_sub", 1);
+        std::cout << "Created ROS Publishers of Arm " << std::to_string(i) << std::endl;
 
-    	});
+        //////////////////////////////////////////////////
+        // ROS subscribers
+        mJointsArmSubscriber[i] = nh.subscribe<sensor_msgs::JointState>("/backendROS/arm_"+std::to_string(i)+"/joints", 1, &MultiArmsController::jointsCallback, this);
+        std::cout << "Created ROS Subscribers of Arm " << std::to_string(i) << std::endl;
 
-    mJointsArm2Subscriber = nh.subscribe<sensor_msgs::JointState>("/backendROS/arm_2/joints", 1, \
-        [this](const sensor_msgs::JointStateConstPtr& _msg) {
-            std::vector<float> jointsArm2;
-            jointsArm2.resize(_msg->position.size());
-			for(int i = 0; i < _msg->position.size(); i++){
-				jointsArm2[i] = _msg->position[i];
-			}
+        //////////////////////////////////////////////////
+        // ROS services
+        mClawArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/claw_req", &MultiArmsController::clawService, this);
+        mJointsArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/joints_req", &MultiArmsController::jointsService, this);
+        mJointIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/jointId_req", &MultiArmsController::jointIDService, this);
+        mLoadIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/loadId_req", &MultiArmsController::loadIDService, this);
+        std::cout << "Created ROS Services of Arm " << std::to_string(i) << std::endl;
 
-            mArmsBackend2.mBackend->joints(jointsArm2, mEnableBackend2);
-
-    	});
-
-    std::cout << "Created ROS Subscribers" << std::endl;
-
-    //////////////////////////////////////////////////
-    mClawArm1Service = nh.advertiseService("/backendROS/arm_1/claw_req", &MultiArmsController::clawService1, this);
-    mClawArm2Service = nh.advertiseService("/backendROS/arm_2/claw_req", &MultiArmsController::clawService2, this);
-
-    mJointsArm1Service = nh.advertiseService("/backendROS/arm_1/joints_req", &MultiArmsController::jointsService1, this);
-    mJointsArm2Service = nh.advertiseService("/backendROS/arm_2/joints_req", &MultiArmsController::jointsService2, this);
-
-    mJointIDArm1Service = nh.advertiseService("/backendROS/arm_1/jointId_req", &MultiArmsController::jointIDService1, this);
-    mJointIDArm2Service = nh.advertiseService("/backendROS/arm_2/jointId_req", &MultiArmsController::jointIDService2, this);
-
-    mLoadIDArm1Service = nh.advertiseService("/backendROS/arm_1/loadId_req", &MultiArmsController::loadIDService1, this);
-    mLoadIDArm2Service = nh.advertiseService("/backendROS/arm_2/loadId_req", &MultiArmsController::loadIDService1, this);
-
-    std::cout << "Created ROS Services" << std::endl;
+    }
 
     return true;
 }
@@ -171,10 +130,22 @@ bool MultiArmsController::init(int _argc, char** _argv){
 // }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::clawService1(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
+void MultiArmsController::jointsCallback(const sensor_msgs::JointStateConstPtr& _msg){
+
+    std::vector<float> jointsArm;
+    for(int j = 0; j < _msg->position.size(); j++){
+        jointsArm.push_back(_msg->position[j]);
+    }
+    int id_arm = _msg->effort[0];
+    mArmsBackend[id_arm].mBackend->joints(jointsArm, mEnableBackend[id_arm]);
+
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+bool MultiArmsController::clawService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
     
     if(_req.req){
-        mArmsBackend1.mBackend->claw(_req.id);
+        mArmsBackend[_req.id].mBackend->claw(_req.data);
     }
     _res.success = true;
     
@@ -182,22 +153,11 @@ bool MultiArmsController::clawService1(hecatonquiros::ReqData::Request &_req, he
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::clawService2(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
-    
-    if(_req.req){
-        mArmsBackend2.mBackend->claw(_req.id);
-    }
-    _res.success = true;
-    
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::jointsService1(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
+bool MultiArmsController::jointsService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
     
     std::vector<float> joints;
     if(_req.req){
-        joints = mArmsBackend1.mBackend->joints(_req.id);
+        joints = mArmsBackend[_req.id].mBackend->joints(_req.data);
     }
 
     sensor_msgs::JointState msg;
@@ -205,90 +165,39 @@ bool MultiArmsController::jointsService1(hecatonquiros::ReqData::Request &_req, 
     for(auto&j:joints){
         msg.position.push_back(j);
     }
-    mJointsArm1Publisher.publish(msg);
+    mJointsArmPublisher[_req.id].publish(msg);
     _res.success = true;
 
     return true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::jointsService2(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
-    
-    std::vector<float> joints;
-    if(_req.req){
-        joints = mArmsBackend2.mBackend->joints(_req.id);
-    }
-
-    sensor_msgs::JointState msg;
-    msg.header.stamp = ros::Time::now();
-    for(auto&j:joints){
-        msg.position.push_back(j);
-    }
-    mJointsArm2Publisher.publish(msg);
-    _res.success = true;
-
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::jointIDService1(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
+bool MultiArmsController::jointIDService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
     
     int pos;
     if(_req.req){
-        pos = mArmsBackend1.mBackend->jointPos(_req.id);
+        pos = mArmsBackend[_req.id].mBackend->jointPos(_req.data);
     }
 
     std_msgs::Int32 msg;
     msg.data = pos;
-    mJointIDArm1Publisher.publish(msg);
+    mJointIDArmPublisher[_req.id].publish(msg);
     _res.success = true;
 
     return true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::jointIDService2(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
-    
-    int pos;
-    if(_req.req){
-        pos = mArmsBackend2.mBackend->jointPos(_req.id);
-    }
-
-    std_msgs::Int32 msg;
-    msg.data = pos;
-    mJointIDArm2Publisher.publish(msg);
-    _res.success = true;
- 
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::loadIDService1(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
+bool MultiArmsController::loadIDService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
     
     int load;
     if(_req.req){
-        load = mArmsBackend1.mBackend->jointLoad(_req.id);
+        load = mArmsBackend[_req.id].mBackend->jointLoad(_req.data);
     }
 
     std_msgs::Int32 msg;
     msg.data = load;
-    mLoadIDArm1Publisher.publish(msg);
-    _res.success = true;
-
-    return true;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::loadIDService2(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
-    
-    int load;
-    if(_req.req){
-        load = mArmsBackend2.mBackend->jointLoad(_req.id);
-    }
-
-    std_msgs::Int32 msg;
-    msg.data = load;
-    mLoadIDArm2Publisher.publish(msg);
+    mLoadIDArmPublisher[_req.id].publish(msg);
     _res.success = true;
 
     return true;

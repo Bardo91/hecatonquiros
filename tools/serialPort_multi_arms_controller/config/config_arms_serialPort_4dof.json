@@ -1,6 +1,10 @@
 {	
-	"id": 1,
-	"enable_backend":true,
+	"nArms": 2,
 	"serial_port": "/dev/ttyUSB0",
-	"configXML": "/home/polux/programming/catkin_hecatonquiros/src/hecatonquiros/arm_controller/config/config_arm1.xml"
+	"id1": 1,
+	"enable_backend1":true,
+	"configXML1": "/home/polux/programming/catkin_hecatonquiros/src/hecatonquiros/arm_controller/config/config_arm1.xml",
+	"id2": 2,
+	"enable_backend2":true,
+	"configXML2": "/home/polux/programming/catkin_hecatonquiros/src/hecatonquiros/arm_controller/config/config_arm2.xml"
 }

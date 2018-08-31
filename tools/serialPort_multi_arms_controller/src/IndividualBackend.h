@@ -35,7 +35,7 @@ public:
     /// \param _robotFile: path to openrave robot description.
     /// \param _enableBackend: set bc to dummy (false) or feetech (true).
     /// \return true if all good .
-    bool init(std::string _json);
+    bool init(std::string _json, int _id);
 
     /// Set current joints of arm.
     /// \param _arm: arm selected.

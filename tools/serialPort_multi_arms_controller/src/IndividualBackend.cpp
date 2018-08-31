@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-bool IndividualBackend::init(std::string _json){
+bool IndividualBackend::init(std::string _json, int _id){
     hecatonquiros::Backend::Config bc; 
 
     if(mConfigFile.Parse(_json.c_str()).HasParseError()){
@@ -29,14 +29,18 @@ bool IndividualBackend::init(std::string _json){
         return false;
     }
 
-    bool enableBackend = mConfigFile["enable_backend"].GetBool();
+    std::string sEnableBc = "enable_backend"+std::to_string(_id);
+    const char *cEnableBc = sEnableBc.c_str();
+    bool enableBackend = mConfigFile[cEnableBc].GetBool();
 
     if(enableBackend){ 
         std::string serialPort = mConfigFile["serial_port"].GetString();
-        bc.configXML = mConfigFile["configXML"].GetString(); 
+        std::string sConfigFile = "configXML"+std::to_string(_id);
+        const char *cConfigFile = sConfigFile.c_str();
+        bc.configXML = mConfigFile[cConfigFile].GetString(); 
 		bc.type = hecatonquiros::Backend::Config::eType::Feetech; 
         bc.port = serialPort;
-        bc.armId = mConfigFile["id"].GetInt();
+        bc.armId = _id;
     }else{
         bc.type = hecatonquiros::Backend::Config::eType::Dummy;
     }
