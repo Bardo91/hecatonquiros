@@ -32,6 +32,7 @@ add_service_files(
   FILES
   SetJoints.srv
   SetPose.srv
+  ReqData.srv
 )
 
 generate_messages(
@@ -65,6 +66,14 @@ compile_library_tool(joystick_controller)
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller "tools/manipulator_controller/src/*.h" "tools/manipulator_controller/src/*.inl" "tools/manipulator_controller/src/*.cpp")
 
 compile_tool(manipulator_controller)
+
+file(GLOB_RECURSE TOOL_SRC_individual_arm_controller "tools/individual_arm_controller/src/*.h" "tools/individual_arm_controller/src/*.inl" "tools/individual_arm_controller/src/*.cpp")
+
+compile_tool(individual_arm_controller)
+
+file(GLOB_RECURSE TOOL_SRC_serialPort_multi_arms_controller "tools/serialPort_multi_arms_controller/src/*.h" "tools/serialPort_multi_arms_controller/src/*.inl" "tools/serialPort_multi_arms_controller/src/*.cpp")
+
+compile_tool(serialPort_multi_arms_controller)
 
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller_tester "tools/manipulator_controller_tester/src/*.h" "tools/manipulator_controller_tester/src/*.inl" "tools/manipulator_controller_tester/src/*.cpp")
 
