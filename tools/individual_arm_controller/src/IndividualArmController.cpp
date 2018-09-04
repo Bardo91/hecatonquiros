@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-//  Copyright 2018 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
+//  Copyright 2018 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com & Manuel Perez Jimenez (a.k.a. manuoso) manuperezj@gmail.com
 //---------------------------------------------------------------------------------------------------------------------
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 //  and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -182,10 +182,9 @@ void IndividualArmController::stateMachine(){
         switch(mState){
             case STATES::DISABLE:
                 mArm->openClaw();
-                mArm->endisTorque(mTargetJoints.size(), false);
+                mArm->endisTorque(mNdof, false);
                 std::cout << "Disabled motors" << std::endl;
                 mState = STATES::STOP;
-                // 666 disable motors
                 break;
             case STATES::HOME:
                 mTargetJoints = cHomeJoints;
@@ -226,6 +225,8 @@ void IndividualArmController::stateMachine(){
 //---------------------------------------------------------------------------------------------------------------------
 bool IndividualArmController::clawService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res){
     if(_req.data){
+        mArm->closeClaw();
+    }else{
         mArm->openClaw();
     }
 
@@ -252,7 +253,7 @@ void IndividualArmController::MovingArmThread(){
         std::vector<float> currJoints = mArm->joints(); // 666 thread safe?
         float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
         for(unsigned i = 0; i < _targetJoints.size();i++){
-            float distJoint = (_targetJoints[i] - currJoints[i]);                  // 666 MOVE TO MANIPULATOR CONTROLLER
+            float distJoint = (_targetJoints[i] - currJoints[i]);                  
             distJoint = distJoint > MAX_JOINT_DIST ? MAX_JOINT_DIST:distJoint;
             _targetJoints[i] = currJoints[i] + distJoint;
         }
@@ -311,9 +312,10 @@ void IndividualArmController::publisherLoop(){
         Eigen::Matrix4f pose = mArm->pose();
         geometry_msgs::PoseStamped poseMsg;
         eigenToRos(pose, poseMsg);
-        poseMsg.header.frame_id = "hecatonquiros_individual";
+        poseMsg.header.frame_id = "hecatonquiros_"+mName;
         poseMsg.header.stamp = jointsMsg.header.stamp;
         posePublisher.publish(poseMsg);
+
         rate.sleep();
     }
 
