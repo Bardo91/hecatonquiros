@@ -56,6 +56,12 @@ namespace hecatonquiros{
         /// \brief abstract method for read Load of a servo
         /// \param _id: id joint to read
         virtual int jointLoad(const int _id);
+
+        /// \brief abstract method for enable/disable servo torque
+        /// \param _id
+        /// \param _enable
+        virtual int jointTorque(const int _id, const bool _enable);
+
     private:
         // Initialize communication with the arduino with the given configuration.
         // \param _config: Configuration file. The port name and the arm id are the only parameters needed.

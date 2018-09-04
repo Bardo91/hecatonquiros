@@ -83,6 +83,11 @@ namespace hecatonquiros{
         /// \param _id
         virtual int jointLoad(const int _id) = 0;
 
+        /// \brief abstract method for enable/disable servo torque
+        /// \param _id
+        /// \param _enable
+        virtual int jointTorque(const int _id, const bool _enable) = 0;
+
         /// \brief Request for particular information of the hardware.
         /// Each backend might have a different behaviour.
         /// \param _cmd: command sent to the backend for requesting something
@@ -100,6 +105,7 @@ namespace hecatonquiros{
         virtual bool claw(const int _action){return true;}
         virtual int jointPos(const int _id){return 0;}
         virtual int jointLoad(const int _id){return 0;}
+        virtual int jointTorque(const int _id, const bool _enable){return 0;};
     private:
         virtual bool init(const Config &_config){return true;}
     };

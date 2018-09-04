@@ -64,6 +64,11 @@ namespace hecatonquiros{
         /// \brief abstract method for read Load of a servo
         /// \param _id: id joint to read
         virtual int jointLoad(const int _id);
+
+        /// \brief abstract method for enable/disable servo torque
+        /// \param _id
+        /// \param _enable
+        virtual int jointTorque(const int _id, const bool _enable);
   
         virtual std::vector<float> joints(int nJoints);
     private:
@@ -73,7 +78,7 @@ namespace hecatonquiros{
         std::mutex mGuard;
         
         ros::Publisher mJointsPublisher;
-        ros::ServiceClient  mClawReq, mJointsReq, mJointIDReq, mLoadIDReq;
+        ros::ServiceClient  mClawReq, mJointsReq, mJointIDReq, mLoadIDReq, mTorqueIDReq;
         ros::Subscriber mJointsSubscriber, mJointIDSubscriber, mLoadIDSubscriber;
 
         std::vector<float> mJoints;

@@ -20,12 +20,17 @@
 #include <string>
 #include <ros/ros.h>
 #include <thread>
+#include <fstream>
+#include <chrono>
 
-#include "IndividualArm.h"
+#include <hecatonquiros/Arm4DoF.h>
+#include <hecatonquiros/model_solvers/ModelSolver.h>
+
 #include "TopicWatchDog.h"
 
 #include "rapidjson/document.h"
 
+#include <std_msgs/String.h>
 #include <std_srvs/SetBool.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Point.h>
@@ -65,7 +70,7 @@ private:
 private:
     ros::AsyncSpinner *mRosSpinner; // Use 4 threads
 
-    enum class STATES {STOP, HOME, IDLE, MOVING, ERROR};
+    enum class STATES {STOP, HOME, IDLE, MOVING, ERROR, DISABLE};
     STATES mState = STATES::STOP;
     std::string mLastError ="";
     ros::Publisher mStatePublisher;
@@ -87,7 +92,7 @@ private:
     ros::ServiceServer mEmergencyStopService;
     bool mEmergencyStop = false;
 
-    IndividualArm mManipulator;
+    hecatonquiros::Arm4DoF *mArm;
     int mNdof;
     std::vector<float> cHomeJoints;
 

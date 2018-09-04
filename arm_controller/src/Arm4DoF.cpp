@@ -199,6 +199,21 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
+    int Arm4DoF::endisTorque(int _joint, bool _enable){
+        if(mBackend != nullptr){
+            if(_enable){
+                return mBackend->jointTorque(_joint, true);
+            }else{
+                return mBackend->jointTorque(_joint, false);
+            }
+            
+        }else{
+            return 0;
+        }
+    }
+
+
+    //---------------------------------------------------------------------------------------------------------------------
     bool Arm4DoF::isInit() const{
         return mBackend != nullptr;
     }

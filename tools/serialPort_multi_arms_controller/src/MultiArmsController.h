@@ -21,11 +21,14 @@
 #include <ros/ros.h>
 #include <thread>
 #include <mutex>
+#include <fstream>
+#include <chrono>
 
-#include "IndividualBackend.h"
+#include <hecatonquiros/backends/Backend.h> 
 
 #include "rapidjson/document.h"
 
+#include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
 #include <sensor_msgs/JointState.h>
 
@@ -47,6 +50,7 @@ private:
     bool jointsService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
     bool jointIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
     bool loadIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    bool torqueIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
 
 private:
     // std::thread mLoopThread;
@@ -54,9 +58,9 @@ private:
 
     std::vector<ros::Publisher> mJointsArmPublisher, mJointIDArmPublisher, mLoadIDArmPublisher;
     std::vector<ros::Subscriber> mJointsArmSubscriber;
-    std::vector<ros::ServiceServer> mClawArmService, mJointsArmService, mJointIDArmService, mLoadIDArmService;
+    std::vector<ros::ServiceServer> mClawArmService, mJointsArmService, mJointIDArmService, mLoadIDArmService, mTorqueIDArmService;
 
-    std::vector<IndividualBackend> mArmsBackend;
+    std::vector<hecatonquiros::Backend *> mBackend;
     rapidjson::Document mConfigFile;
     std::vector<bool> mEnableBackend;
 

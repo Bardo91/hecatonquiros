@@ -20,14 +20,6 @@
 
 #include "IndividualArmController.h"
 
-#include <std_msgs/String.h>
-#include <fstream>
-
-#include <hecatonquiros/Arm4DoF.h>
-#include <hecatonquiros/model_solvers/ModelSolver.h>
-
-#include <chrono>
-
 //---------------------------------------------------------------------------------------------------------------------
 bool IndividualArmController::init(int _argc, char** _argv){
 
@@ -53,19 +45,39 @@ bool IndividualArmController::init(int _argc, char** _argv){
     
     mActuateBackend = mConfigFile["enable_backend"].GetBool();
     mName = mConfigFile["name"].GetString();
+    bool visualize = mConfigFile["visualize"].GetBool();
 
     ros::init(_argc, _argv, "individual_controller_"+mName);
     
     mRosSpinner = new ros::AsyncSpinner(4); // Use 4 threads
     mRosSpinner->start();
 
-    if(mManipulator.init(json)){
-        std::cout << "Arm created "+ mName << std::endl;
+    hecatonquiros::Backend::Config bc; 
+    if(mActuateBackend){ 
+		bc.type = hecatonquiros::Backend::Config::eType::ROS; 
+        bc.armId = mConfigFile["id"].GetInt();;
     }else{
-        std::cout  << "Error creating arm "+ mName <<std::endl;
-        return false;
+        bc.type = hecatonquiros::Backend::Config::eType::Dummy;
     }
-    mNdof = mManipulator.joints().size();
+
+    //arm controller
+    hecatonquiros::ModelSolver::Config ms;
+    ms.type = hecatonquiros::ModelSolver::Config::eType::OpenRave;
+    ms.robotName = mName;
+    ms.manipulatorName = "manipulator";
+    ms.robotFile = mConfigFile["arm_model"].GetString();
+    std::vector<float> off;
+    const rapidjson::Value& o = mConfigFile["offset"];
+    for (auto& v : o.GetArray()){
+        off.push_back(v.GetDouble());
+    }
+    ms.offset = off;
+    ms.rotation = {0,0,0,1};
+    ms.visualizer = visualize;
+    mArm = new hecatonquiros::Arm4DoF(ms, bc);
+    std::cout << "Arm created "+ mName << std::endl;
+
+    mNdof = mArm->joints().size();
     // std::cout << "Manipulator has " << mNdof << " dof." << std::endl;
 
     if(mNdof == 3)
@@ -105,7 +117,7 @@ bool IndividualArmController::init(int _argc, char** _argv){
     mTargetPose6DJacobiSubscriber->attachCallback(wrapperPose6dJacobiCallback);
 
     mClawService = nh.advertiseService("/hecatonquiros/"+mName+"/claw", &IndividualArmController::clawService, this);
-    mEmergencyStopService = nh.advertiseService("/hecatonquiros/emergency_stop", &IndividualArmController::emergencyStopService, this);
+    mEmergencyStopService = nh.advertiseService("/hecatonquiros/"+mName+"/emergency_stop", &IndividualArmController::emergencyStopService, this);
 
 
     return true;
@@ -152,10 +164,10 @@ void IndividualArmController::start(){
 
 //---------------------------------------------------------------------------------------------------------------------
 void IndividualArmController::stop(){
-    mRunning = false;
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     mLastError = "Intentionally stoped";
     mState = STATES::ERROR;
+    mRunning = false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     if(mStatePublisherThread.joinable())    mStatePublisherThread.join();
     if(mMainThread.joinable())              mMainThread.join();
 
@@ -168,19 +180,24 @@ void IndividualArmController::stateMachine(){
 
     while(ros::ok() && mRunning){
         switch(mState){
-            case STATES::STOP:
-                mManipulator.mArm->openClaw();
+            case STATES::DISABLE:
+                mArm->openClaw();
+                mArm->endisTorque(mTargetJoints.size(), false);
+                std::cout << "Disabled motors" << std::endl;
+                mState = STATES::STOP;
                 // 666 disable motors
                 break;
             case STATES::HOME:
                 mTargetJoints = cHomeJoints;
                 mLastAimedJoints = mTargetJoints;
-                mManipulator.mArm->joints(cHomeJoints, mActuateBackend);
+                mArm->joints(cHomeJoints, mActuateBackend);
                 break;
             case STATES::IDLE:
                 mTargetJoints = cHomeJoints;
                 mLastAimedJoints = mTargetJoints;
-                mManipulator.mArm->joints(cHomeJoints, mActuateBackend);
+                mArm->joints(cHomeJoints, mActuateBackend);
+                break;
+            case STATES::STOP:
                 break;
             case STATES::MOVING:    
                 break;
@@ -188,29 +205,28 @@ void IndividualArmController::stateMachine(){
                 break;
         }
 
-	if( mTargetJointsSubscriber->isValid() ||
-	    mTargetPose3DSubscriber->isValid() || 
-	    mTargetPose6DSubscriber->isValid() ||
-	    mTargetPose3DJacobiSubscriber->isValid() || 
-	    mTargetPose6DJacobiSubscriber->isValid() )
-	{
-		mState = STATES::MOVING;
-	}else{		
-        if(mState != STATES::HOME){
-            mManipulator.mArm->openClaw();
-		    mState = STATES::HOME;
-        }
-	}	
+        if( mTargetJointsSubscriber->isValid() ||
+            mTargetPose3DSubscriber->isValid() || 
+            mTargetPose6DSubscriber->isValid() ||
+            mTargetPose3DJacobiSubscriber->isValid() || 
+            mTargetPose6DJacobiSubscriber->isValid() )
+        {
+            mState = STATES::MOVING;
+        }else{		
+            if(mState != STATES::HOME && mState != STATES::STOP && mState != STATES::DISABLE){
+                mArm->openClaw();
+                mState = STATES::HOME;
+            }
+        }	
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(20));
-    }
+            //std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-
 bool IndividualArmController::clawService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res){
     if(_req.data){
-        mManipulator.mArm->openClaw();
+        mArm->openClaw();
     }
 
     _res.success = true;
@@ -222,8 +238,7 @@ bool IndividualArmController::emergencyStopService(std_srvs::SetBool::Request  &
     mEmergencyStop = _req.data;
 
     if(mEmergencyStop){
-        mState = STATES::STOP;
-        mManipulator.mArm->openClaw();
+        mState = STATES::DISABLE;
     }
 
     _res.success = true;
@@ -234,14 +249,14 @@ bool IndividualArmController::emergencyStopService(std_srvs::SetBool::Request  &
 void IndividualArmController::MovingArmThread(){
 
     auto moveIncLambda = [&](std::vector<float> _targetJoints)->std::vector<float>{  // INTEGRATE IN callback to limit speed
-        std::vector<float> currJoints = mManipulator.joints(); // 666 thread safe?
+        std::vector<float> currJoints = mArm->joints(); // 666 thread safe?
         float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
         for(unsigned i = 0; i < _targetJoints.size();i++){
             float distJoint = (_targetJoints[i] - currJoints[i]);                  // 666 MOVE TO MANIPULATOR CONTROLLER
             distJoint = distJoint > MAX_JOINT_DIST ? MAX_JOINT_DIST:distJoint;
             _targetJoints[i] = currJoints[i] + distJoint;
         }
-        mManipulator.joints(_targetJoints, mActuateBackend);
+        mArm->joints(_targetJoints, mActuateBackend);
         return _targetJoints;
     };
 
@@ -277,7 +292,7 @@ void IndividualArmController::publisherLoop(){
         std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
 	    jointsMsg.header.stamp = ros::Time::now();
-        joints = mManipulator.joints();
+        joints = mArm->joints();
         for(auto&j:joints){
             jointsMsg.position.push_back(j);
         }
@@ -293,7 +308,7 @@ void IndividualArmController::publisherLoop(){
         aimingJointsPublisher.publish(aimingJointsMsg);
 
         // Publish current pose
-        Eigen::Matrix4f pose = mManipulator.pose();
+        Eigen::Matrix4f pose = mArm->pose();
         geometry_msgs::PoseStamped poseMsg;
         eigenToRos(pose, poseMsg);
         poseMsg.header.frame_id = "hecatonquiros_individual";
@@ -353,7 +368,7 @@ void IndividualArmController::pose3DCallback(const geometry_msgs::PoseStamped::C
             rosToEigen(_msg, pose);
 
             std::vector<float> joints;
-            if(mManipulator.checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
+            if(mArm->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
                 mTargetJoints = joints; // 666 Thread safe?
             }else{
                 std::cout << "Failed IK left" << std::endl;
@@ -368,7 +383,7 @@ void IndividualArmController::pose6DCallback(const geometry_msgs::PoseStamped::C
             rosToEigen(_msg, pose);
                 
             std::vector<float> joints;
-            if(mManipulator.checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
+            if(mArm->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_6D)){
                 mTargetJoints = joints; // 666 Thread safe?
             }  else{
                 std::cout << "Failed IK" << std::endl;
@@ -384,7 +399,7 @@ void IndividualArmController::pose3DJacobiCallback(const geometry_msgs::PoseStam
 
             std::vector<float> joints;
             Eigen::Vector3f position = pose.block<3,1>(0,3);
-            if(mManipulator.mArm->jacobianStep(position, joints)){
+            if(mArm->jacobianStep(position, joints)){
                 mTargetJoints = joints; // 666 Thread safe?
             }else{
                 std::cout << "Failed IK left" << std::endl;
@@ -399,7 +414,7 @@ void IndividualArmController::pose6DJacobiCallback(const geometry_msgs::PoseStam
             rosToEigen(_msg, pose);
                 
             std::vector<float> joints;
-            if(mManipulator.mArm->jacobianStep(pose, joints)){
+            if(mArm->jacobianStep(pose, joints)){
                 mTargetJoints = joints; // 666 Thread safe?
             }  else{
                 std::cout << "Failed IK" << std::endl;

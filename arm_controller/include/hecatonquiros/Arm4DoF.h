@@ -84,6 +84,9 @@ namespace hecatonquiros{
         /// Read load value joint
         int readLoad(int _joint);
 
+        /// Enable disable torque servo joint
+        int endisTorque(int _joint, bool _enable);
+
         bool isInit() const;
 
         /// Performs a movement step towards a position (just cartesian motion) using jacobian. 

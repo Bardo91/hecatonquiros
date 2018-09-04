@@ -34,7 +34,7 @@ namespace hecatonquiros{
 		mJointsReq 	= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/joints_req");
 		mJointIDReq = nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/jointId_req");
 		mLoadIDReq 	= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/loadId_req");
-
+		mTorqueIDReq= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/torqueId_req");
 
 		mJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/backendROS/arm_"+std::to_string(mArmId)+"/joints_sub", 1, \
         [this](const sensor_msgs::JointStateConstPtr& _msg) {
@@ -130,6 +130,22 @@ namespace hecatonquiros{
 			}
 		}else{
 			std::cout << "BCROS: Failed to call service of jointLoad" << std::endl;
+			return -1;
+		}
+    }
+
+	//-----------------------------------------------------------------------------------------------------------------
+    int BackendROS::jointTorque(const int _id, const bool _enable){
+		hecatonquiros::ReqData srv;
+		srv.request.req = _enable;
+		srv.request.id = mArmId;
+		srv.request.data = _id;
+		if(mTorqueIDReq.call(srv)){
+			if(srv.response.success){
+				return 1;
+			}
+		}else{
+			std::cout << "BCROS: Failed to call service of jointTorque" << std::endl;
 			return -1;
 		}
     }

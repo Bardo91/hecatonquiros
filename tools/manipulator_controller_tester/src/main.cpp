@@ -20,6 +20,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/JointState.h>
+#include <std_srvs/SetBool.h>
 #include <Eigen/Eigen>
 #include <chrono>
 #include <thread>
@@ -35,7 +36,10 @@ int main(int _argc, char **_argv){
 
 	ros::NodeHandle nh;
 
-	std::cout << "Circle Test -> 1, Point Test -> 2, Joints Test -> 3" << std::endl;
+	std::cout << "Circle Test -> 1" << std::endl;
+	std::cout << "Point Test -> 2" << std::endl;
+	std::cout << "Joints Test -> 3" << std::endl;
+	std::cout << "Emergency Service Test -> 4" << std::endl;
 	int test;
 	std::cin >> test;
 
@@ -144,6 +148,29 @@ int main(int _argc, char **_argv){
 			leftPosePublisher.publish(leftMsg);
 			rightPosePublisher.publish(rightMsg);
 		}
+	}else if(test == 4){
+		ros::ServiceClient leftEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/emergency_stop");
+		ros::ServiceClient rightEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/emergency_stop");
+		
+		
+		std_srvs::SetBool srv;
+		srv.request.data = true;
+		if(leftEmergServ.call(srv)){
+			if(srv.response.success){
+				std::cout << "response success left is TRUE" << std::endl;
+			}
+		}else{
+			std::cout << "response success left is FALSE" << std::endl;
+		}
+
+		if(rightEmergServ.call(srv)){
+			if(srv.response.success){
+				std::cout << "response success right is TRUE" << std::endl;
+			}
+		}else{
+			std::cout << "response success right is FALSE" << std::endl;
+		}
+
 	}else{
 		std::cout << "Unknown Test!" << std::endl;
 	}

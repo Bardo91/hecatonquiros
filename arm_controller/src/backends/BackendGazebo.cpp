@@ -101,4 +101,9 @@ namespace hecatonquiros{
         return 0;
     }
 
+	//-----------------------------------------------------------------------------------------------------------------
+    int BackendGazebo::jointTorque(const int _id, const bool _enable){
+        return 0;
+    }
+
 }

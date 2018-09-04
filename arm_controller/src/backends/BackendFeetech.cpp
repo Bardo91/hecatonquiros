@@ -181,6 +181,23 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::jointTorque(const int _id, const bool _enable){
+        int val;
+        if(_enable){
+            mComGuard.lock();
+            val = mServoDriver->EnableTorque(mArmId*10 + _id + 1, 'H');
+            mComGuard.unlock();
+        }else{
+            mComGuard.lock();
+            std::cout << "BCFEETECH: Disable torque id: " << std::to_string(mArmId*10 + _id + 1) << std::endl;
+            val = mServoDriver->EnableTorque(mArmId*10 + _id + 1, 'L');
+            std::cout << "BCFEETECH: val: " << std::to_string(val) << std::endl; 
+            mComGuard.unlock();
+        }
+        return val;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetech::extractDataXML(std::string _pathXML){
         tinyxml2::XMLDocument xml_doc;
         //std::cout << "XML Path: " << _pathXML << std::endl; 

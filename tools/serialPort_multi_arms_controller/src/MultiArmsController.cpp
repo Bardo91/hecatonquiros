@@ -20,14 +20,6 @@
 
 #include "MultiArmsController.h"
 
-#include <std_msgs/String.h>
-#include <fstream>
-
-#include <hecatonquiros/Arm4DoF.h>
-#include <hecatonquiros/model_solvers/ModelSolver.h>
-
-#include <chrono>
-
 //---------------------------------------------------------------------------------------------------------------------
 bool MultiArmsController::init(int _argc, char** _argv){
 
@@ -55,7 +47,7 @@ bool MultiArmsController::init(int _argc, char** _argv){
     ros::NodeHandle nh;
 
     int nArms = mConfigFile["nArms"].GetInt() + 1;
-    mArmsBackend.resize(nArms);
+    mBackend.resize(nArms);
     mEnableBackend.resize(nArms);
     mJointsArmPublisher.resize(nArms);
     mJointIDArmPublisher.resize(nArms);
@@ -65,19 +57,30 @@ bool MultiArmsController::init(int _argc, char** _argv){
     mJointsArmService.resize(nArms);
     mJointIDArmService.resize(nArms); 
     mLoadIDArmService.resize(nArms);
+    mTorqueIDArmService.resize(nArms);
 
     for(int i = 1; i < nArms; i++){
 
-        if(mArmsBackend[i].init(json, i)){
-            std::cout << "Arm " << std::to_string(i) << " created"<< std::endl;
+        hecatonquiros::Backend::Config bc; 
+
+        std::string sEnableBc = "enable_backend"+std::to_string(i);
+        const char *cEnableBc = sEnableBc.c_str();
+        mEnableBackend[i] = mConfigFile[cEnableBc].GetBool();
+
+        if(mEnableBackend[i]){ 
+            std::string serialPort = mConfigFile["serial_port"].GetString();
+            std::string sConfigFile = "configXML"+std::to_string(i);
+            const char *cConfigFile = sConfigFile.c_str();
+            bc.configXML = mConfigFile[cConfigFile].GetString(); 
+            bc.type = hecatonquiros::Backend::Config::eType::Feetech; 
+            bc.port = serialPort;
+            bc.armId = i;
         }else{
-            std::cout << "ERROR creating Arm " << std::to_string(i) << std::endl;
-            return false;
+            bc.type = hecatonquiros::Backend::Config::eType::Dummy;
         }
 
-        std::string senablebc = "enable_backend"+std::to_string(i);
-        const char *cenablebc = senablebc.c_str();
-        mEnableBackend[i] = mConfigFile[cenablebc].GetBool();
+        mBackend[i] = hecatonquiros::Backend::create(bc);
+        std::cout << "Arm " << std::to_string(i) << " created"<< std::endl;
 
         //////////////////////////////////////////////////
         // ROS publishers
@@ -97,6 +100,7 @@ bool MultiArmsController::init(int _argc, char** _argv){
         mJointsArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/joints_req", &MultiArmsController::jointsService, this);
         mJointIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/jointId_req", &MultiArmsController::jointIDService, this);
         mLoadIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/loadId_req", &MultiArmsController::loadIDService, this);
+        mTorqueIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/torqueId_req", &MultiArmsController::torqueIDService, this);
         std::cout << "Created ROS Services of Arm " << std::to_string(i) << std::endl;
 
     }
@@ -137,7 +141,7 @@ void MultiArmsController::jointsCallback(const sensor_msgs::JointStateConstPtr& 
         jointsArm.push_back(_msg->position[j]);
     }
     int id_arm = _msg->effort[0];
-    mArmsBackend[id_arm].mBackend->joints(jointsArm, mEnableBackend[id_arm]);
+    mBackend[id_arm]->joints(jointsArm, mEnableBackend[id_arm]);
 
 }
 
@@ -145,7 +149,7 @@ void MultiArmsController::jointsCallback(const sensor_msgs::JointStateConstPtr& 
 bool MultiArmsController::clawService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
     
     if(_req.req){
-        mArmsBackend[_req.id].mBackend->claw(_req.data);
+        mBackend[_req.id]->claw(_req.data);
     }
     _res.success = true;
     
@@ -157,7 +161,7 @@ bool MultiArmsController::jointsService(hecatonquiros::ReqData::Request &_req, h
     
     std::vector<float> joints;
     if(_req.req){
-        joints = mArmsBackend[_req.id].mBackend->joints(_req.data);
+        joints = mBackend[_req.id]->joints(_req.data);
     }
 
     sensor_msgs::JointState msg;
@@ -176,7 +180,7 @@ bool MultiArmsController::jointIDService(hecatonquiros::ReqData::Request &_req, 
     
     int pos;
     if(_req.req){
-        pos = mArmsBackend[_req.id].mBackend->jointPos(_req.data);
+        pos = mBackend[_req.id]->jointPos(_req.data);
     }
 
     std_msgs::Int32 msg;
@@ -192,12 +196,26 @@ bool MultiArmsController::loadIDService(hecatonquiros::ReqData::Request &_req, h
     
     int load;
     if(_req.req){
-        load = mArmsBackend[_req.id].mBackend->jointLoad(_req.data);
+        load = mBackend[_req.id]->jointLoad(_req.data);
     }
 
     std_msgs::Int32 msg;
     msg.data = load;
     mLoadIDArmPublisher[_req.id].publish(msg);
+    _res.success = true;
+
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+bool MultiArmsController::torqueIDService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
+    
+    int val;
+    if(_req.req){
+        val = mBackend[_req.id]->jointTorque(_req.data, true);
+    }else{
+        val = mBackend[_req.id]->jointTorque(_req.data, false);
+    }
     _res.success = true;
 
     return true;
