@@ -112,7 +112,7 @@ namespace hecatonquiros{
     bool BackendFeetech::claw(const int _action){
         if(_action == 0){
             mComGuard.lock();
-            mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
+            mServoDriver->WritePos(mArmId*10 + 7, 350, mSpeed);  
             mComGuard.unlock();
             return true;
         }else if(_action == 1){
