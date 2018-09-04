@@ -166,15 +166,15 @@ namespace hecatonquiros{
             mComGuard.lock();
             int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
             mComGuard.unlock();
-            if(val < 0 || val > 1023){
-                std::cout << "Reading error from feetech backend. ID: " << mArmId*10 + i + 1 << std::endl;
+            if(val < 0 || val > 1024){
+                std::cout << "Reading error from feetech backend. ID: " << mArmId*10 + i + 1 << " val: " << val << std::endl;
                 return {};
+                //joints.push_back(0);
+            }else{
+                joints.push_back( mapValToAngle( mMinMaxValues[i].first, 
+                                                mMinMaxValues[i].second,
+                                                val) - mOffsetJoints[i]);
             }
-            
-            joints.push_back( mapValToAngle( mMinMaxValues[i].first, 
-                                            mMinMaxValues[i].second,
-                                            val) - mOffsetJoints[i]);
-
         }
 
         return joints;
