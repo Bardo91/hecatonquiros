@@ -188,10 +188,8 @@ namespace hecatonquiros{
             val = mServoDriver->EnableTorque(mArmId*10 + _id + 1, 'H');
             mComGuard.unlock();
         }else{
-            mComGuard.lock();
-            std::cout << "BCFEETECH: Disable torque id: " << std::to_string(mArmId*10 + _id + 1) << std::endl;
+            mComGuard.lock(); 
             val = mServoDriver->EnableTorque(mArmId*10 + _id + 1, 'L');
-            std::cout << "BCFEETECH: val: " << std::to_string(val) << std::endl; 
             mComGuard.unlock();
         }
         return val;
