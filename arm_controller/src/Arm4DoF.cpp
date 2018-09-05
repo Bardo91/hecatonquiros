@@ -73,13 +73,17 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     std::vector<float> Arm4DoF::joints() const {
-        if(mModelSolver != nullptr){
-            return mModelSolver->joints();
+        if(mBackend != nullptr){
+            // 666 will not work without model solver
+            return mBackend->joints(mModelSolver->joints().size()); 
         }else{
-            std::cout << "No model solver instantiated" << std::endl;
-            return {};
+            if(mModelSolver != nullptr){
+                return mModelSolver->joints();
+            }else{
+                std::cout << "No model solver instantiated" << std::endl;
+                return {};
+            }
         }
-        
     }
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -154,13 +158,20 @@ namespace hecatonquiros{
     
     //---------------------------------------------------------------------------------------------------------------------
     Eigen::Matrix4f Arm4DoF::pose() const {
-        if(mModelSolver != nullptr){
-            std::vector<Eigen::Matrix4f> transforms;
-            mModelSolver->jointsTransform(transforms);
-            return transforms.back();
+        if(mBackend != nullptr){
+            // 666 will not work without model solver 666 causes glitch and not very good for multithreading...
+            auto joints = mBackend->joints(mModelSolver->joints().size());
+            Eigen::Matrix4f pose = mModelSolver->testFK(joints); 
+            return pose;
         }else{
-            std::cout << "No model solver instantiated" << std::endl;
-            return Eigen::Matrix4f::Identity();
+            if(mModelSolver != nullptr){
+                std::vector<Eigen::Matrix4f> transforms;
+                mModelSolver->jointsTransform(transforms);
+                return transforms.back();
+            }else{
+                std::cout << "No model solver instantiated" << std::endl;
+                return Eigen::Matrix4f::Identity();
+            }
         }
     }
 

@@ -23,7 +23,7 @@
 
 namespace hecatonquiros{
     //-----------------------------------------------------------------------------------------------------------------
-    void ModelSolverSimple4Dof::joints(const std::vector<float> &_joints){
+    void ModelSolverSimple4Dof::joints(std::vector<float> &_joints){
         mJoints = _joints;
         mUpdatedTransforms = false;
     }

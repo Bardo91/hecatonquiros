@@ -41,7 +41,7 @@ namespace hecatonquiros{
 
         /// Set joints of robot
         /// \param _joints: desired joints
-        virtual void joints(const std::vector<float> &_joints);
+        virtual void joints(std::vector<float> &_joints);
         
         /// Get current joints of robot
         virtual std::vector<float> joints() const;
@@ -68,6 +68,10 @@ namespace hecatonquiros{
         /// \param _joints: list of possible solutions joints for given pose
         virtual Eigen::Matrix4f testIk(const std::vector<float> &_joints);
 
+        /// End effector pose given joints
+        /// \param _joints: joints to test endeffector
+        virtual Eigen::Matrix4f testFK(const std::vector<float> _joints);
+
         /// Get the points of the desired trajectory
         /// \param _pose: desired points that the trajectory must have
         /// \param _traj: list of possible solutions joints for given poses
@@ -92,6 +96,7 @@ namespace hecatonquiros{
         static bool addObject(std::string _xmlObject, std::string _name = "object");
         static void moveObject(Eigen::Matrix4f _T, std::string _name);
         static void setTransparencyObject(std::string _name, float _val);
+	static std::vector<OpenRAVE::GraphHandlePtr> drawCoordinates(Eigen::Matrix4f &_pose, float size = 0.02);
 
         /// Draw a line on the current environment. Keep returned object to keep the line
         /// \param _init: beginning of the line

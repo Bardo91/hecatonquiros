@@ -53,7 +53,7 @@ namespace hecatonquiros{
 
 
     //-----------------------------------------------------------------------------------------------------------------
-    void ModelSolverRos::joints(const std::vector<float> &_joints){
+    void ModelSolverRos::joints(std::vector<float> &_joints){
         #ifdef HAS_ROS
             ros::NodeHandle n;
             hecatonquiros::SetJoints jointsSrv;

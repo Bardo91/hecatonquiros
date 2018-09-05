@@ -23,6 +23,46 @@ bool SCServo::isConnected(){
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+int SCServo::EnableTorque(u8 ID, u8 Enable) {
+	return writeByte(ID, P_TORQUE_ENABLE, Enable);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+int SCServo::WritePos(u8 ID, u16 Position, u16 Time, u16 Speed) {
+	return writePos(ID, Position, Time, Speed, INST_WRITE);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+int SCServo::RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed) {
+	return writePos(ID, Position, Time, Speed, INST_REG_WRITE);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+void SCServo::SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]) {
+	mSerialConnection->flush();
+	u8 *buf_send[6];
+	u8 buf[6];
+	for (int i = 0; i<IDN; i++){
+		Host2SCS(buf+0, buf+1, Position[i]);
+		Host2SCS(buf+2, buf+3, Time[i]);
+		Host2SCS(buf+4, buf+5, Speed[i]);
+		buf_send[i] = new u8 [6];
+		std::memcpy(buf_send[i], buf, sizeof(u8)*6);
+	}
+	syncWrite(ID, IDN, P_GOAL_POSITION_L, buf_send, 6);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+int SCServo::ReadPos(u8 ID) {
+	return readWord(ID, P_PRESENT_POSITION_L);
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 void SCServo::Host2SCS(u8 *DataL, u8* DataH, int Data) {
 	if(End) {
 		*DataL = (Data>>8);
@@ -139,10 +179,6 @@ int SCServo::writeWord(u8 ID, u8 MemAddr, u16 wDat) {
 	return Ack(ID);
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-int SCServo::EnableTorque(u8 ID, u8 Enable) {
-	return writeByte(ID, P_TORQUE_ENABLE, Enable);
-}
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun) {
@@ -151,60 +187,18 @@ int SCServo::writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun) {
 	Host2SCS(buf+0, buf+1, Position);
 	Host2SCS(buf+2, buf+3, Time);
 	Host2SCS(buf+4, buf+5, Speed);
-	//std::cout << "buf: ";
-	//for(int j = 0; j<6; j++){
-	//	std::cout << (int)buf[j];
-	//}
-	std::cout << std::endl;
 	writeBuf(ID, P_GOAL_POSITION_L, buf, 6, Fun);
 	return Ack(ID);
 	//return 1;
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-int SCServo::WritePos(u8 ID, u16 Position, u16 Time, u16 Speed) {
-	return writePos(ID, Position, Time, Speed, INST_WRITE);
-}
 
-//---------------------------------------------------------------------------------------------------------------------
-int SCServo::RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed) {
-	return writePos(ID, Position, Time, Speed, INST_REG_WRITE);
-}
 
 //---------------------------------------------------------------------------------------------------------------------
 void SCServo::RegWriteAction() {
 	writeBuf(0xfe, 0, NULL, 0, INST_ACTION);
 }
 
-//---------------------------------------------------------------------------------------------------------------------
-void SCServo::SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]) {
-	mSerialConnection->flush();
-	u8 *buf_send[6];
-	u8 buf[6];
-	for (int i = 0; i<IDN; i++){
-		Host2SCS(buf+0, buf+1, Position[i]);
-		Host2SCS(buf+2, buf+3, Time[i]);
-		Host2SCS(buf+4, buf+5, Speed[i]);
-		//buf_send[i] = (u8 *)std::malloc( sizeof(u8)*6 );
-		buf_send[i] = new u8 [6];
-		std::memcpy(buf_send[i], buf, sizeof(u8)*6);
-		//std::cout << "Pos: " << (int) Position[i] << std::endl;
-		//std::cout << "Time: " << (int) Time[i] << std::endl;
-		//std::cout << "Speed: " << (int) Speed[i] << std::endl;
-		//std::cout << "Sync buf: ";
-		//for(int j = 0; j<6; j++){
-		//	std::cout << (int)buf[j];
-		//}
-		//std::cout << std::endl;
-		//std::cout << "Sync buf_send: ";
-		//for(int k = 0; k<6; k++){
-		//	std::cout << (int)buf_send[i][k];
-		//}
-		//std::cout << std::endl;
-		
-	}
-	syncWrite(ID, IDN, P_GOAL_POSITION_L, buf_send, 6);
-}
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::Read(u8 ID, u8 MemAddr, u8 *nData, u8 nLen) {
@@ -236,17 +230,13 @@ int SCServo::readByte(u8 ID, u8 MemAddr) {
 int SCServo::readWord(u8 ID, u8 MemAddr) {	
 	u8 nDat[2];
 	int Size;
-	u16 wDat;
 	Size = Read(ID, MemAddr, nDat, 2);
 	if(Size!=2)
 		return -1;
+		
+	u16 wDat;
 	wDat = SCS2Host(nDat[0], nDat[1]);
 	return wDat;
-}
-
-//---------------------------------------------------------------------------------------------------------------------
-int SCServo::ReadPos(u8 ID) {
-	return readWord(ID, P_PRESENT_POSITION_L);
 }
 
 //---------------------------------------------------------------------------------------------------------------------

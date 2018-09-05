@@ -104,7 +104,7 @@ namespace hecatonquiros{
 
 
     //-----------------------------------------------------------------------------------------------------------------
-    void ModelSolverOpenRave::joints(const std::vector<float> &_joints){
+    void ModelSolverOpenRave::joints(std::vector<float> &_joints){
         #ifdef HAS_OPENRAVE
             EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
             std::vector<OpenRAVE::RobotBasePtr> robots;
@@ -125,11 +125,13 @@ namespace hecatonquiros{
                 indices[i] = i;
             }
             robot->SetDOFValues(joints, 1, indices);
-            
-            poses.clear();
+            robot->GetDOFValues(joints);
+            for(unsigned i = 0; i < _joints.size(); i++){
+                _joints[i] = joints[i];
+            }
 
-            std::vector<Eigen::Matrix4f> transforms;
-            jointsTransform(transforms);
+            //std::vector<Eigen::Matrix4f> transforms;
+            //jointsTransform(transforms);
             
             //for(auto &pose:transforms){
             //    RaveVector<float> p1 = {pose(0,3),pose(1,3), pose(2,3)}, p2;
@@ -463,6 +465,50 @@ namespace hecatonquiros{
 
     }
 
+
+    Eigen::Matrix4f ModelSolverOpenRave::testFK(const std::vector<float> _joints){
+        #ifdef HAS_OPENRAVE
+            EnvironmentMutex::scoped_lock lock(mEnvironment->GetMutex());
+            
+            std::vector<OpenRAVE::RobotBasePtr> robots;
+            auto robot = mEnvironment->GetRobot(mConfig.robotName);
+
+            std::vector< dReal > currentJoints;
+            robot->GetDOFValues(currentJoints);
+
+            std::vector<dReal> joints(robot->GetDOF ());
+            std::vector<int> indices(robot->GetDOF ());
+            for(unsigned i = 0; i < robot->GetDOF (); i++){
+                if(i < _joints.size()){
+                    joints[i] = _joints[i];
+                }else{
+                    joints[i] = currentJoints[i];
+                }
+                indices[i] = i;
+            }
+            robot->SetDOFValues(joints, 1, indices);
+            
+
+            std::vector<OpenRAVE::Transform> or_transforms;
+            robot->GetLinkTransformations (or_transforms);
+
+            auto orTransform = robot->GetLinks().back()->GetTransform();
+            OpenRAVE::TransformMatrix orMatrix(orTransform);
+            Eigen::Matrix4f T = Eigen::Matrix4f::Identity();;
+
+            T(0,0) = orMatrix.m[0];     T(0,1) = orMatrix.m[1];     T(0,2) = orMatrix.m[2];     T(0,3) = orMatrix.trans.x;
+            T(1,0) = orMatrix.m[4];     T(1,1) = orMatrix.m[5];     T(1,2) = orMatrix.m[6];     T(1,3) = orMatrix.trans.y;
+            T(2,0) = orMatrix.m[8];     T(2,1) = orMatrix.m[9];     T(2,2) = orMatrix.m[10];    T(2,3) = orMatrix.trans.z;
+
+            robot->SetDOFValues(currentJoints, 1, indices); // restore joints
+            
+            return T;
+            
+        #else
+            return Eigen::Matrix4f::Identity();
+        #endif
+    }
+
     //-----------------------------------------------------------------------------------------------------------------
     Eigen::MatrixXf  ModelSolverOpenRave::jacobian(){
         #ifdef HAS_OPENRAVE
@@ -598,6 +644,21 @@ namespace hecatonquiros{
                 }
             }	
         #endif
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    std::vector<OpenRAVE::GraphHandlePtr> ModelSolverOpenRave::drawCoordinates(Eigen::Matrix4f &_pose, float _size){
+        std::vector<OpenRAVE::GraphHandlePtr> handles;
+	
+	for(unsigned i = 0; i < 3; i++){
+		handles.push_back(
+					drawLine(_pose.block<3,1>(0,3), 
+						_pose.block<3,1>(0,3) + _pose.block<3,1>(0,i)*_size,
+						0.01, 	1*(i==0), 
+							1*(i==1),
+							1*(i==2)));
+	}
+	return handles;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
