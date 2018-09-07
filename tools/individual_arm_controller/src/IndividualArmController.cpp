@@ -84,6 +84,7 @@ bool IndividualArmController::init(int _argc, char** _argv){
         cHomeJoints = {0,-M_PI/5,M_PI/1.5};
     if(mNdof == 4)
         cHomeJoints = {0,-M_PI/5,M_PI/1.5, 0};
+        //cHomeJoints = {0,0, 90*M_PI/180.0, 0};
     if(mNdof == 6)
         cHomeJoints = {0,-M_PI/6,M_PI/1.5, -90*M_PI/180.0, /*-M_PI/1.5*/ 0,0};
 
@@ -373,7 +374,7 @@ void IndividualArmController::pose3DCallback(const geometry_msgs::PoseStamped::C
             if(mArm->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
                 mTargetJoints = joints; // 666 Thread safe?
             }else{
-                std::cout << "Failed IK left" << std::endl;
+                std::cout << "Failed IK" << std::endl;
             }
         }
     }
@@ -404,7 +405,7 @@ void IndividualArmController::pose3DJacobiCallback(const geometry_msgs::PoseStam
             if(mArm->jacobianStep(position, joints)){
                 mTargetJoints = joints; // 666 Thread safe?
             }else{
-                std::cout << "Failed IK left" << std::endl;
+                std::cout << "Failed IK" << std::endl;
             }
         }
     }
