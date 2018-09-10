@@ -92,6 +92,7 @@ namespace hecatonquiros{
         /// Each backend might have a different behaviour.
         /// \param _cmd: command sent to the backend for requesting something
         virtual float request(std::string &_cmd) {return 0.0;}
+        
     protected:
         Backend() {}  
         // \brief abstract method for initialization of the class

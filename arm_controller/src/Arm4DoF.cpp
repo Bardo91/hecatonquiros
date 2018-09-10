@@ -29,6 +29,28 @@
 #include <chrono>
 #include <cassert>
 
+template <class MatT>
+Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
+pseudoinverse(const MatT &mat, typename MatT::Scalar tolerance = typename MatT::Scalar{1e-4}) // choose appropriately
+{
+    typedef typename MatT::Scalar Scalar;
+    auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+    const auto &singularValues = svd.singularValues();
+    Eigen::Matrix<Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> singularValuesInv(mat.cols(), mat.rows());
+    singularValuesInv.setZero();
+    for (unsigned int i = 0; i < singularValues.size(); ++i) {
+        if (singularValues(i) > tolerance)
+        {
+            singularValuesInv(i, i) = Scalar{1} / singularValues(i);
+        }
+        else
+        {
+            singularValuesInv(i, i) = Scalar{0};
+        }
+    }
+    return svd.matrixV() * singularValuesInv * svd.matrixU().adjoint();
+}
+
 namespace hecatonquiros{
     //---------------------------------------------------------------------------------------------------------------------
     Arm4DoF::Arm4DoF(const ModelSolver::Config &_modelConfig, const Backend::Config &_backendConfig) {
@@ -227,8 +249,11 @@ namespace hecatonquiros{
             Eigen::Vector3f errVec = _position - pose().block<3,1>(0,3);
             Eigen::MatrixXf I(jacobian.cols(), jacobian.cols());
             I.setIdentity();
-            Eigen::VectorXf incJoints = 
-                    (jacobian.transpose()*jacobian +I*0.1).inverse()*jacobian.transpose()*errVec;
+            // Eigen::VectorXf incJoints = 
+            //         (jacobian.transpose()*jacobian +I*_alpha*_alpha).inverse()*jacobian.transpose()*errVec;
+            
+            auto jacob_inv = pseudoinverse(jacobian);
+            Eigen::VectorXf incJoints =  jacob_inv * (errVec)*0.1/errVec.norm();
 
             // std::cout << incJoints << std::endl;
             if(std::isnan(incJoints[0]))
@@ -314,3 +339,4 @@ namespace hecatonquiros{
         }
     }
 }
+

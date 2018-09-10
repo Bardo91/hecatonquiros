@@ -49,17 +49,17 @@ int main(int _argc, char **_argv){
 				Eigen::Matrix4f leftPose;
 				Eigen::Matrix4f rightPose;
 				
-				ros::Subscriber leftPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/pose", 1, 
+				ros::Subscriber leftPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/out/pose", 1, 
 							[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
 								rosToEigen(_msg, leftPose);
 							});
-				ros::Subscriber rightPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/pose", 1, 
+				ros::Subscriber rightPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/out/pose", 1, 
 							[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
 								rosToEigen(_msg, rightPose);
 							});
 
-				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/target_pose3d_jacobi", 1);
-				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/target_pose3d_jacobi", 1);
+				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
+				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose3d", 1);
 
 				std::cout << "Wait for pose" << std::endl;
 				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
@@ -73,7 +73,7 @@ int main(int _argc, char **_argv){
 				
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
-				while(duration < 50000){
+				while(duration < 500000){
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					auto t1 = std::chrono::high_resolution_clock::now();
@@ -83,7 +83,7 @@ int main(int _argc, char **_argv){
 					float incZ = sin(2*M_PI*duration/10000)*0.1;
 
 					Eigen::Matrix4f leftTargetPose, rightTargetPose;
-					if(duration < 25000){
+					if(duration < 250000){
 						leftTargetPose = leftInitPose;
 						rightTargetPose = rightInitPose;		
 					}else{
@@ -110,8 +110,8 @@ int main(int _argc, char **_argv){
 			}
 			case 'p':
 			{
-				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/target_pose3d", 1);
-				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/target_pose3d", 1);
+				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
+				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose3d", 1);
 
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
@@ -155,8 +155,8 @@ int main(int _argc, char **_argv){
 			}
 			case 'j':
 			{
-				ros::Publisher leftJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/left_arm/target_joints", 1);
-				ros::Publisher rightJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/right_arm/target_joints", 1);													
+				ros::Publisher leftJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/left_arm/in/target_joints", 1);
+				ros::Publisher rightJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/right_arm/in/target_joints", 1);													
 
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
@@ -192,8 +192,8 @@ int main(int _argc, char **_argv){
 			}
 			case 'e':
 			{
-				ros::ServiceClient leftEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/emergency_stop");
-				ros::ServiceClient rightEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/emergency_stop");
+				ros::ServiceClient leftEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/in/emergency_stop");
+				ros::ServiceClient rightEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/in/emergency_stop");
 				
 				std_srvs::SetBool srv;
 				srv.request.data = true;
@@ -216,8 +216,8 @@ int main(int _argc, char **_argv){
 			}
 			case 'g':
 			{
-				ros::ServiceClient leftGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/claw");
-				ros::ServiceClient rightGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/claw");
+				ros::ServiceClient leftGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/in/claw");
+				ros::ServiceClient rightGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/in/claw");
 				std_srvs::SetBool srv;
 
 				std::cout << "1 close gripper, 2 open gripper" << std::endl;

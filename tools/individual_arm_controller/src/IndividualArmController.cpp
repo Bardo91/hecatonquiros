@@ -91,35 +91,34 @@ bool IndividualArmController::init(int _argc, char** _argv){
     // ROS publishers and subscribers.
     ros::NodeHandle nh;
     
-    mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/"+mName+"/controller/state", 1);  
-    mMovingKeepAlive = nh.advertise<std_msgs::String>("/hecatonquiros/"+mName+"/moving/keep_alive", 1);  
+    mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/"+mName+"/out/controller/state", 1);  
+    mMovingKeepAlive = nh.advertise<std_msgs::String>("/hecatonquiros/"+mName+"/out/moving/keep_alive", 1);  
 
     // Direct joints access
-    mTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/"+mName+"/target_joints", 0.2);
+    mTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/"+mName+"/in/target_joints", 0.2);
     WatchdogJoints::Callback wrapperJointsCallback = [&](const typename sensor_msgs::JointState::ConstPtr &_msg){jointsCallback(_msg);};
     mTargetJointsSubscriber->attachCallback(wrapperJointsCallback);
 
     // FAST-IK methods
-    mTargetPose3DSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/target_pose3d", 0.2);
+    mTargetPose3DSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/in/target_pose3d", 0.2);
     WatchdogPose::Callback wrapperPose3dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){pose3DCallback(_msg);};
     mTargetPose3DSubscriber->attachCallback(wrapperPose3dCallback);
 
-    mTargetPose6DSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/target_pose6d", 0.2);
+    mTargetPose6DSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/in/target_pose6d", 0.2);
     WatchdogPose::Callback wrapperPose6dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){pose6DCallback(_msg);};
     mTargetPose6DSubscriber->attachCallback(wrapperPose6dCallback);
 
     // Jacobian methods
-    mTargetPose3DJacobiSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/target_pose3d_jacobi", 0.2);
+    mTargetPose3DJacobiSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/in/target_pose3d_jacobi", 0.2);
     WatchdogPose::Callback wrapperPose3dJacobiCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){pose3DJacobiCallback(_msg);};
     mTargetPose3DJacobiSubscriber->attachCallback(wrapperPose3dJacobiCallback);
 
-    mTargetPose6DJacobiSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/target_pose6d_jacobi", 0.2);
+    mTargetPose6DJacobiSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/in/target_pose6d_jacobi", 0.2);
     WatchdogPose::Callback wrapperPose6dJacobiCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){pose6DJacobiCallback(_msg);};
     mTargetPose6DJacobiSubscriber->attachCallback(wrapperPose6dJacobiCallback);
 
-    mClawService = nh.advertiseService("/hecatonquiros/"+mName+"/claw", &IndividualArmController::clawService, this);
-    mEmergencyStopService = nh.advertiseService("/hecatonquiros/"+mName+"/emergency_stop", &IndividualArmController::emergencyStopService, this);
-
+    mClawService = nh.advertiseService("/hecatonquiros/"+mName+"/in/claw", &IndividualArmController::clawService, this);
+    mEmergencyStopService = nh.advertiseService("/hecatonquiros/"+mName+"/in/emergency_stop", &IndividualArmController::emergencyStopService, this);
 
     return true;
 }
@@ -283,13 +282,24 @@ void IndividualArmController::MovingArmThread(){
 //---------------------------------------------------------------------------------------------------------------------
 void IndividualArmController::publisherLoop(){
     ros::NodeHandle nh;
-    ros::Publisher jointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/joints_state", 1);
-    ros::Publisher posePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/"+mName+"/pose", 1);
-    ros::Publisher aimingJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/aiming_joints", 1);  
+    ros::Publisher jointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/out/joints_state", 1);
+    ros::Publisher posePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/"+mName+"/out/pose", 1);
+    ros::Publisher aimingJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/out/aiming_joints", 1);  
+    ros::Publisher targetJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/out/target_joints", 1);
 
     ros::Rate rate(50);
 
     while(ros::ok()){
+        // Publish target joints
+        std::vector<float> targetJoints;
+        sensor_msgs::JointState targetJointsMsg;
+	    targetJointsMsg.header.stamp = ros::Time::now();
+        targetJoints = mTargetJoints;
+        for(auto&j:targetJoints){
+            targetJointsMsg.position.push_back(j);
+        }
+        targetJointsPublisher.publish(targetJointsMsg);
+
         // Publish state joints
         std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
@@ -402,7 +412,7 @@ void IndividualArmController::pose3DJacobiCallback(const geometry_msgs::PoseStam
 
             std::vector<float> joints;
             Eigen::Vector3f position = pose.block<3,1>(0,3);
-            if(mArm->jacobianStep(position, joints)){
+            if(mArm->jacobianStep(position, joints, 0.2)){
                 mTargetJoints = joints; // 666 Thread safe?
             }else{
                 std::cout << "Failed IK" << std::endl;
