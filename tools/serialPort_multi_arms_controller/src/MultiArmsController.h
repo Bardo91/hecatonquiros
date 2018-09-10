@@ -45,6 +45,7 @@ public:
 
 private:
     void jointsCallback(const sensor_msgs::JointStateConstPtr& _msg);
+    void continuousJointsPub(int _id, int _njoints);
 
     bool clawService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
     bool jointsService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
@@ -56,9 +57,11 @@ private:
     // std::thread mLoopThread;
     // bool mRun;
 
+    std::vector<std::thread> mReadJointsThread;
+
     std::vector<ros::Publisher> mJointsArmPublisher, mJointIDArmPublisher, mLoadIDArmPublisher;
     std::vector<ros::Subscriber> mJointsArmSubscriber;
-    std::vector<ros::ServiceServer> mClawArmService, mJointsArmService, mJointIDArmService, mLoadIDArmService, mTorqueIDArmService;
+    std::vector<ros::ServiceServer> mClawArmService, mJointIDArmService, mLoadIDArmService, mTorqueIDArmService;
 
     std::vector<hecatonquiros::Backend *> mBackend;
     rapidjson::Document mConfigFile;

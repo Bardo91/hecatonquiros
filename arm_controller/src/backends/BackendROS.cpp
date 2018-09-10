@@ -93,6 +93,8 @@ namespace hecatonquiros{
 		if(mClawReq.call(srv)){
 			if(srv.response.success){
 				return true;
+			}else{
+				return false;
 			}
 		}else{
 			std::cout << "BCROS: Failed to call service of claw" << std::endl;
@@ -110,6 +112,8 @@ namespace hecatonquiros{
 		if(mJointIDReq.call(srv)){
 			if(srv.response.success){
 				return mJoint;
+			}else{
+				return 0;
 			}
 		}else{
 			std::cout << "BCROS: Failed to call service of jointPos" << std::endl;
@@ -127,6 +131,8 @@ namespace hecatonquiros{
 		if(mLoadIDReq.call(srv)){
 			if(srv.response.success){
 				return mLoad;
+			}else{
+				return 0;
 			}
 		}else{
 			std::cout << "BCROS: Failed to call service of jointLoad" << std::endl;
@@ -143,6 +149,8 @@ namespace hecatonquiros{
 		if(mTorqueIDReq.call(srv)){
 			if(srv.response.success){
 				return 1;
+			}else{
+				return 0;
 			}
 		}else{
 			std::cout << "BCROS: Failed to call service of jointTorque" << std::endl;
@@ -152,32 +160,7 @@ namespace hecatonquiros{
 
 	//-----------------------------------------------------------------------------------------------------------------
     std::vector<float> BackendROS::joints(int nJoints){
-
-		hecatonquiros::ReqData srv;
-		srv.request.req = true;
-		srv.request.id = mArmId;
-		srv.request.data = nJoints;
-		if(mJointsReq.call(srv)){
-			if(srv.response.success){
-				return mJoints;
-			}else{
-				std::cout << "BCROS: Response call service Joints is FALSE" << std::endl;
-				std::vector<float> dummy;
-				dummy.resize(nJoints);
-				for(int i = 0; i < nJoints; i++){
-					dummy[i] = 0;
-				}
-				return dummy;
-			}
-		}else{
-			std::cout << "BCROS: Failed to call service of joints" << std::endl;
-			std::vector<float> dummy;
-			dummy.resize(nJoints);
-			for(int i = 0; i < nJoints; i++){
-				dummy[i] = 0;
-			}
-			return dummy;
-		}
+		return mJoints;
     }
 
 }

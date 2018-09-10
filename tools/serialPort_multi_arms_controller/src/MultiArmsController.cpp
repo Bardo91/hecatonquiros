@@ -54,10 +54,11 @@ bool MultiArmsController::init(int _argc, char** _argv){
     mLoadIDArmPublisher.resize(nArms);
     mJointsArmSubscriber.resize(nArms);
     mClawArmService.resize(nArms);
-    mJointsArmService.resize(nArms);
     mJointIDArmService.resize(nArms); 
     mLoadIDArmService.resize(nArms);
     mTorqueIDArmService.resize(nArms);
+
+    mReadJointsThread.resize(nArms);
 
     for(int i = 1; i < nArms; i++){
 
@@ -97,11 +98,13 @@ bool MultiArmsController::init(int _argc, char** _argv){
         //////////////////////////////////////////////////
         // ROS services
         mClawArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/claw_req", &MultiArmsController::clawService, this);
-        mJointsArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/joints_req", &MultiArmsController::jointsService, this);
         mJointIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/jointId_req", &MultiArmsController::jointIDService, this);
         mLoadIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/loadId_req", &MultiArmsController::loadIDService, this);
         mTorqueIDArmService[i] = nh.advertiseService("/backendROS/arm_"+std::to_string(i)+"/torqueId_req", &MultiArmsController::torqueIDService, this);
         std::cout << "Created ROS Services of Arm " << std::to_string(i) << std::endl;
+
+        mReadJointsThread[i] = std::thread(&MultiArmsController::continuousJointsPub, this, i, 4);
+        std::cout << "Created thread Continuous Joints publisher" << std::endl;
 
     }
 
@@ -157,22 +160,25 @@ bool MultiArmsController::clawService(hecatonquiros::ReqData::Request &_req, hec
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-bool MultiArmsController::jointsService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
+void MultiArmsController::continuousJointsPub(int _id, int _njoints){
     
-    std::vector<float> joints;
-    if(_req.req){
-        joints = mBackend[_req.id]->joints(_req.data);
-    }
 
-    sensor_msgs::JointState msg;
-    msg.header.stamp = ros::Time::now();
-    for(auto&j:joints){
-        msg.position.push_back(j);
-    }
-    mJointsArmPublisher[_req.id].publish(msg);
-    _res.success = true;
+    while(ros::ok()){
 
-    return true;
+        std::vector<float> joints = mBackend[_id]->joints(_njoints);
+
+        sensor_msgs::JointState msg;
+        msg.header.stamp = ros::Time::now();
+        for(auto&j:joints){
+            msg.position.push_back(j);
+        }
+        mJointsArmPublisher[_id].publish(msg);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    }
+    
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------
