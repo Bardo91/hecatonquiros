@@ -54,7 +54,7 @@ private:
 
     std::vector<std::thread> mReadJointsThread;
 
-    std::vector<ros::Publisher> mJointsArmPublisher;
+    std::vector<ros::Publisher> mJointsArmPublisher, mMovingKeepAlive;
     std::vector<ros::Subscriber> mJointsArmSubscriber;
     std::vector<ros::ServiceServer> mClawArmService;
     ros::ServiceServer mConfigService;

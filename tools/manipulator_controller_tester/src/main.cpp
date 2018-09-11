@@ -36,16 +36,33 @@ int main(int _argc, char **_argv){
 
 	ros::NodeHandle nh;
 	char test;
-	while(true){
+	bool finish = true;
+	while(finish){
 		std::cout << "Circle Test -> c" << std::endl;
 		std::cout << "Some Points Test -> p" << std::endl;
 		std::cout << "Some Joints Test -> j" << std::endl;
 		std::cout << "Emergency Service Test -> e" << std::endl;
 		std::cout << "Open/Close Gripper -> g" << std::endl;
+		std::cout << "Finish program -> q" << std::endl;
 		std::cin >> test;
 		switch(test){
+			case 'q':
+				finish = false;
+				break;
 			case 'c':
-			{
+			{	
+				std::cout << "Time: ";
+				int time;
+				std::cin >> time;
+
+				std::cout << "Vel1: ";
+				int vel1;
+				std::cin >> vel1;
+
+				std::cout << "Vel2: ";
+				int vel2;
+				std::cin >> vel2;
+
 				Eigen::Matrix4f leftPose;
 				Eigen::Matrix4f rightPose;
 				
@@ -73,17 +90,17 @@ int main(int _argc, char **_argv){
 				
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
-				while(duration < 500000){
+				while(duration < time){
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					auto t1 = std::chrono::high_resolution_clock::now();
 					duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
 
-					float incY = cos(2*M_PI*duration/10000)*0.1;
-					float incZ = sin(2*M_PI*duration/10000)*0.1;
+					float incY = cos(2*M_PI*duration/vel1)*0.1;
+					float incZ = sin(2*M_PI*duration/vel2)*0.1;
 
 					Eigen::Matrix4f leftTargetPose, rightTargetPose;
-					if(duration < 250000){
+					if(duration < time/2){
 						leftTargetPose = leftInitPose;
 						rightTargetPose = rightInitPose;		
 					}else{
@@ -117,7 +134,11 @@ int main(int _argc, char **_argv){
 				float duration = 0;
 				float incX = 0.29, incY = 0.15, incZ = 0.29;
 
-				while(duration < 5000){
+				std::cout << "Time: ";
+				int time;
+				std::cin >> time;
+
+				while(duration < time){
 
 					incX += 0;
 					incY += 0.01;
@@ -161,7 +182,12 @@ int main(int _argc, char **_argv){
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
 				int incA = 90;
-				while(duration < 5000){
+
+				std::cout << "Time: ";
+				int time;
+				std::cin >> time;
+				
+				while(duration < time){
 
 					incA = incA - 5;
 

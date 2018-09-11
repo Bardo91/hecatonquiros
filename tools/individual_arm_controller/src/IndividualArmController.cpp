@@ -95,7 +95,6 @@ bool IndividualArmController::init(int _argc, char** _argv){
     ros::NodeHandle nh;
     
     mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/"+mName+"/out/controller/state", 1);  
-    mMovingKeepAlive = nh.advertise<std_msgs::String>("/hecatonquiros/"+mName+"/out/moving/keep_alive", 1);  
 
     // Direct joints access
     mTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/"+mName+"/in/target_joints", 0.2);
@@ -247,14 +246,19 @@ bool IndividualArmController::emergencyStopService(std_srvs::SetBool::Request  &
 //---------------------------------------------------------------------------------------------------------------------
 void IndividualArmController::MovingArmThread(){
 
+    ros::Rate rate(30);
+
     auto moveIncLambda = [&](std::vector<float> _targetJoints)->std::vector<float>{  // INTEGRATE IN callback to limit speed
+        
         std::vector<float> currJoints = mArm->joints(); // 666 thread safe?
         float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
+
         for(unsigned i = 0; i < _targetJoints.size();i++){
             float distJoint = (_targetJoints[i] - currJoints[i]);                  
             distJoint = distJoint > MAX_JOINT_DIST ? MAX_JOINT_DIST:distJoint;
             _targetJoints[i] = currJoints[i] + distJoint;
         }
+
         mArm->joints(_targetJoints, mActuateBackend);
         return _targetJoints;
     };
@@ -265,12 +269,11 @@ void IndividualArmController::MovingArmThread(){
             case STATES::MOVING:
             {   
                 mLastAimedJoints = moveIncLambda(mTargetJoints);
-                std_msgs::String aliveMsg;  
-                aliveMsg.data = "I am moving "+mName; 
-                mMovingKeepAlive.publish(aliveMsg);
+                rate.sleep();
             }
                 break;
             default:
+                rate.sleep();
                 break;
         }
     }

@@ -61,17 +61,22 @@ bool MultiArmsController::configService(hecatonquiros::ConfigData::Request &_req
     ros::NodeHandle nh;
     hecatonquiros::Backend::Config bc; 
 
+    std::cout << "ID: " << _req.id << std::endl;
+    std::cout << "NDOF: " << _req.ndof << std::endl;
+    std::cout << "ConfigXML: " << _req.configxml << std::endl;
+    std::cout << "SerialPort: " << _req.serialport << std::endl;
+
     bc.configXML = _req.configxml; 
     bc.type = hecatonquiros::Backend::Config::eType::Feetech; 
     bc.port = _req.serialport;
     bc.armId = _req.id;
-    bc.type = hecatonquiros::Backend::Config::eType::Dummy;
 
     mBackend.push_back(hecatonquiros::Backend::create(bc));
     std::cout << "Arm " << std::to_string(_req.id) << " created"<< std::endl;
 
     //////////////////////////////////////////////////
     // ROS publishers
+    mMovingKeepAlive.push_back(nh.advertise<std_msgs::String>("/backendFeetech/arm_"+std::to_string(_req.id)+"/moving/keep_alive", 1));  
     mJointsArmPublisher.push_back(nh.advertise<sensor_msgs::JointState>("/backendROS/arm_"+std::to_string(_req.id)+"/joints_sub", 1));
     std::cout << "Created ROS Publishers of Arm " << std::to_string(_req.id) << std::endl;
 
@@ -114,11 +119,17 @@ void MultiArmsController::jointsCallback(const sensor_msgs::JointStateConstPtr& 
     int id_arm = _msg->effort[0];
     mBackend[id_arm-1]->joints(jointsArm, true);
 
+    std_msgs::String aliveMsg;  
+    aliveMsg.data = "I am moving "+id_arm; 
+    mMovingKeepAlive[id_arm-1].publish(aliveMsg);
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void MultiArmsController::continuousJointsPub(int _id, int _njoints){
     
+    //ros::Rate rate(10);
+
     while(ros::ok()){
 
         std::vector<float> joints = mBackend[_id-1]->joints(_njoints);
@@ -130,7 +141,8 @@ void MultiArmsController::continuousJointsPub(int _id, int _njoints){
         }
         mJointsArmPublisher[_id-1].publish(msg);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        //rate.sleep();
 
     }
 

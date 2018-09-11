@@ -22,6 +22,7 @@
 #include <thread>
 #include <fstream>
 #include <chrono>
+#include <mutex>
 
 #include <hecatonquiros/Arm4DoF.h>
 #include <hecatonquiros/model_solvers/ModelSolver.h>
@@ -80,6 +81,7 @@ private:
     std::thread mStatePublisherThread;
     std::thread mJointsPublisherThread;
     std::thread mLastAimedJointsThread;
+    std::mutex mGuard;
     bool mRunning = false;
 
     WatchdogJoints *mTargetJointsSubscriber;
