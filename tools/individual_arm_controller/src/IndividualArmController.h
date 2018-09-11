@@ -70,7 +70,7 @@ private:
 private:
     ros::AsyncSpinner *mRosSpinner; // Use 4 threads
 
-    enum class STATES {STOP, HOME, IDLE, MOVING, ERROR, DISABLE};
+    enum class STATES {STOP, HOME, IDLE, MOVING, ERROR};
     STATES mState = STATES::STOP;
     std::string mLastError ="";
     ros::Publisher mStatePublisher;

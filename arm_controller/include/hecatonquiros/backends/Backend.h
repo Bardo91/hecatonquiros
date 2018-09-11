@@ -48,7 +48,10 @@ namespace hecatonquiros{
 
             /// Config for gazebo
             std::string topic = "";
-	    
+
+            /// Numer of DOF
+            int             ndof;
+
             /// offsets  to joints
             std::vector<float> jointsOffsets;
 

@@ -55,7 +55,10 @@ bool IndividualArmController::init(int _argc, char** _argv){
     hecatonquiros::Backend::Config bc; 
     if(mActuateBackend){ 
 		bc.type = hecatonquiros::Backend::Config::eType::ROS; 
-        bc.armId = mConfigFile["id"].GetInt();;
+        bc.armId = mConfigFile["id"].GetInt();
+        bc.configXML = mConfigFile["configXML"].GetString(); 
+        bc.port = mConfigFile["serial_port"].GetString();
+        bc.ndof =  mConfigFile["ndof"].GetInt();
     }else{
         bc.type = hecatonquiros::Backend::Config::eType::Dummy;
     }
@@ -165,7 +168,7 @@ void IndividualArmController::start(){
 //---------------------------------------------------------------------------------------------------------------------
 void IndividualArmController::stop(){
     mLastError = "Intentionally stoped";
-    mState = STATES::ERROR;
+    mState = STATES::STOP;
     mRunning = false;
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     if(mStatePublisherThread.joinable())    mStatePublisherThread.join();
@@ -180,12 +183,6 @@ void IndividualArmController::stateMachine(){
 
     while(ros::ok() && mRunning){
         switch(mState){
-            case STATES::DISABLE:
-                mArm->openClaw();
-                mArm->endisTorque(mNdof, false);
-                std::cout << "Disabled motors" << std::endl;
-                mState = STATES::STOP;
-                break;
             case STATES::HOME:
                 mTargetJoints = cHomeJoints;
                 mLastAimedJoints = mTargetJoints;
@@ -197,6 +194,7 @@ void IndividualArmController::stateMachine(){
                 mArm->joints(cHomeJoints, mActuateBackend);
                 break;
             case STATES::STOP:
+                mArm->openClaw();
                 break;
             case STATES::MOVING:    
                 break;
@@ -212,7 +210,7 @@ void IndividualArmController::stateMachine(){
         {
             mState = STATES::MOVING;
         }else{		
-            if(mState != STATES::HOME && mState != STATES::STOP && mState != STATES::DISABLE){
+            if(mState != STATES::HOME && mState != STATES::STOP){
                 mArm->openClaw();
                 mState = STATES::HOME;
             }
@@ -239,7 +237,7 @@ bool IndividualArmController::emergencyStopService(std_srvs::SetBool::Request  &
     mEmergencyStop = _req.data;
 
     if(mEmergencyStop){
-        mState = STATES::DISABLE;
+        mState = STATES::STOP;
     }
 
     _res.success = true;

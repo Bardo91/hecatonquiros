@@ -37,6 +37,7 @@
 #include <thread>
 
 #include "hecatonquiros/ReqData.h"
+#include "hecatonquiros/ConfigData.h"
 
 namespace hecatonquiros{
     class BackendROS: public Backend{
@@ -78,11 +79,10 @@ namespace hecatonquiros{
         std::mutex mGuard;
         
         ros::Publisher mJointsPublisher;
-        ros::ServiceClient  mClawReq, mJointsReq, mJointIDReq, mLoadIDReq, mTorqueIDReq;
-        ros::Subscriber mJointsSubscriber, mJointIDSubscriber, mLoadIDSubscriber;
+        ros::ServiceClient  mClawReq, mConfigReq;
+        ros::Subscriber mJointsSubscriber;
 
         std::vector<float> mJoints;
-        int mLoad, mJoint;
 	    int mArmId;
     };
 }

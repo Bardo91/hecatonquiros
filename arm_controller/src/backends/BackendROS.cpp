@@ -31,10 +31,7 @@ namespace hecatonquiros{
  		mJointsPublisher = nh.advertise<sensor_msgs::JointState>("/backendROS/arm_"+std::to_string(mArmId)+"/joints", 1);
 		
 		mClawReq 	= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/claw_req");
-		mJointsReq 	= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/joints_req");
-		mJointIDReq = nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/jointId_req");
-		mLoadIDReq 	= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/loadId_req");
-		mTorqueIDReq= nh.serviceClient<hecatonquiros::ReqData>("/backendROS/arm_"+std::to_string(mArmId)+"/torqueId_req");
+		mConfigReq 	= nh.serviceClient<hecatonquiros::ConfigData>("/backendROS/config_req");
 
 		mJointsSubscriber = nh.subscribe<sensor_msgs::JointState>("/backendROS/arm_"+std::to_string(mArmId)+"/joints_sub", 1, \
         [this](const sensor_msgs::JointStateConstPtr& _msg) {
@@ -46,25 +43,25 @@ namespace hecatonquiros{
 			}
     	});
 
-		mJointIDSubscriber = nh.subscribe<std_msgs::Int32>("/backendROS/arm_"+std::to_string(mArmId)+"/jointId_sub", 1, \
-		[this](const std_msgs::Int32::ConstPtr& _msg){
-			mGuard.lock();
-			mJoint = _msg->data;
-			mGuard.unlock();
-		});
-		mLoadIDSubscriber = nh.subscribe<std_msgs::Int32>("/backendROS/arm_"+std::to_string(mArmId)+"/loadId_sub", 1, \
-		[this](const std_msgs::Int32::ConstPtr& _msg){
-			mGuard.lock();
-			mLoad = _msg->data;
-			mGuard.unlock();
-		});
+		hecatonquiros::ConfigData srv;
+		srv.request.req = true;
+		srv.request.id = mArmId;
+		srv.request.ndof =  _config.ndof; 
+		srv.request.serialport = _config.port;
+		srv.request.configxml = _config.configXML;
+		if(mConfigReq.call(srv)){
+			if(srv.response.success){
+				std::cout << "BCROS: Service of Config Arms success" << std::endl;
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			std::cout << "BCROS: Failed to call service of Config Arms" << std::endl;
+			return false;
+		}		
 
 		return true;
-    }
-
-    //---------------------------------------------------------------------------------------------------------------------
-    bool BackendROS::pose(const Eigen::Matrix4f &_pose, bool _blocking){
-		return false;
     }
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -103,64 +100,28 @@ namespace hecatonquiros{
     }
 
 	//-----------------------------------------------------------------------------------------------------------------
-    int BackendROS::jointPos(const int _id){
-		
-		hecatonquiros::ReqData srv;
-		srv.request.req = true;
-		srv.request.id = mArmId;
-		srv.request.data = _id;
-		if(mJointIDReq.call(srv)){
-			if(srv.response.success){
-				return mJoint;
-			}else{
-				return 0;
-			}
-		}else{
-			std::cout << "BCROS: Failed to call service of jointPos" << std::endl;
-			return -1;
-		}
-    }
-
-    //-----------------------------------------------------------------------------------------------------------------
-    int BackendROS::jointLoad(const int _id){
-
-        hecatonquiros::ReqData srv;
-		srv.request.req = true;
-		srv.request.id = mArmId;
-		srv.request.data = _id;
-		if(mLoadIDReq.call(srv)){
-			if(srv.response.success){
-				return mLoad;
-			}else{
-				return 0;
-			}
-		}else{
-			std::cout << "BCROS: Failed to call service of jointLoad" << std::endl;
-			return -1;
-		}
-    }
-
-	//-----------------------------------------------------------------------------------------------------------------
-    int BackendROS::jointTorque(const int _id, const bool _enable){
-		hecatonquiros::ReqData srv;
-		srv.request.req = _enable;
-		srv.request.id = mArmId;
-		srv.request.data = _id;
-		if(mTorqueIDReq.call(srv)){
-			if(srv.response.success){
-				return 1;
-			}else{
-				return 0;
-			}
-		}else{
-			std::cout << "BCROS: Failed to call service of jointTorque" << std::endl;
-			return -1;
-		}
-    }
-
-	//-----------------------------------------------------------------------------------------------------------------
     std::vector<float> BackendROS::joints(int nJoints){
 		return mJoints;
+    }
+
+	//---------------------------------------------------------------------------------------------------------------------
+    bool BackendROS::pose(const Eigen::Matrix4f &_pose, bool _blocking){
+		return false;
+    }
+
+	//---------------------------------------------------------------------------------------------------------------------
+    int BackendROS::jointPos(const int _id){
+		return -1;
+    }
+
+	//---------------------------------------------------------------------------------------------------------------------
+    int BackendROS::jointLoad(const int _id){
+		return -1;
+    }
+
+	//---------------------------------------------------------------------------------------------------------------------
+    int BackendROS::jointTorque(const int _id, const bool _enable){
+		return -1;
     }
 
 }

@@ -26,13 +26,11 @@
 
 #include <hecatonquiros/backends/Backend.h> 
 
-#include "rapidjson/document.h"
-
 #include <std_msgs/String.h>
-#include <std_msgs/Int32.h>
 #include <sensor_msgs/JointState.h>
 
 #include "hecatonquiros/ReqData.h"
+#include "hecatonquiros/ConfigData.h"
 
 class MultiArmsController{
 public:
@@ -48,10 +46,7 @@ private:
     void continuousJointsPub(int _id, int _njoints);
 
     bool clawService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool jointsService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool jointIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool loadIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
-    bool torqueIDService(hecatonquiros::ReqData::Request  &_req, hecatonquiros::ReqData::Response &_res);
+    bool configService(hecatonquiros::ConfigData::Request  &_req, hecatonquiros::ConfigData::Response &_res);
 
 private:
     // std::thread mLoopThread;
@@ -59,12 +54,11 @@ private:
 
     std::vector<std::thread> mReadJointsThread;
 
-    std::vector<ros::Publisher> mJointsArmPublisher, mJointIDArmPublisher, mLoadIDArmPublisher;
+    std::vector<ros::Publisher> mJointsArmPublisher;
     std::vector<ros::Subscriber> mJointsArmSubscriber;
-    std::vector<ros::ServiceServer> mClawArmService, mJointIDArmService, mLoadIDArmService, mTorqueIDArmService;
+    std::vector<ros::ServiceServer> mClawArmService;
+    ros::ServiceServer mConfigService;
 
     std::vector<hecatonquiros::Backend *> mBackend;
-    rapidjson::Document mConfigFile;
-    std::vector<bool> mEnableBackend;
 
 };

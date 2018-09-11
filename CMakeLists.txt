@@ -33,6 +33,7 @@ add_service_files(
   SetJoints.srv
   SetPose.srv
   ReqData.srv
+  ConfigData.srv
 )
 
 generate_messages(
