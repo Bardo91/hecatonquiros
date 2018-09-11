@@ -80,3 +80,7 @@ file(GLOB_RECURSE TOOL_SRC_manipulator_controller_tester "tools/manipulator_cont
 
 compile_tool(manipulator_controller_tester)
 
+file(GLOB_RECURSE TOOL_SRC_plotter_poses "tools/plotter_poses/src/*.h" "tools/plotter_poses/src/*.inl" "tools/plotter_poses/src/*.cpp")
+
+compile_tool_qt(plotter_poses)
+
