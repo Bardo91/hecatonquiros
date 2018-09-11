@@ -23,7 +23,7 @@
 //---------------------------------------------------------------------------------------------------------------------
 bool IndividualArmController::init(int _argc, char** _argv){
 
-	if (_argc != 2) {
+	if (_argc < 2) {
         std::cout << "Bad input arguments, please provide only the path of a json config file with the structure detailed in the documentation" << std::endl;
         return false;
     }
@@ -43,6 +43,8 @@ bool IndividualArmController::init(int _argc, char** _argv){
         return false;
     }
     
+    std::this_thread::sleep_for(std::chrono::seconds(mConfigFile["id"].GetInt()*2));
+
     mActuateBackend = mConfigFile["enable_backend"].GetBool();
     mName = mConfigFile["name"].GetString();
     bool visualize = mConfigFile["visualize"].GetBool();
