@@ -39,6 +39,7 @@ int main(int _argc, char **_argv){
 	bool finish = true;
 	while(finish){
 		std::cout << "Circle Test -> c" << std::endl;
+		std::cout << "Fix Point Test -> f" << std::endl;
 		std::cout << "Some Points Test -> p" << std::endl;
 		std::cout << "Some Joints Test -> j" << std::endl;
 		std::cout << "Emergency Service Test -> e" << std::endl;
@@ -83,8 +84,8 @@ int main(int _argc, char **_argv){
 
 				Eigen::Matrix4f leftInitPose = leftPose, rightInitPose = rightPose;
 				Eigen::Matrix4f leftSecondPose = leftPose, rightSecondPose = rightPose;
-				leftSecondPose(2,3) += -0.15;
-				rightSecondPose(2,3) += -0.15;
+				leftSecondPose(2,3) += +0.1;
+				rightSecondPose(2,3) += +0.1;
 
 				std::cout << "Circle TEST" << std::endl;
 				
@@ -172,6 +173,62 @@ int main(int _argc, char **_argv){
 					duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
 
 				}				
+				break;
+			}
+			case 'f':
+			{	
+				std::cout << "Pose3d -> 1, PoseLine3d -> 2" << std::endl; 
+				int select;
+				std::cin >> select;
+
+				ros::Publisher leftPosePublisher;
+				ros::Publisher rightPosePublisher; 
+				if(select == 1){
+					leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
+					rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose3d", 1);
+				}else if(select == 2){
+					leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose_line3d", 1);
+					rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose_line3d", 1);
+				}else{
+					std::cout << "Bad select" << std::endl; 
+					break;
+				}
+				
+
+				float x, y, z;
+				std::cout << "X: ";
+				std::cin >> x;
+				std::cout << "Y: ";
+				std::cin >> y;
+				std::cout << "Z: ";
+				std::cin >> z;
+
+				while(true){
+					geometry_msgs::PoseStamped leftMsg;
+					leftMsg.pose.position.x = x;
+					leftMsg.pose.position.y = -y;
+					leftMsg.pose.position.z =  z;
+					leftMsg.pose.orientation.x = 0;
+					leftMsg.pose.orientation.y = 0;
+					leftMsg.pose.orientation.z = 0;
+					leftMsg.pose.orientation.w = 1;
+					leftMsg.header.stamp = ros::Time::now();
+
+					geometry_msgs::PoseStamped rightMsg;
+					rightMsg.pose.position.x = x;
+					rightMsg.pose.position.y = y;
+					rightMsg.pose.position.z = z;
+					rightMsg.pose.orientation.x = 0;
+					rightMsg.pose.orientation.y = 0;
+					rightMsg.pose.orientation.z = 0;
+					rightMsg.pose.orientation.w = 1;
+					rightMsg.header.stamp = ros::Time::now();
+
+					leftPosePublisher.publish(leftMsg);
+					rightPosePublisher.publish(rightMsg);
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				}			
 				break;
 			}
 			case 'j':

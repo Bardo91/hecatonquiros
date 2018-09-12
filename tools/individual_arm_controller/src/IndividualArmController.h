@@ -62,7 +62,11 @@ private:
 private:
 
     void jointsCallback(const sensor_msgs::JointState::ConstPtr &_msg);
+
+    void poseLine3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+
     void pose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+    void pose4DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
     void pose6DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
 
     void pose3DJacobiCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
@@ -85,7 +89,9 @@ private:
     bool mRunning = false;
 
     WatchdogJoints *mTargetJointsSubscriber;
+    WatchdogPose *mTargetPoseLine3DSubscriber;
     WatchdogPose *mTargetPose3DSubscriber;
+    WatchdogPose *mTargetPose4DSubscriber;
     WatchdogPose *mTargetPose6DSubscriber;
     WatchdogPose *mTargetPose3DJacobiSubscriber;
     WatchdogPose *mTargetPose6DJacobiSubscriber;
@@ -100,6 +106,7 @@ private:
 
     std::vector<float> mTargetJoints;
     std::vector<float> mLastAimedJoints;
+    Eigen::Matrix4f mCurrentPose;
 
     rapidjson::Document mConfigFile;
     bool mActuateBackend = false;
