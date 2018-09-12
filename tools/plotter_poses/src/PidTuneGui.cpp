@@ -9,7 +9,7 @@
 #include <QTime>
 #include <std_srvs/Trigger.h>
 
-PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector<std::pair<std::string, std::string>> _pidBaseTopics, QWidget *parent): QMainWindow(parent) {
+PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, QWidget *parent): QMainWindow(parent) {
     mCentralWidget = new QWidget();
     mMainLayout = new QVBoxLayout();
     mCentralWidget->setLayout(mMainLayout);
@@ -21,7 +21,7 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector
 
     QHBoxLayout *refLayout = new QHBoxLayout();
     mButtonsLayout->addLayout(refLayout);
-    mRefEdit = new QLineEdit(_valTopic.c_str());
+    mRefEdit = new QLineEdit(_refTopic.c_str());
     mRefEdit->setMaximumWidth(300);
     auto refText = new QLineEdit("Ref. position");
     refText->setMaximumWidth(100);
@@ -32,7 +32,7 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector
     QHBoxLayout *valLayout = new QHBoxLayout();
     mButtonsLayout->addLayout(valLayout);
     mMainLayout->addLayout(mButtonsLayout); 
-    mPosEdit = new QLineEdit(_refTopic.c_str());
+    mPosEdit = new QLineEdit(_valTopic.c_str());
     mPosEdit->setMaximumWidth(300);
     auto posText = new QLineEdit("Current position");
     posText->setMaximumWidth(100);
@@ -54,7 +54,7 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector
 
     mGraphPosition->addGraph(); // red line X
     QPen pen;
-    pen.setWidthF(4);
+    pen.setWidthF(2);
     pen.setColor(QColor(255, 0, 0));
     mGraphPosition->graph(0)->setPen(pen);
 
@@ -66,7 +66,7 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector
     QSharedPointer<QCPAxisTickerTime> mTimeTicker(new QCPAxisTickerTime);
     mTimeTicker->setTimeFormat("%h:%m:%s");
     mGraphPosition->xAxis->setTicker(mTimeTicker);
-    mGraphPosition->yAxis->setRange(-1.0, 1.0);
+    mGraphPosition->yAxis->setRange(-0.5, 0.5);
 
     // GRAPH Y
     mGraphPosition->addGraph(); // green line Y
@@ -80,7 +80,7 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector
     mGraphPosition->graph(3)->setPen(pen);
 
     mGraphPosition->xAxis->setTicker(mTimeTicker);
-    mGraphPosition->yAxis->setRange(-1.0, 1.0);
+    mGraphPosition->yAxis->setRange(-0.5, 0.5);
 
     // GRAPH Z
     mGraphPosition->addGraph(); // blue line Z
@@ -94,7 +94,7 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, std::vector
     mGraphPosition->graph(5)->setPen(pen);
 
     mGraphPosition->xAxis->setTicker(mTimeTicker);
-    mGraphPosition->yAxis->setRange(-1.0, 1.0);
+    mGraphPosition->yAxis->setRange(-0.5, 0.5);
     
     connect(mGraphPosition->xAxis, SIGNAL(rangeChanged(QCPRange)), mGraphPosition->xAxis2, SLOT(setRange(QCPRange)));
     connect(mGraphPosition->yAxis, SIGNAL(rangeChanged(QCPRange)), mGraphPosition->yAxis2, SLOT(setRange(QCPRange)));
@@ -130,8 +130,8 @@ void PidTuneGui::realTimePlot(){
     }
     // make key axis range scroll with the data (at a constant range size of 8):
     
-    double min = mLastX-1 < mLastRefX - 1? mLastX -1: mLastRefX -1;
-    double max = mLastX+1 > mLastRefX + 1? mLastX +1: mLastRefX +1;
+    double min = mLastX-0.5 < mLastRefX - 0.5? mLastX -0.5: mLastRefX -0.5;
+    double max = mLastX+0.5 > mLastRefX + 0.5? mLastX +0.5: mLastRefX +0.5;
     mGraphPosition->yAxis->setRange(min, max);
 
     mGraphPosition->xAxis->setRange(key, 8, Qt::AlignRight);
@@ -143,13 +143,8 @@ void PidTuneGui::connectTopics(){
     ros::NodeHandle n;
     mSubPos = n.subscribe<geometry_msgs::PoseStamped>(mPosEdit->text().toStdString(),1, &PidTuneGui::positionCallback, this);
     mSubRef = n.subscribe<geometry_msgs::PoseStamped>(mRefEdit->text().toStdString(), 1,&PidTuneGui::referenceCallback, this);
-    //mSubXKp = n.subscribe<std_msgs::Float32>("/PID_x/kp", 1,&PidTuneGui::changePIDCallback, this);
 
 }
-
-//void PidTuneGui::changePIDCallback(const std_msgs::Float32::ConstPtr &_data){}
-
-
 
 void PidTuneGui::positionCallback(const geometry_msgs::PoseStamped::ConstPtr &_data){
     mLastX = _data->pose.position.x;
