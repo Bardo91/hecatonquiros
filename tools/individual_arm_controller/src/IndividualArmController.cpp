@@ -396,12 +396,7 @@ void IndividualArmController::poseLine3DCallback(const geometry_msgs::PoseStampe
             Eigen::Matrix4f finalPose;
             rosToEigen(_msg, finalPose);
 
-            std::cout << "--------------------" << std::endl;
-            std::cout << "Pose received: X-> " << finalPose(0,3) << " Y-> " << finalPose(1,3) << " Z-> " << finalPose(2,3) << std::endl;
-
             Eigen::Matrix4f pose = mCurrentPose;
-
-            std::cout << "Current Pose: X-> " << pose(0,3) << " Y-> " << pose(1,3) << " Z-> " << pose(2,3) << std::endl;
 
             float dx = finalPose(0,3) - pose(0,3);
             float dy = finalPose(1,3) - pose(1,3);
@@ -410,17 +405,11 @@ void IndividualArmController::poseLine3DCallback(const geometry_msgs::PoseStampe
             Eigen::Vector3f dir = {dx, dy, dz};
             dir /=dir.norm();
             
-            std::cout << "Dir: " << dir << std::endl;
-
             float distance = sqrt(dx*dx + dy*dy + dz*dz);
             float step_size = distance/2;   // 666 PROBLEMS WITH STEP SIZE WHEN DISTANCE IS TOO SHORT
 
-            std::cout << "Distance: " << distance << " Step Size: " << step_size << std::endl;
-
             pose.block<3,1>(0,3) +=dir*step_size;
 
-            std::cout << "Next Pose: X-> " << pose(0,3) << " Y-> " << pose(1,3) << " Z-> " << pose(2,3) << std::endl;
-            
             std::vector<float> joints;
             if(mArm->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){
                 mTargetJoints = joints; // 666 Thread safe?		
