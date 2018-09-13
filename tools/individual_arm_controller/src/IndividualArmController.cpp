@@ -108,6 +108,10 @@ bool IndividualArmController::init(int _argc, char** _argv){
     WatchdogPose::Callback wrapperPoseLine3dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){poseLine3DCallback(_msg);};
     mTargetPoseLine3DSubscriber->attachCallback(wrapperPoseLine3dCallback);
 
+    mTargetPoseLine4DSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/in/target_pose_line4d", 0.2);
+    WatchdogPose::Callback wrapperPoseLine4dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){poseLine4DCallback(_msg);};
+    mTargetPoseLine4DSubscriber->attachCallback(wrapperPoseLine4dCallback);
+
     // FAST-IK methods
     mTargetPose3DSubscriber = new WatchdogPose("/hecatonquiros/"+mName+"/in/target_pose3d", 0.2);
     WatchdogPose::Callback wrapperPose3dCallback = [&](const typename geometry_msgs::PoseStamped::ConstPtr &_msg){pose3DCallback(_msg);};
@@ -214,6 +218,7 @@ void IndividualArmController::stateMachine(){
 
         if( mTargetJointsSubscriber->isValid() ||
             mTargetPoseLine3DSubscriber->isValid() ||
+            mTargetPoseLine4DSubscriber->isValid() ||
             mTargetPose3DSubscriber->isValid() ||
             mTargetPose4DSubscriber->isValid() || 
             mTargetPose6DSubscriber->isValid() ||
@@ -417,6 +422,45 @@ void IndividualArmController::poseLine3DCallback(const geometry_msgs::PoseStampe
                 std::cout << "Failed IK" << std::endl;
             }
                 
+        }
+    }
+
+//---------------------------------------------------------------------------------------------------------------------
+void IndividualArmController::poseLine4DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg){
+        if(mState == STATES::MOVING){	   
+
+            Eigen::Matrix4f finalPose;
+            rosToEigen(_msg, finalPose);
+
+            Eigen::Matrix4f pose = mCurrentPose;
+
+            float dx = finalPose(0,3) - pose(0,3);
+            float dy = finalPose(1,3) - pose(1,3);
+            float dz = finalPose(2,3) - pose(2,3);
+
+            Eigen::Vector3f dir = {dx, dy, dz};
+            dir /=dir.norm();
+            
+            float distance = sqrt(dx*dx + dy*dy + dz*dz);
+            float step_size = distance/2;   // 666 PROBLEMS WITH STEP SIZE WHEN DISTANCE IS TOO SHORT
+
+            pose.block<3,1>(0,3) +=dir*step_size;
+
+            std::vector<float> joints;
+            if(mArm->checkIk(pose, joints, hecatonquiros::ModelSolver::IK_TYPE::IK_3D)){  
+                Eigen::Vector3f a = pose.block<3,1>(0,0);
+                Eigen::Vector3f b = -Eigen::Vector3f::UnitZ();
+                Eigen::Vector3f c = Eigen::Vector3f::UnitX();
+                float angle = acos(a.dot(b));
+                int direction = (b.cross(a)).dot(c) < 0 ? 1:-1;
+
+                std::vector<float> targetjoints = joints;
+                targetjoints[3] = direction*angle;
+                targetjoints[3] = targetjoints[3]-1.57;
+                mTargetJoints = targetjoints; // 666 Thread safe?
+            }else{
+                std::cout << "Failed IK" << std::endl;
+            }                
         }
     }
 

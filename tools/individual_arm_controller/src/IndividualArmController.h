@@ -64,6 +64,7 @@ private:
     void jointsCallback(const sensor_msgs::JointState::ConstPtr &_msg);
 
     void poseLine3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
+    void poseLine4DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
 
     void pose3DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
     void pose4DCallback(const geometry_msgs::PoseStamped::ConstPtr &_msg);
@@ -90,6 +91,7 @@ private:
 
     WatchdogJoints *mTargetJointsSubscriber;
     WatchdogPose *mTargetPoseLine3DSubscriber;
+    WatchdogPose *mTargetPoseLine4DSubscriber;
     WatchdogPose *mTargetPose3DSubscriber;
     WatchdogPose *mTargetPose4DSubscriber;
     WatchdogPose *mTargetPose6DSubscriber;
