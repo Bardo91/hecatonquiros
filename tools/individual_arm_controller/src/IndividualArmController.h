@@ -107,6 +107,7 @@ private:
     std::vector<float> mTargetJoints;
     std::vector<float> mLastAimedJoints;
     Eigen::Matrix4f mCurrentPose;
+    std::vector<float> mCurrJoints;
 
     rapidjson::Document mConfigFile;
     bool mActuateBackend = false;

@@ -263,7 +263,7 @@ void IndividualArmController::MovingArmThread(){
 
     auto moveIncLambda = [&](std::vector<float> _targetJoints)->std::vector<float>{  // INTEGRATE IN callback to limit speed
         
-        std::vector<float> currJoints = mArm->joints(); // 666 thread safe?
+        std::vector<float> currJoints = mCurrJoints; // 666 thread safe?
         float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
 
         for(unsigned i = 0; i < _targetJoints.size();i++){
@@ -317,8 +317,9 @@ void IndividualArmController::publisherLoop(){
         // Publish state joints
         std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
-	    jointsMsg.header.stamp = ros::Time::now();
-        joints = mArm->joints();
+	    jointsMsg.header.stamp = targetJointsMsg.header.stamp;
+        mCurrJoints = mArm->joints();
+        joints = mCurrJoints;
         for(auto&j:joints){
             jointsMsg.position.push_back(j);
         }
@@ -326,7 +327,7 @@ void IndividualArmController::publisherLoop(){
 
         // Publish aiming joints
         sensor_msgs::JointState aimingJointsMsg;
-	    aimingJointsMsg.header.stamp = jointsMsg.header.stamp;
+	    aimingJointsMsg.header.stamp = targetJointsMsg.header.stamp;
         std::vector<float> aimJoints = mLastAimedJoints;
         for(auto&j:aimJoints){
             aimingJointsMsg.position.push_back(j);
@@ -338,7 +339,7 @@ void IndividualArmController::publisherLoop(){
         geometry_msgs::PoseStamped poseMsg;
         eigenToRos(mCurrentPose, poseMsg);
         poseMsg.header.frame_id = "hecatonquiros_"+mName;
-        poseMsg.header.stamp = jointsMsg.header.stamp;
+        poseMsg.header.stamp = targetJointsMsg.header.stamp;
         posePublisher.publish(poseMsg);
 
         rate.sleep();
