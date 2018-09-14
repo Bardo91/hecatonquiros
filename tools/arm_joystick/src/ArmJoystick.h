@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------------------------------------
-//  Copyright 2018 Manuel Perez Jimenez (a.k.a. manuoso) manuperezj@gmail.com
+//  Copyright 2018 Pablo Ramon Soria (a.k.a. Bardo91) pabramsor@gmail.com
 //---------------------------------------------------------------------------------------------------------------------
 //  Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 //  and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,34 +17,37 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //---------------------------------------------------------------------------------------------------------------------
 
-#include "ArmJoystick.h"
+#include <iostream>
+#include <string>
+#include <ros/ros.h>
+#include <thread>
+#include <mutex>
+#include <fstream>
+#include <chrono>
 
-//---------------------------------------------------------------------------------------------------------------------
-int main(int _argc, char **_argv) {
+#include <Eigen/Eigen>
+#include <geometry_msgs/PoseStamped.h>
 
-	ArmJoystick controller;
+class ArmJoystick{
+public:
+    bool init(int _argc, char** _argv);
+    bool start();
+    bool stop();
 
-    ros::init(_argc, _argv, "arm_joystick");
+private:
+    void loop();
+
+private:
+    void joystickThread(std::string _joy);
+
+private:
+    void rosToEigen(const geometry_msgs::PoseStamped::ConstPtr &_msg, Eigen::Matrix4f &_pose);
+    void eigenToRos(Eigen::Matrix4f &_pose, geometry_msgs::PoseStamped &_msg);
+
+private:
+    std::thread mLoopThread;
+    bool mRun;
+
     
-    ros::AsyncSpinner rosSpinner(4); // Use 4 thread
-    rosSpinner.start();
 
-    if(!controller.init(_argc, _argv)){
-        std::cout << "Error initializing Arm Joystick" << std::endl;
-        return false;
-    }
-
-    controller.start();
-
-    while(ros::ok()){
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    controller.stop();
-
-	std::cout << "Finish Main Thread" << std::endl;
-
-    return 0;
-}
-
-
+};
