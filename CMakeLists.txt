@@ -48,6 +48,10 @@ catkin_package(
 add_subdirectory(arm_controller)
 
 # Add set of tools
+file(GLOB_RECURSE TOOL_SRC_velocity_test "tools/velocity_test/src/*.h"  "tools/velocity_test/src/*.inl" "tools/velocity_test/src/*.cpp")
+
+compile_tool(velocity_test)
+
 file(GLOB_RECURSE TOOL_SRC_arm_joystick "tools/arm_joystick/src/*.h"  "tools/arm_joystick/src/*.inl" "tools/arm_joystick/src/*.cpp")
 
 compile_tool(arm_joystick)
