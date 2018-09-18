@@ -4,8 +4,8 @@
 //
 //
 
-#ifndef PIDTUNEGUI_H_
-#define PIDTUNEGUI_H_
+#ifndef PLOTTERPOSESGUI_H_
+#define PLOTTERPOSESGUI_H_
 
     #include <ros/ros.h>
     #include <QHBoxLayout>
@@ -18,11 +18,11 @@
     #include "qcustomplot.h"
     #include <vector>
 
-    class PidTuneGui : public QMainWindow {
+    class PlotterPosesGui : public QMainWindow {
         Q_OBJECT
     public:
-        PidTuneGui(std::string _refTopic, std::string _valTopic, QWidget *parent = 0);
-        virtual ~PidTuneGui(){};
+        PlotterPosesGui(std::string _refTopic, std::string _valTopic, QWidget *parent = 0);
+        virtual ~PlotterPosesGui(){};
 
     protected:
         void closeEvent(QCloseEvent *event) override;

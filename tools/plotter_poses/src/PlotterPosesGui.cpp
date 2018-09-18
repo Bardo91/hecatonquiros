@@ -5,16 +5,16 @@
 //
 //
 
-#include "PidTuneGui.h"
+#include "PlotterPosesGui.h"
 #include <QTime>
 #include <std_srvs/Trigger.h>
 
-PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, QWidget *parent): QMainWindow(parent) {
+PlotterPosesGui::PlotterPosesGui(std::string _refTopic, std::string _valTopic, QWidget *parent): QMainWindow(parent) {
     mCentralWidget = new QWidget();
     mMainLayout = new QVBoxLayout();
     mCentralWidget->setLayout(mMainLayout);
     setCentralWidget(mCentralWidget);
-    this->setWindowTitle("PID Tune Gui");
+    this->setWindowTitle("Plotter Poses Gui");
 
     // Add text entries for topics     
     mButtonsLayout = new QVBoxLayout();
@@ -105,12 +105,12 @@ PidTuneGui::PidTuneGui(std::string _refTopic, std::string _valTopic, QWidget *pa
 }
 
 
-void PidTuneGui::closeEvent(QCloseEvent *event) {
+void PlotterPosesGui::closeEvent(QCloseEvent *event) {
 
 }
 
 
-void PidTuneGui::realTimePlot(){
+void PlotterPosesGui::realTimePlot(){
     static QTime time(QTime::currentTime());
     // calculate two new data points:
     double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
@@ -138,21 +138,21 @@ void PidTuneGui::realTimePlot(){
     mGraphPosition->replot();
 }
 
-void PidTuneGui::connectTopics(){
+void PlotterPosesGui::connectTopics(){
     // other
     ros::NodeHandle n;
-    mSubPos = n.subscribe<geometry_msgs::PoseStamped>(mPosEdit->text().toStdString(),1, &PidTuneGui::positionCallback, this);
-    mSubRef = n.subscribe<geometry_msgs::PoseStamped>(mRefEdit->text().toStdString(), 1,&PidTuneGui::referenceCallback, this);
+    mSubPos = n.subscribe<geometry_msgs::PoseStamped>(mPosEdit->text().toStdString(),1, &PlotterPosesGui::positionCallback, this);
+    mSubRef = n.subscribe<geometry_msgs::PoseStamped>(mRefEdit->text().toStdString(), 1,&PlotterPosesGui::referenceCallback, this);
 
 }
 
-void PidTuneGui::positionCallback(const geometry_msgs::PoseStamped::ConstPtr &_data){
+void PlotterPosesGui::positionCallback(const geometry_msgs::PoseStamped::ConstPtr &_data){
     mLastX = _data->pose.position.x;
     mLastY = _data->pose.position.y;
     mLastZ = _data->pose.position.z;
 }
 
-void PidTuneGui::referenceCallback(const geometry_msgs::PoseStamped::ConstPtr &_data){
+void PlotterPosesGui::referenceCallback(const geometry_msgs::PoseStamped::ConstPtr &_data){
     mLastRefX = _data->pose.position.x;
     mLastRefY = _data->pose.position.y;
     mLastRefZ = _data->pose.position.z;

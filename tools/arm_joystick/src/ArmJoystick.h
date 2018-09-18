@@ -30,6 +30,7 @@
 #include <Eigen/Eigen>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Joy.h>
+#include <std_srvs/SetBool.h>
 
 class ArmJoystick{
 public:
@@ -60,12 +61,14 @@ private:
 
     ros::Subscriber mPoseLeftArmSubscriber, mPoseRightArmSubscriber, mJoySubscriber;
     ros::Publisher mTargetLeftArmPublisher, mTargetRightArmPublisher;
+    ros::ServiceClient mLeftGripServ, mRightGripServ;
 
-    Eigen::Matrix4f mPoseLeft, mPoseRight, mCurrentPoseLeft, mCurrentPoseRight;
+    Eigen::Matrix4f mPoseLeft, mPoseRight, mCurrentPoseLeft, mCurrentPoseRight, mHomePoseLeft, mHomePoseRight;
 
     std::string mLeftArmPub, mRightArmPub, mLeftArmSub, mRightArmSub, mJoySub;
 
     bool mSecButLeft, mSecButRight;
+    bool mHomeArms = false;
 
     double mVel = 0.0;
     double mVelX1, mVelX2, mVelY1, mVelY2, mVelZ1, mVelZ2Up, mVelZ2Down;

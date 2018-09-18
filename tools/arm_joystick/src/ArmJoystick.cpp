@@ -74,8 +74,14 @@ bool ArmJoystick::init(int _argc, char** _argv){
 	mTargetRightArmPublisher = nh.advertise<geometry_msgs::PoseStamped>(mRightArmPub, 1);
 	std::cout << "Created ROS Publishers" << std::endl;
 
+	mLeftGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/in/claw");
+	mRightGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/in/claw");
+
 	std::cout << "Wait for pose" << std::endl;
 	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+	mHomePoseLeft = mPoseLeft;
+	mHomePoseRight = mPoseRight;
 
 	mCurrentPoseLeft = mPoseLeft;
 	mCurrentPoseRight = mPoseRight;
@@ -130,7 +136,7 @@ void ArmJoystick::loop(){
 //---------------------------------------------------------------------------------------------------------------------
 void ArmJoystick::movingFunction(){
 
-	if(mSecButLeft){
+	if(mSecButLeft && !mHomeArms){
 		mCurrentPoseLeft(0,3) += mVelX1;
 		mCurrentPoseLeft(1,3) += mVelY1;
 		mCurrentPoseLeft(2,3) += mVelZ1; 
@@ -140,7 +146,7 @@ void ArmJoystick::movingFunction(){
 		mTargetLeftArmPublisher.publish(poseMsgLeft);
 	}
 	
-	if(mSecButRight){
+	if(mSecButRight && !mHomeArms){
 		mCurrentPoseRight(0,3) += mVelX2;
 		mCurrentPoseRight(1,3) += mVelY2;
 		if(mVelZ2Up){
@@ -151,6 +157,18 @@ void ArmJoystick::movingFunction(){
 		}
 		geometry_msgs::PoseStamped poseMsgRight;
 		eigenToRos(mCurrentPoseRight, poseMsgRight);
+		poseMsgRight.header.stamp = ros::Time::now();
+		mTargetRightArmPublisher.publish(poseMsgRight);
+	}
+
+	if(mHomeArms){
+		geometry_msgs::PoseStamped poseMsgLeft;
+		eigenToRos(mHomePoseLeft, poseMsgLeft);
+		poseMsgLeft.header.stamp = ros::Time::now();
+		mTargetLeftArmPublisher.publish(poseMsgLeft);
+
+		geometry_msgs::PoseStamped poseMsgRight;
+		eigenToRos(mHomePoseRight, poseMsgRight);
 		poseMsgRight.header.stamp = ros::Time::now();
 		mTargetRightArmPublisher.publish(poseMsgRight);
 	}
@@ -278,7 +296,7 @@ void ArmJoystick::joystickThread(){
 		}
 
 		// UPDATE POSE
-		if(mJoyButtons[9] == 1){
+		if(mJoyButtons[8] == 1){
 			mCurrentPoseLeft = mPoseLeft;
 			mCurrentPoseRight = mPoseRight;
 			std::cout << "Pose Left: " << std::endl;
@@ -287,7 +305,56 @@ void ArmJoystick::joystickThread(){
 			std::cout << mCurrentPoseRight << std::endl;
 		}
 
-		if(mVelX1 || mVelX2 || mVelY1 || mVelY2 || mVelZ1 || mVelZ2Up || mVelZ2Down){
+		// SEND HOME POSE
+		if(mJoyButtons[9] == 1){
+			mHomeArms = true;
+			std_srvs::SetBool srv;
+			srv.request.data = false;
+			if(mLeftGripServ.call(srv)){
+				if(srv.response.success){
+					std::cout << "response success left is TRUE" << std::endl;
+				}else{
+					std::cout << "response success left is FALSE" << std::endl;
+				}
+			}
+			if(mRightGripServ.call(srv)){
+				if(srv.response.success){
+					std::cout << "response success right is TRUE" << std::endl;
+				}else{
+					std::cout << "response success right is FALSE" << std::endl;
+				}
+			}
+		}else{
+			mHomeArms = false;
+		}
+
+		// CLAW 1
+		if(mJoyButtons[6] == 1){
+			std_srvs::SetBool srv;
+			srv.request.data = true;
+			if(mLeftGripServ.call(srv)){
+				if(srv.response.success){
+					std::cout << "response success left is TRUE" << std::endl;
+				}else{
+					std::cout << "response success left is FALSE" << std::endl;
+				}
+			}
+		}
+
+		// CLAW 2
+		if(mJoyButtons[7] == 1){
+			std_srvs::SetBool srv;
+			srv.request.data = true;
+			if(mRightGripServ.call(srv)){
+				if(srv.response.success){
+					std::cout << "response success right is TRUE" << std::endl;
+				}else{
+					std::cout << "response success right is FALSE" << std::endl;
+				}
+			}
+		}
+
+		if(mVelX1 || mVelX2 || mVelY1 || mVelY2 || mVelZ1 || mVelZ2Up || mVelZ2Down || mHomeArms){
 			mState = STATES::MOVING;
 		}else{
 			mState = STATES::STOP;
