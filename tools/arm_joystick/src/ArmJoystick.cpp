@@ -79,6 +79,10 @@ bool ArmJoystick::init(int _argc, char** _argv){
 
 	mCurrentPoseLeft = mPoseLeft;
 	mCurrentPoseRight = mPoseRight;
+	std::cout << "Pose Left: " << std::endl;
+	std::cout << mCurrentPoseLeft << std::endl;
+	std::cout << "Pose Right: " << std::endl;
+	std::cout << mCurrentPoseRight << std::endl;
 
     return true;
 }
@@ -156,17 +160,15 @@ void ArmJoystick::movingFunction(){
 //---------------------------------------------------------------------------------------------------------------------
 void ArmJoystick::stopFunction(){
 
-	Eigen::Matrix4f poseIzq = mPoseLeft;
-	geometry_msgs::PoseStamped poseMsgIzq;
-	eigenToRos(poseIzq, poseMsgIzq);
-	poseMsgIzq.header.stamp = ros::Time::now();
-	mTargetLeftArmPublisher.publish(poseMsgIzq);
+	geometry_msgs::PoseStamped poseMsgLeft;
+	eigenToRos(mCurrentPoseLeft, poseMsgLeft);
+	poseMsgLeft.header.stamp = ros::Time::now();
+	mTargetLeftArmPublisher.publish(poseMsgLeft);
 
-	Eigen::Matrix4f poseDer = mPoseRight;
-	geometry_msgs::PoseStamped poseMsgDer;
-	eigenToRos(poseDer, poseMsgDer);
-	poseMsgIzq.header.stamp = ros::Time::now();
-	mTargetRightArmPublisher.publish(poseMsgDer);
+	geometry_msgs::PoseStamped poseMsgRight;
+	eigenToRos(mCurrentPoseRight, poseMsgRight);
+	poseMsgRight.header.stamp = ros::Time::now();
+	mTargetRightArmPublisher.publish(poseMsgRight);
 
 }
 
@@ -273,6 +275,16 @@ void ArmJoystick::joystickThread(){
 			mSecButRight = false;
 		}else{
 			std::cout << "Unknown value Security button right of joystick" << std::endl;
+		}
+
+		// UPDATE POSE
+		if(mJoyButtons[9] == 1){
+			mCurrentPoseLeft = mPoseLeft;
+			mCurrentPoseRight = mPoseRight;
+			std::cout << "Pose Left: " << std::endl;
+			std::cout << mCurrentPoseLeft << std::endl;
+			std::cout << "Pose Right: " << std::endl;
+			std::cout << mCurrentPoseRight << std::endl;
 		}
 
 		if(mVelX1 || mVelX2 || mVelY1 || mVelY2 || mVelZ1 || mVelZ2Up || mVelZ2Down){
