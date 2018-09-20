@@ -24,6 +24,8 @@
 #include <fstream>
 #include <chrono>
 #include <mutex>
+#include <ros/ros.h>
+#include <sensor_msgs/JointState.h>
 
 #include <math.h>
 #include <cmath>
@@ -82,6 +84,11 @@ int main(int _argc, char** _argv){
 
     std::vector<float> offsetJoints3 = {-0.05, 0.087266463, 0.087266463, 0.0, 0.08726646259, 0.0, -0.05, 0.13089969389, 0.08726646259, -0.08726646259, 0.0, 0.0};
 
+    ros::NodeHandle nh;
+    ros::Publisher timeLeftPublisher = nh.advertise<sensor_msgs::JointState>("/velocity_test/left_arm", 1);
+    ros::Publisher timeRightPublisher = nh.advertise<sensor_msgs::JointState>("/velocity_test/right_arm", 1);
+    ros::Publisher timeBothPublisher = nh.advertise<sensor_msgs::JointState>("/velocity_test/both_arm", 1);
+
     servoDriver =  new SCServo(serialPort);
     if(!servoDriver->isConnected()){
         return -1;
@@ -103,7 +110,7 @@ int main(int _argc, char** _argv){
     servoDriver->SyncWritePos(id1, idn1, pos1, tim1, spee1);
     guard.unlock();
     auto t1 = std::chrono::high_resolution_clock::now();
-    float duration1 = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+    float duration1 = std::chrono::duration_cast<std::chrono::microseconds>(t1-t0).count();
     std::cout << "Time send joints ARM1: " << std::to_string(duration1) << std::endl;
     std::cout << "Position sended ARM1: " << std::endl;
     for(unsigned i = 0; i < idn1; i++){
@@ -129,7 +136,7 @@ int main(int _argc, char** _argv){
     servoDriver->SyncWritePos(id2, idn2, pos2, tim2, spee2);
     guard.unlock();
     auto t3 = std::chrono::high_resolution_clock::now();
-    float duration2 = std::chrono::duration_cast<std::chrono::milliseconds>(t3-t2).count();
+    float duration2 = std::chrono::duration_cast<std::chrono::microseconds>(t3-t2).count();
     std::cout << "Time send joints ARM2: " << std::to_string(duration2) << std::endl;
     std::cout << "Position sended ARM2: " << std::endl;
     for(unsigned j = 0; j < idn2; j++){
@@ -166,7 +173,7 @@ int main(int _argc, char** _argv){
     servoDriver->SyncWritePos(id3, idn3, pos3, tim3, spee3);
     guard.unlock();
     auto t5 = std::chrono::high_resolution_clock::now();
-    float duration3 = std::chrono::duration_cast<std::chrono::milliseconds>(t5-t4).count();
+    float duration3 = std::chrono::duration_cast<std::chrono::microseconds>(t5-t4).count();
     std::cout << "Time send joints both ARMS: " << std::to_string(duration3) << std::endl;
     std::cout << "Position sended both ARMS: " << std::endl;
     for(unsigned k = 0; k < idn3; k++){
