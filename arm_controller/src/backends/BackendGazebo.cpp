@@ -87,7 +87,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool BackendGazebo::claw(const int _action){
+    bool BackendGazebo::claw(const int _action, bool _blocking){
 		return false;
     }
 

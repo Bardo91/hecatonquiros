@@ -20,19 +20,36 @@
 //---------------------------------------------------------------------------------------------------------------------
 
 
-#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDFEETECH_H_
-#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDFEETECH_H_
+#ifndef HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDFEETECHQUEUETHREAD_H_
+#define HECATONQUIROS_ARMCONTROLLER_BACKENDS_BACKENDFEETECHQUEUETHREAD_H_
 
 #include <hecatonquiros/backends/Backend.h>  
 #include <hecatonquiros/backends/dep/SCServo.h>  
 
 #include <thread>
+#include <queue>
+#include <condition_variable>
+#include <map>
 
 namespace hecatonquiros{
-    class BackendFeetech: public Backend {
+    class BackendFeetechQueueThread: public Backend {
     public:
+        enum class eTypeQ {Write, Read, Claw};
+        struct DataQueue {
+            eTypeQ                      type;
+            std::vector<int>            valueRead;
+            unsigned char*              idJoints;
+            unsigned char               idn;
+            unsigned short*             pos;
+            unsigned short*             time;
+            unsigned short*             speed;
+            bool                        block;
+            std::mutex                  guard;
+            std::condition_variable     condVar;
+        };
+
         /// Default constructor. 
-        BackendFeetech():Backend(){}
+        BackendFeetechQueueThread():Backend(){}
 
         /// This method is not implemented in arduino backend, it sends false by default.
         virtual bool pose(const Eigen::Matrix4f &_pose, bool _blocking = false);
@@ -68,6 +85,8 @@ namespace hecatonquiros{
         // \return true. 
         virtual bool init(const Config &_config);
 
+        static bool initStatic(std::string _serialPort); 
+
         // Map from 0 to 1023 according to min and max angle
         int mapAngleToVal(float _minAngle, float _maxAngle, float _angle);
 
@@ -82,12 +101,19 @@ namespace hecatonquiros{
         /// \param _dir: dir of XML file
         virtual bool extractDataXML(std::string _pathXML);
 
+        /// Loop thread for get and send request
+        static void queueThread();
+
+        /// Function that check the request
+        static bool checkReq(DataQueue _req);
+
     private:
+        
         std::string mSerialPort;
         int mArmId;
 
-        SCServo *mServoDriver;
         float mSpeed = 500;     // 666 SEE HOW TO TUNE SPEED
+
         std::vector<std::pair<float, float> > mMinMaxValues = { {-110.0/180.0*M_PI, 110/180.0*M_PI},    // 666 SEE HOW TO TUNE FOREACH ROBOT
                                                                 {-110.0/180.0*M_PI, 110/180.0*M_PI},
                                                                 {-110.0/180.0*M_PI, 115/180.0*M_PI},
@@ -95,12 +121,16 @@ namespace hecatonquiros{
                                                                 {-135.0/180.0*M_PI, 135/180.0*M_PI},
                                                                 {-135.0/180.0*M_PI, 135/180.0*M_PI}};
         
-        std::thread mLoadChecker;
-        std::vector<int> mUsedJoints;
         std::vector<float> mOffsetJoints;
 
-        #warning This static guard only makes sense if all the devices are connecting using the same serial device, which is the case now buy might not be
-        static std::mutex mComGuard;
+        static bool mActivateStatic;
+        static std::queue<std::shared_ptr<DataQueue>> mComQueue;
+        static SCServo *mServoDriver;
+        static std::thread mQueueThread;
+        static std::mutex mQueueGuard;
+
+        //#warning This static guard only makes sense if all the devices are connecting using the same serial device, which is the case now buy might not be
+
     };
 }
 

@@ -66,7 +66,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool BackendArduino::claw(const int _action){
+    bool BackendArduino::claw(const int _action, bool _blocking){
         if(mSerialPort != nullptr && mSerialPort->isOpen()){
             std::stringstream cmd;
             switch(_action){

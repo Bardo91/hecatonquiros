@@ -24,6 +24,7 @@
 #include <hecatonquiros/backends/BackendArduino.h>
 #include <hecatonquiros/backends/BackendGazebo.h>
 #include <hecatonquiros/backends/BackendFeetech.h>
+#include <hecatonquiros/backends/BackendFeetechQueueThread.h>
 #include <hecatonquiros/backends/BackendROS.h>
 
 namespace hecatonquiros{
@@ -41,6 +42,9 @@ namespace hecatonquiros{
             break;
         case Backend::Config::eType::Feetech:
             bd = new BackendFeetech();
+            break;
+        case Backend::Config::eType::FeetechQueueThread:
+            bd = new BackendFeetechQueueThread();
             break;
         default:
             return nullptr;

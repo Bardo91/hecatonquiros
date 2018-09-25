@@ -43,7 +43,7 @@ namespace hecatonquiros{
 
         /// Method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
-        virtual bool claw(const int _action);
+        virtual bool claw(const int _action, bool _blocking = false);
 
         /// \brief abstract method for read position of a servo
         /// \param _id: id joint to read

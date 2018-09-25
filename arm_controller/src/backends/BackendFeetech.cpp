@@ -109,7 +109,7 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool BackendFeetech::claw(const int _action){
+    bool BackendFeetech::claw(const int _action, bool _blocking){
         if(_action == 0){
             mComGuard.lock();
             mServoDriver->WritePos(mArmId*10 + 7, 350, mSpeed);  
@@ -160,9 +160,9 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    std::vector<float> BackendFeetech::joints(int nJoints){
+    std::vector<float> BackendFeetech::joints(int _nJoints, bool _blocking){
         std::vector<float> joints;
-        for(unsigned i = 0; i < nJoints; i++){
+        for(unsigned i = 0; i < _nJoints; i++){
             mComGuard.lock();
             int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
             mComGuard.unlock();

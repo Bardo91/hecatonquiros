@@ -81,7 +81,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool BackendROS::claw(const int _action){
+    bool BackendROS::claw(const int _action, bool _blocking){
 
 		hecatonquiros::ReqData srv;
 		srv.request.req = true;
