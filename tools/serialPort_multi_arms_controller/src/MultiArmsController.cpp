@@ -67,7 +67,7 @@ bool MultiArmsController::configService(hecatonquiros::ConfigData::Request &_req
     std::cout << "SerialPort: " << _req.serialport << std::endl;
 
     bc.configXML = _req.configxml; 
-    bc.type = hecatonquiros::Backend::Config::eType::Feetech; 
+    bc.type = hecatonquiros::Backend::Config::eType::FeetechQueueThread; 
     bc.port = _req.serialport;
     bc.armId = _req.id;
 
@@ -102,7 +102,7 @@ bool MultiArmsController::configService(hecatonquiros::ConfigData::Request &_req
 bool MultiArmsController::clawService(hecatonquiros::ReqData::Request &_req, hecatonquiros::ReqData::Response &_res){
     
     if(_req.req){
-        mBackend[_req.id-1]->claw(_req.data);
+        mBackend[_req.id-1]->claw(_req.data, true);
     }
     _res.success = true;
     
@@ -132,7 +132,7 @@ void MultiArmsController::continuousJointsPub(int _id, int _njoints){
 
     while(ros::ok()){
 
-        std::vector<float> joints = mBackend[_id-1]->joints(_njoints);
+        std::vector<float> joints = mBackend[_id-1]->joints(_njoints, true);
 
         sensor_msgs::JointState msg;
         msg.header.stamp = ros::Time::now();

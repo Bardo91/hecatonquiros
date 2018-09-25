@@ -147,6 +147,7 @@ void IndividualArmController::start(){
     mState = STATES::HOME;
 
     mStatePublisherThread = std::thread([&](){
+        ros::Rate rate(20);
         while(mRunning && ros::ok()){
             std_msgs::String msgState;
             switch(mState){
@@ -167,7 +168,7 @@ void IndividualArmController::start(){
                     break;
             }
             mStatePublisher.publish(msgState);
-            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+            rate.sleep();
         }
     });
 
@@ -231,10 +232,8 @@ void IndividualArmController::stateMachine(){
                 mArm->openClaw();
                 mState = STATES::HOME;
             }
-        }	
-
-            //std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
+    }
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -282,14 +281,13 @@ void IndividualArmController::MovingArmThread(){
     };
 
     while(mRunning && ros::ok()){
-        
         switch(mState){
             case STATES::MOVING:
             {   
                 mLastAimedJoints = moveIncLambda(mTargetJoints);
                 rate.sleep();
-            }
                 break;
+            }
             default:
                 rate.sleep();
                 break;
@@ -306,7 +304,7 @@ void IndividualArmController::publisherLoop(){
     ros::Publisher aimingJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/out/aiming_joints", 1);  
     ros::Publisher targetJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/"+mName+"/out/target_joints", 1);
 
-    ros::Rate rate(50);
+    ros::Rate rate(30);
 
     while(ros::ok()){
         // Publish target joints

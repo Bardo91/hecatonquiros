@@ -38,11 +38,11 @@ namespace hecatonquiros{
         /// \param _joints: vector containing the joints
         /// \param _blocking: set blocking or not blocking operation
         /// \return true if joints are send or set without errors, false if something failed.
-        virtual bool joints(std::vector<float> &_joints, bool _blocking = false);
+        virtual bool joints(std::vector<float> &_joints, bool _blocking = true);
 
         /// Method for actuating to claws if implemented and attached
         /// \param _action: 0 close, 1 stop, 2 open;
-        virtual bool claw(const int _action, bool _blocking = false);
+        virtual bool claw(const int _action, bool _blocking = true);
 
         /// \brief abstract method for read position of a servo
         /// \param _id: id joint to read
