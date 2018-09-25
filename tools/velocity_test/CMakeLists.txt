@@ -67,3 +67,4 @@ target_include_directories(${TOOL_NAME} PUBLIC ${catkin_INCLUDE_DIRS})
 target_link_libraries(${TOOL_NAME} ${catkin_LIBRARIES} hecatonquiros)
 
 add_dependencies(${TOOL_NAME} ${catkin_EXPORTED_TARGETS} ${TOOL_NAME}_generate_messages_cpp)
+
