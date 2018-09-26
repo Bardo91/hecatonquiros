@@ -100,7 +100,7 @@ namespace hecatonquiros{
     }
 
 	//-----------------------------------------------------------------------------------------------------------------
-    std::vector<float> BackendROS::joints(int nJoints){
+    std::vector<float> BackendROS::joints(int nJoints, bool _blocking){
 		return mJoints;
     }
 

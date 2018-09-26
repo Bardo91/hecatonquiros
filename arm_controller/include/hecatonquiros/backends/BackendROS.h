@@ -71,7 +71,8 @@ namespace hecatonquiros{
         /// \param _enable
         virtual int jointTorque(const int _id, const bool _enable);
   
-        virtual std::vector<float> joints(int nJoints);
+        virtual std::vector<float> joints(int nJoints, bool _blocking = true);
+        
     private:
         virtual bool init(const Config &_config);
 

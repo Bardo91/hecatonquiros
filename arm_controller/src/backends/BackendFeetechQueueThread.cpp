@@ -72,7 +72,6 @@ namespace hecatonquiros{
         while(true){
 
             if(!mComQueue.empty()){
-
                 auto data = mComQueue.front();
                 //if(checkReq(data)){
                     switch(data->type){

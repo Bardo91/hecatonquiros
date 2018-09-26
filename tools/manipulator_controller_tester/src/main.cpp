@@ -84,8 +84,10 @@ int main(int _argc, char **_argv){
 
 				Eigen::Matrix4f leftInitPose = leftPose, rightInitPose = rightPose;
 				Eigen::Matrix4f leftSecondPose = leftPose, rightSecondPose = rightPose;
-				leftSecondPose(2,3) += +0.1;
-				rightSecondPose(2,3) += +0.1;
+				leftInitPose(2,3) += +0.03;
+				leftSecondPose(2,3) += +0.03;
+				leftSecondPose(2,3) += +0.03;
+				rightSecondPose(2,3) += +0.03;
 
 				std::cout << "Circle TEST" << std::endl;
 				
@@ -97,8 +99,8 @@ int main(int _argc, char **_argv){
 					auto t1 = std::chrono::high_resolution_clock::now();
 					duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
 
-					float incY = cos(2*M_PI*duration/vel1)*0.1;
-					float incZ = sin(2*M_PI*duration/vel2)*0.1;
+					float incY = cos(2*M_PI*duration/vel1)*0.07;
+					float incZ = sin(2*M_PI*duration/vel2)*0.07;
 
 					Eigen::Matrix4f leftTargetPose, rightTargetPose;
 					if(duration < time/2){

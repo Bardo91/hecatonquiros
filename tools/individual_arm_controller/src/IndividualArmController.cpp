@@ -173,10 +173,8 @@ void IndividualArmController::start(){
     });
 
     mMainThread = std::thread(&IndividualArmController::stateMachine, this);
-    std::cout << "INDARMCONT: Created main thread" << std::endl;
 
     mJointsPublisherThread = std::thread(&IndividualArmController::publisherLoop, this);
-    std::cout << "INDARMCONT: Created publisher thread" << std::endl;
 
 }
 
@@ -351,8 +349,6 @@ void IndividualArmController::publisherLoop(){
 
         rate.sleep();
     }
-
-    std::cout << "INDARMCONT: Publisher Loop finished" << std::endl;
 }   
 
 //---------------------------------------------------------------------------------------------------------------------
