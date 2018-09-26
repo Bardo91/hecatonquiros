@@ -12,9 +12,12 @@
 SCServo::SCServo(std::string _serialPort) {
 	Level = 1;
 	End = 1;
-	if(this->init(_serialPort)){
-		mSerialConnection = mSerialPorts[_serialPort];
+	if(mSerialConnection == nullptr){
+		if(this->init(_serialPort)){
+			mSerialConnection = mSerialPorts[_serialPort];
+		}
 	}
+	
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -40,13 +43,13 @@ int SCServo::RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed) {
 //---------------------------------------------------------------------------------------------------------------------
 void SCServo::SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]) {
 	mSerialConnection->flush();
-	u8 *buf_send[6];
+	u8 *buf_send[IDN];					
 	u8 buf[6];
 	for (int i = 0; i<IDN; i++){
 		Host2SCS(buf+0, buf+1, Position[i]);
 		Host2SCS(buf+2, buf+3, Time[i]);
 		Host2SCS(buf+4, buf+5, Speed[i]);
-		buf_send[i] = new u8 [6];
+		buf_send[i] = new u8 [6];						// 666 TODO FREE MEMORY
 		std::memcpy(buf_send[i], buf, sizeof(u8)*6);
 	}
 	syncWrite(ID, IDN, P_GOAL_POSITION_L, buf_send, 6);

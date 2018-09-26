@@ -87,7 +87,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    bool BackendGazebo::claw(const int _action){
+    bool BackendGazebo::claw(const int _action, bool _blocking){
 		return false;
     }
 
@@ -98,6 +98,11 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     int BackendGazebo::jointLoad(const int _id){
+        return 0;
+    }
+
+	//-----------------------------------------------------------------------------------------------------------------
+    int BackendGazebo::jointTorque(const int _id, const bool _enable){
         return 0;
     }
 

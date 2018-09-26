@@ -83,34 +83,36 @@ namespace hecatonquiros{
             }
         }
         
-        mComGuard.lock();
+        //mComGuard.lock();
         //if(mServoDriver->isConnected()){
-            // unsigned char idn = _joints.size();
-            // unsigned char id[idn];
-            // unsigned short pos[idn], tim[idn], spee[idn];
-            // for(unsigned i = 0; i < _joints.size(); i++){
-		    //     id[i] = mArmId*10 + i + 1;
-		    //     pos[i] = mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]);
-		    //     tim[i] = mSpeed;
-		    //     spee[i] = 0;
-            // }
-            // mServoDriver->SyncWritePos(id, idn, pos, tim, spee);
-            // return true;
+            unsigned char idn = _joints.size();
+            unsigned char id[idn];
+            unsigned short pos[idn], tim[idn], spee[idn];
+            for(unsigned i = 0; i < _joints.size(); i++){
+		        id[i] = mArmId*10 + i + 1;
+		        pos[i] = mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]);
+		        tim[i] = mSpeed;
+		        spee[i] = 0;
+            }
+            mComGuard.lock(); 
+            mServoDriver->SyncWritePos(id, idn, pos, tim, spee);
+            mComGuard.unlock();
+            return true;
         //}
-        for(unsigned i = 0; i < _joints.size(); i++){
-            mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
-        }
-        mComGuard.unlock();
+        //for(unsigned i = 0; i < _joints.size(); i++){
+        //    mServoDriver->WritePos(mArmId*10 + i + 1, mapAngleToVal(mMinMaxValues[i].first, mMinMaxValues[i].second, _joints[i] + mOffsetJoints[i]), mSpeed);
+        //}
+        //mComGuard.unlock();
 
         
-        return true;
+        //return true;
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    bool BackendFeetech::claw(const int _action){
+    bool BackendFeetech::claw(const int _action, bool _blocking){
         if(_action == 0){
             mComGuard.lock();
-            mServoDriver->WritePos(mArmId*10 + 7, 300, mSpeed);
+            mServoDriver->WritePos(mArmId*10 + 7, 350, mSpeed);  
             mComGuard.unlock();
             return true;
         }else if(_action == 1){
@@ -158,24 +160,39 @@ namespace hecatonquiros{
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-    std::vector<float> BackendFeetech::joints(int nJoints){
+    std::vector<float> BackendFeetech::joints(int _nJoints, bool _blocking){
         std::vector<float> joints;
-        for(unsigned i = 0; i < nJoints; i++){
+        for(unsigned i = 0; i < _nJoints; i++){
             mComGuard.lock();
             int val = mServoDriver->ReadPos(mArmId*10 + i + 1);
             mComGuard.unlock();
-            if(val < 0 || val > 1023){
-                std::cout << "Reading error from feetech backend. ID: " << mArmId*10 + i + 1 << std::endl;
+            if(val < 0 || val > 1024){
+                std::cout << "Reading error from feetech backend. ID: " << mArmId*10 + i + 1 << " val: " << val << std::endl;
                 return {};
+                //joints.push_back(0);
+            }else{
+                joints.push_back( mapValToAngle( mMinMaxValues[i].first, 
+                                                mMinMaxValues[i].second,
+                                                val) - mOffsetJoints[i]);
             }
-            
-            joints.push_back( mapValToAngle( mMinMaxValues[i].first, 
-                                            mMinMaxValues[i].second,
-                                            val) - mOffsetJoints[i]);
-
         }
 
         return joints;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    int BackendFeetech::jointTorque(const int _id, const bool _enable){
+        int val;
+        if(_enable){
+            mComGuard.lock();
+            val = mServoDriver->EnableTorque(mArmId*10 + _id + 1, 'H');
+            mComGuard.unlock();
+        }else{
+            mComGuard.lock(); 
+            val = mServoDriver->EnableTorque(mArmId*10 + _id + 1, 'L');
+            mComGuard.unlock();
+        }
+        return val;
     }
 
     //-----------------------------------------------------------------------------------------------------------------

@@ -32,6 +32,8 @@ add_service_files(
   FILES
   SetJoints.srv
   SetPose.srv
+  ReqData.srv
+  ConfigData.srv
 )
 
 generate_messages(
@@ -46,6 +48,10 @@ catkin_package(
 add_subdirectory(arm_controller)
 
 # Add set of tools
+file(GLOB_RECURSE TOOL_SRC_velocity_test "tools/velocity_test/src/*.h"  "tools/velocity_test/src/*.inl" "tools/velocity_test/src/*.cpp")
+
+compile_tool(velocity_test)
+
 file(GLOB_RECURSE TOOL_SRC_arm_joystick "tools/arm_joystick/src/*.h"  "tools/arm_joystick/src/*.inl" "tools/arm_joystick/src/*.cpp")
 
 compile_tool(arm_joystick)
@@ -58,15 +64,23 @@ file(GLOB_RECURSE TOOL_SRC_calibration_feetech "tools/calibration_feetech/src/*.
 
 compile_tool(calibration_feetech)
 
-file(GLOB_RECURSE TOOL_SRC_joystick_controller "tools/joystick_controller/src/*.h" "tools/joystick_controller/src/*.inl" "tools/joystick_controller/src/*.cpp")
-
-compile_library_tool(joystick_controller)
-
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller "tools/manipulator_controller/src/*.h" "tools/manipulator_controller/src/*.inl" "tools/manipulator_controller/src/*.cpp")
 
 compile_tool(manipulator_controller)
 
+file(GLOB_RECURSE TOOL_SRC_individual_arm_controller "tools/individual_arm_controller/src/*.h" "tools/individual_arm_controller/src/*.inl" "tools/individual_arm_controller/src/*.cpp")
+
+compile_tool(individual_arm_controller)
+
+file(GLOB_RECURSE TOOL_SRC_serialPort_multi_arms_controller "tools/serialPort_multi_arms_controller/src/*.h" "tools/serialPort_multi_arms_controller/src/*.inl" "tools/serialPort_multi_arms_controller/src/*.cpp")
+
+compile_tool(serialPort_multi_arms_controller)
+
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller_tester "tools/manipulator_controller_tester/src/*.h" "tools/manipulator_controller_tester/src/*.inl" "tools/manipulator_controller_tester/src/*.cpp")
 
 compile_tool(manipulator_controller_tester)
+
+file(GLOB_RECURSE TOOL_SRC_plotter_poses "tools/plotter_poses/src/*.h" "tools/plotter_poses/src/*.inl" "tools/plotter_poses/src/*.cpp")
+
+compile_tool_qt(plotter_poses)
 

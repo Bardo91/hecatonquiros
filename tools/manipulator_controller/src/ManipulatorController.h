@@ -48,7 +48,7 @@ private:
     bool rightClawService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res);
     bool emergencyStopService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res);
 
-    void movingCallback();
+    void MovingArmThread(DualManipulator::eArm _arm);
     void publisherLoop(DualManipulator::eArm _arm);
 
     void rosToEigen(const geometry_msgs::PoseStamped::ConstPtr &_msg, Eigen::Matrix4f &_pose);
@@ -75,11 +75,12 @@ private:
     STATES mState = STATES::STOP;
     std::string mLastError ="";
     ros::Publisher mStatePublisher;
-    ros::Publisher mMovingKeepAlive;
+    ros::Publisher mMovingKeepAliveLeft, mMovingKeepAliveRight;
 
     std::thread mMainThread;
     std::thread mStatePublisherThread;
     std::thread mLeftJointsPublisherThread, mRightJointsPublisherThread;
+    std::thread mLeftLastAimedJointsThread, mRightLastAimedJointsThread;
     bool mRunning = false;
 
     WatchdogJoints *mLeftTargetJointsSubscriber, *mRightTargetJointsSubscriber;
