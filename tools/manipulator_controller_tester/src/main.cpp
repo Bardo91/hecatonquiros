@@ -20,6 +20,7 @@
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/JointState.h>
+#include <std_srvs/SetBool.h>
 #include <Eigen/Eigen>
 #include <chrono>
 #include <thread>
@@ -34,63 +35,305 @@ int main(int _argc, char **_argv){
 	spinner.start();
 
 	ros::NodeHandle nh;
-	
-	Eigen::Matrix4f leftPose;
-	Eigen::Matrix4f rightPose;
-	
-	ros::Subscriber leftPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left/pose", 1, 
-				[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
-					rosToEigen(_msg, leftPose);
-				});
-	ros::Subscriber rightPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right/pose", 1, 
-				[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
-					rosToEigen(_msg, rightPose);
-				});
+	char test;
+	bool finish = true;
+	while(finish){
+		std::cout << "Circle Test -> c" << std::endl;
+		std::cout << "Fix Point Test -> f" << std::endl;
+		std::cout << "Some Points Test -> p" << std::endl;
+		std::cout << "Some Joints Test -> j" << std::endl;
+		std::cout << "Emergency Service Test -> e" << std::endl;
+		std::cout << "Open/Close Gripper -> g" << std::endl;
+		std::cout << "Finish program -> q" << std::endl;
+		std::cin >> test;
+		switch(test){
+			case 'q':
+				finish = false;
+				break;
+			case 'c':
+			{	
+				std::cout << "Time: ";
+				int time;
+				std::cin >> time;
 
-	ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left/target_pose3d_jacobi", 1);
-	ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right/target_pose3d_jacobi", 1);
+				std::cout << "Vel1: ";
+				int vel1;
+				std::cin >> vel1;
 
-	std::cout << "Wait for pose" << std::endl;
-	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+				std::cout << "Vel2: ";
+				int vel2;
+				std::cin >> vel2;
 
-	Eigen::Matrix4f leftInitPose = leftPose, rightInitPose = rightPose;
+				Eigen::Matrix4f leftPose;
+				Eigen::Matrix4f rightPose;
+				
+				ros::Subscriber leftPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/out/pose", 1, 
+							[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
+								rosToEigen(_msg, leftPose);
+							});
+				ros::Subscriber rightPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/out/pose", 1, 
+							[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
+								rosToEigen(_msg, rightPose);
+							});
 
+				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
+				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose3d", 1);
 
-	std::cout << "Circle TEST" << std::endl;
-	
-	auto t0 = std::chrono::high_resolution_clock::now();
-	float duration = 0;
-	while(duration < 50000){
+				std::cout << "Wait for pose" << std::endl;
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		auto t1 = std::chrono::high_resolution_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+				Eigen::Matrix4f leftInitPose = leftPose, rightInitPose = rightPose;
+				Eigen::Matrix4f leftSecondPose = leftPose, rightSecondPose = rightPose;
+				leftInitPose(2,3) += +0.03;
+				leftSecondPose(2,3) += +0.03;
+				leftSecondPose(2,3) += +0.03;
+				rightSecondPose(2,3) += +0.03;
 
-		float incY = cos(2*M_PI*duration/10000)*0.1;
-		float incZ = sin(2*M_PI*duration/10000)*0.1;
+				std::cout << "Circle TEST" << std::endl;
+				
+				auto t0 = std::chrono::high_resolution_clock::now();
+				float duration = 0;
+				while(duration < time){
 
-		Eigen::Matrix4f leftTargetPose = leftInitPose;
-		leftTargetPose(1,3) += incY;
-		leftTargetPose(2,3) += incZ;
-		geometry_msgs::PoseStamped leftMsg;
-		eigenToRos(leftTargetPose, leftMsg);
-		leftMsg.header.stamp = ros::Time::now();
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					auto t1 = std::chrono::high_resolution_clock::now();
+					duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
 
-		Eigen::Matrix4f rightTargetPose = rightInitPose;
-		rightTargetPose(1,3) += incY;
-		rightTargetPose(2,3) += incZ;
-		geometry_msgs::PoseStamped rightMsg;
-		eigenToRos(rightTargetPose, rightMsg);
-		rightMsg.header.stamp = ros::Time::now();
+					float incY = cos(2*M_PI*duration/vel1)*0.07;
+					float incZ = sin(2*M_PI*duration/vel2)*0.07;
 
-		leftPosePublisher.publish(leftMsg);
-		rightPosePublisher.publish(rightMsg);
-		
+					Eigen::Matrix4f leftTargetPose, rightTargetPose;
+					if(duration < time/2){
+						leftTargetPose = leftInitPose;
+						rightTargetPose = rightInitPose;		
+					}else{
+						leftTargetPose = leftSecondPose;
+						rightTargetPose = rightSecondPose;
+					}
+					
+					leftTargetPose(1,3) += incY;
+					leftTargetPose(2,3) += incZ;
+					geometry_msgs::PoseStamped leftMsg;
+					eigenToRos(leftTargetPose, leftMsg);
+					leftMsg.header.stamp = ros::Time::now();
+
+					rightTargetPose(1,3) += incY;
+					rightTargetPose(2,3) += incZ;
+					geometry_msgs::PoseStamped rightMsg;
+					eigenToRos(rightTargetPose, rightMsg);
+					rightMsg.header.stamp = ros::Time::now();
+
+					leftPosePublisher.publish(leftMsg);
+					rightPosePublisher.publish(rightMsg);	
+				}
+				break;
+			}
+			case 'p':
+			{
+				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
+				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose3d", 1);
+
+				auto t0 = std::chrono::high_resolution_clock::now();
+				float duration = 0;
+				float incX = 0.29, incY = 0.15, incZ = 0.29;
+
+				std::cout << "Time: ";
+				int time;
+				std::cin >> time;
+
+				while(duration < time){
+
+					incX += 0;
+					incY += 0.01;
+					incZ += 0;
+
+					geometry_msgs::PoseStamped leftMsg;
+					leftMsg.pose.position.x = incX;
+					leftMsg.pose.position.y = -incY;
+					leftMsg.pose.position.z =  incZ;
+					leftMsg.pose.orientation.x = 0;
+					leftMsg.pose.orientation.y = 0;
+					leftMsg.pose.orientation.z = 0;
+					leftMsg.pose.orientation.w = 1;
+					leftMsg.header.stamp = ros::Time::now();
+
+					geometry_msgs::PoseStamped rightMsg;
+					rightMsg.pose.position.x = incX;
+					rightMsg.pose.position.y = incY;
+					rightMsg.pose.position.z = incZ;
+					rightMsg.pose.orientation.x = 0;
+					rightMsg.pose.orientation.y = 0;
+					rightMsg.pose.orientation.z = 0;
+					rightMsg.pose.orientation.w = 1;
+					rightMsg.header.stamp = ros::Time::now();
+
+					leftPosePublisher.publish(leftMsg);
+					rightPosePublisher.publish(rightMsg);
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+					auto t1 = std::chrono::high_resolution_clock::now();
+					duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+
+				}				
+				break;
+			}
+			case 'f':
+			{	
+				std::cout << "Pose3d -> 1, PoseLine3d -> 2" << std::endl; 
+				int select;
+				std::cin >> select;
+
+				ros::Publisher leftPosePublisher;
+				ros::Publisher rightPosePublisher; 
+				if(select == 1){
+					leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
+					rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose3d", 1);
+				}else if(select == 2){
+					leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose_line3d", 1);
+					rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose_line3d", 1);
+				}else{
+					std::cout << "Bad select" << std::endl; 
+					break;
+				}
+				
+
+				float x, y, z;
+				std::cout << "X: ";
+				std::cin >> x;
+				std::cout << "Y: ";
+				std::cin >> y;
+				std::cout << "Z: ";
+				std::cin >> z;
+
+				while(true){
+					geometry_msgs::PoseStamped leftMsg;
+					leftMsg.pose.position.x = x;
+					leftMsg.pose.position.y = -y;
+					leftMsg.pose.position.z =  z;
+					leftMsg.pose.orientation.x = 0;
+					leftMsg.pose.orientation.y = 0;
+					leftMsg.pose.orientation.z = 0;
+					leftMsg.pose.orientation.w = 1;
+					leftMsg.header.stamp = ros::Time::now();
+
+					geometry_msgs::PoseStamped rightMsg;
+					rightMsg.pose.position.x = x;
+					rightMsg.pose.position.y = y;
+					rightMsg.pose.position.z = z;
+					rightMsg.pose.orientation.x = 0;
+					rightMsg.pose.orientation.y = 0;
+					rightMsg.pose.orientation.z = 0;
+					rightMsg.pose.orientation.w = 1;
+					rightMsg.header.stamp = ros::Time::now();
+
+					leftPosePublisher.publish(leftMsg);
+					rightPosePublisher.publish(rightMsg);
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				}			
+				break;
+			}
+			case 'j':
+			{
+				ros::Publisher leftJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/left_arm/in/target_joints", 1);
+				ros::Publisher rightJointsPublisher = nh.advertise<sensor_msgs::JointState>("/hecatonquiros/right_arm/in/target_joints", 1);													
+
+				auto t0 = std::chrono::high_resolution_clock::now();
+				float duration = 0;
+				int incA = 90;
+
+				std::cout << "Time: ";
+				int time;
+				std::cin >> time;
+				
+				while(duration < time){
+
+					incA = incA - 5;
+
+					sensor_msgs::JointState leftMsg;	
+					leftMsg.position.push_back(0.0*M_PI/180.0);
+					leftMsg.position.push_back(0.0*M_PI/180.0);
+					leftMsg.position.push_back(incA*M_PI/180.0);
+					leftMsg.position.push_back(0.0*M_PI/180.0);
+					leftMsg.header.stamp = ros::Time::now();
+				
+					sensor_msgs::JointState rightMsg;
+					rightMsg.position.push_back(0.0*M_PI/180.0);
+					rightMsg.position.push_back(0.0*M_PI/180.0);
+					rightMsg.position.push_back(incA*M_PI/180.0);
+					rightMsg.position.push_back(0.0*M_PI/180.0);
+					rightMsg.header.stamp = leftMsg.header.stamp;
+
+					leftJointsPublisher.publish(leftMsg);
+					rightJointsPublisher.publish(rightMsg);	
+
+					std::this_thread::sleep_for(std::chrono::milliseconds(200));
+					auto t1 = std::chrono::high_resolution_clock::now();
+					duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+
+				}	
+
+				break;
+			}
+			case 'e':
+			{
+				ros::ServiceClient leftEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/in/emergency_stop");
+				ros::ServiceClient rightEmergServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/in/emergency_stop");
+				
+				std_srvs::SetBool srv;
+				srv.request.data = true;
+				if(leftEmergServ.call(srv)){
+					if(srv.response.success){
+						std::cout << "response success left is TRUE" << std::endl;
+					}
+				}else{
+					std::cout << "response success left is FALSE" << std::endl;
+				}
+
+				if(rightEmergServ.call(srv)){
+					if(srv.response.success){
+						std::cout << "response success right is TRUE" << std::endl;
+					}
+				}else{
+					std::cout << "response success right is FALSE" << std::endl;
+				}
+				break;
+			}
+			case 'g':
+			{
+				ros::ServiceClient leftGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/left_arm/in/claw");
+				ros::ServiceClient rightGripServ = nh.serviceClient<std_srvs::SetBool>("/hecatonquiros/right_arm/in/claw");
+				std_srvs::SetBool srv;
+
+				std::cout << "1 close gripper, 2 open gripper" << std::endl;
+				int grip;
+				std::cin >> grip;
+				if(grip == 1){
+					srv.request.data = true;
+				}else if(grip == 2){
+					srv.request.data = false;
+				}else{
+					std::cout << "Number error!" << std::endl;
+				}
+				if(leftGripServ.call(srv)){
+					if(srv.response.success){
+						std::cout << "response success left is TRUE" << std::endl;
+					}else{
+						std::cout << "response success left is FALSE" << std::endl;
+					}
+				}
+				if(rightGripServ.call(srv)){
+					if(srv.response.success){
+						std::cout << "response success right is TRUE" << std::endl;
+					}else{
+						std::cout << "response success right is FALSE" << std::endl;
+					}
+				}
+				break;
+			}
+		}
 	}
-
 }
-
-
 
 //---------------------------------------------------------------------------------------------------------------------
 void rosToEigen(const geometry_msgs::PoseStamped::ConstPtr &_msg, Eigen::Matrix4f &_pose){

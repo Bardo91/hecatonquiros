@@ -53,7 +53,7 @@ namespace hecatonquiros{
         }
 
         /// Joints in radians
-        void joints(std::vector<float>, bool _actuateBackend = false);
+        void joints(std::vector<float> _q, bool _actuateBackend = false);
         std::vector<float> joints() const;
 
         /// Position in cartesian coordinates (meters)
@@ -83,6 +83,9 @@ namespace hecatonquiros{
 
         /// Read load value joint
         int readLoad(int _joint);
+
+        /// Enable disable torque servo joint
+        int endisTorque(int _joint, bool _enable);
 
         bool isInit() const;
 

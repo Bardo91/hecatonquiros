@@ -77,7 +77,8 @@ bool ManipulatorController::init(int _argc, char** _argv){
     ros::NodeHandle nh;
     
     mStatePublisher = nh.advertise<std_msgs::String>("/hecatonquiros/controller/state", 1);  
-    mMovingKeepAlive = nh.advertise<std_msgs::String>("/hecatonquiros/moving/keep_alive", 1);  
+    mMovingKeepAliveLeft = nh.advertise<std_msgs::String>("/hecatonquiros/moving/keep_alive_left", 1);  
+    mMovingKeepAliveRight = nh.advertise<std_msgs::String>("/hecatonquiros/moving/keep_alive_right", 1); 
 
     // Direct joints access
     mLeftTargetJointsSubscriber = new WatchdogJoints("/hecatonquiros/left/target_joints", 0.2);
@@ -182,6 +183,10 @@ void ManipulatorController::stop(){
 
 //---------------------------------------------------------------------------------------------------------------------
 void ManipulatorController::stateMachine(){
+
+    mLeftLastAimedJointsThread = std::thread(&ManipulatorController::MovingArmThread, this, DualManipulator::eArm::LEFT);
+    mRightLastAimedJointsThread = std::thread(&ManipulatorController::MovingArmThread, this, DualManipulator::eArm::RIGHT);
+
     while(ros::ok() && mRunning){
         switch(mState){
             case STATES::STOP:
@@ -205,8 +210,7 @@ void ManipulatorController::stateMachine(){
                 mManipulator.mLeftArm->joints(cHomeJoints, mActuateBackend);
                 mManipulator.mRightArm->joints(cHomeJoints, mActuateBackend);
                 break;
-            case STATES::MOVING:
-                movingCallback();
+            case STATES::MOVING:    
                 break;
             case STATES::ERROR:
                 break;
@@ -246,7 +250,7 @@ bool ManipulatorController::leftClawService(std_srvs::SetBool::Request  &_req, s
 
     _res.success = true;
     return true;
-};
+}
 
 //---------------------------------------------------------------------------------------------------------------------
 bool ManipulatorController::rightClawService(std_srvs::SetBool::Request  &_req, std_srvs::SetBool::Response &_res){
@@ -257,7 +261,7 @@ bool ManipulatorController::rightClawService(std_srvs::SetBool::Request  &_req, 
 
     _res.success = true;
     return true;
-};
+}
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -275,7 +279,10 @@ bool ManipulatorController::emergencyStopService(std_srvs::SetBool::Request  &_r
 }
 
 //---------------------------------------------------------------------------------------------------------------------
-void ManipulatorController::movingCallback(){
+void ManipulatorController::MovingArmThread(DualManipulator::eArm _arm){
+
+    bool isLeftArm = (_arm == DualManipulator::eArm::LEFT);
+
     auto moveIncLambda = [&](std::vector<float> _targetJoints, DualManipulator::eArm _arm)->std::vector<float>{  // INTEGRATE IN callback to limit speed
         std::vector<float> currJoints = mManipulator.joints(_arm); // 666 thread safe?
         float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
@@ -288,12 +295,27 @@ void ManipulatorController::movingCallback(){
         return _targetJoints;
     };
 
-    mLeftLastAimedJoints = moveIncLambda(mLeftTargetJoints, DualManipulator::eArm::LEFT);
-    mRightLastAimedJoints = moveIncLambda(mRightTargetJoints, DualManipulator::eArm::RIGHT);
-    
-    
-    std_msgs::String aliveMsg;  aliveMsg.data = "I am moving"; 
-    mMovingKeepAlive.publish(aliveMsg);
+    while(mRunning && ros::ok()){
+        
+        switch(mState){
+            case STATES::MOVING:
+                if(isLeftArm){
+                    mLeftLastAimedJoints = moveIncLambda(mLeftTargetJoints, DualManipulator::eArm::LEFT);
+                    std_msgs::String aliveMsg;  
+                    aliveMsg.data = "I am moving Left"; 
+                    mMovingKeepAliveLeft.publish(aliveMsg);
+                }else{
+                    mRightLastAimedJoints = moveIncLambda(mRightTargetJoints, DualManipulator::eArm::RIGHT);
+                    std_msgs::String aliveMsg;  
+                    aliveMsg.data = "I am moving Right"; 
+                    mMovingKeepAliveRight.publish(aliveMsg);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,8 @@
+{	
+	"leftarmpub":"/hecatonquiros/left_arm/in/target_pose_line3d",
+	"rightarmpub": "/hecatonquiros/right_arm/in/target_pose_line3d",
+	"leftarmsub": "/hecatonquiros/left_arm/out/pose",
+	"rightarmsub":"/hecatonquiros/right_arm/out/pose",
+	"joysub":"/joy",
+	"vel":0.001
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="model_left" default="/home/polux/programming/catkin_hecatonquiros/src/hecatonquiros/tools/individual_arm_controller/config/config_manipulator_controller_4dof_left.json"/>
+  
+  <node name="left" pkg="individual_arm_controller" type="individual_arm_controller" args="$(arg model_left)" output="screen" />
+
+</launch>
