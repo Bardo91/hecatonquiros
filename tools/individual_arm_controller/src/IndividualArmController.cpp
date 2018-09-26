@@ -82,8 +82,8 @@ bool IndividualArmController::init(int _argc, char** _argv){
     mArm = new hecatonquiros::Arm4DoF(ms, bc);
     std::cout << "Arm created "+ mName << std::endl;
 
-    mNdof = mArm->joints().size();
-    // std::cout << "Manipulator has " << mNdof << " dof." << std::endl;
+    mNdof = mConfigFile["ndof"].GetInt(); //mArm->joints().size();
+    //std::cout << "Manipulator has " << mNdof << " dof." << std::endl;
 
     if(mNdof == 3)
         cHomeJoints = {0,-M_PI/5,M_PI/1.5};
@@ -194,6 +194,8 @@ void IndividualArmController::stop(){
 //---------------------------------------------------------------------------------------------------------------------
 void IndividualArmController::stateMachine(){
 
+    ros::Rate rate(30);
+
     mLastAimedJointsThread = std::thread(&IndividualArmController::MovingArmThread, this);
 
     while(ros::ok() && mRunning){
@@ -233,6 +235,8 @@ void IndividualArmController::stateMachine(){
                 mState = STATES::HOME;
             }
         }
+
+        rate.sleep();
     }
 }
 

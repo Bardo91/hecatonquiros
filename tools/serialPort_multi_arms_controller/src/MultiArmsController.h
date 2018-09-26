@@ -52,13 +52,13 @@ private:
     // std::thread mLoopThread;
     // bool mRun;
 
-    std::vector<std::thread> mReadJointsThread;
+    std::map<int, std::thread *> mReadJointsThread;
 
-    std::vector<ros::Publisher> mJointsArmPublisher, mMovingKeepAlive;
-    std::vector<ros::Subscriber> mJointsArmSubscriber;
-    std::vector<ros::ServiceServer> mClawArmService;
+    std::map<int, ros::Publisher> mJointsArmPublisher, mMovingKeepAlive;
+    std::map<int, ros::Subscriber> mJointsArmSubscriber;
+    std::map<int, ros::ServiceServer> mClawArmService;
     ros::ServiceServer mConfigService;
 
-    std::vector<hecatonquiros::Backend *> mBackend;
+    std::map<int,hecatonquiros::Backend *> mBackend;
 
 };

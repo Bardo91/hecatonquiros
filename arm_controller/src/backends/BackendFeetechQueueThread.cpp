@@ -96,7 +96,7 @@ namespace hecatonquiros{
                             }
                         case eTypeQ::Claw:
                             {   
-                                mServoDriver->WritePos(data->idJoints[0], data->pos[0], data->speed[0]); 
+                                mServoDriver->WritePos(data->idJoints[0], data->pos[0], data->time[0], data->speed[0]); 
                                 if(data->block){
                                     data->condVar.notify_one();
                                 }
@@ -211,24 +211,31 @@ namespace hecatonquiros{
 
     //-----------------------------------------------------------------------------------------------------------------
     bool BackendFeetechQueueThread::claw(const int _action, bool _blocking){
-        std::shared_ptr<DataQueue> data(new DataQueue);
+        unsigned char id[1];
+        unsigned short pos[1], speed[1], tim[1];
         if(_action == 0){
-            data->type = eTypeQ::Claw;
-            data->idJoints[0] = mArmId*10 + 7;
-            data->pos[0] = 350;
-            data->speed[0] = mSpeed;      
+            id[0] = mArmId*10 + 7;
+            pos[0] = 350;
+            tim[0] = mSpeed;
+            speed[0] = 0;
         }else if(_action == 1){
             // 666 TODO: NOT WORKING WITH REQUEST
         }else if(_action == 2){
-            data->type = eTypeQ::Claw;
-            data->idJoints[0] = mArmId*10 + 7;
-            data->pos[0] = 1023;
-            data->speed[0] = mSpeed;  
+            id[0] = mArmId*10 + 7;
+            pos[0] = 1023;
+            tim[0] = mSpeed;
+            speed[0] = 0;
         }else{
             std::cout << "Unrecognized command!" << std::endl;
             return false;
         }
 
+        std::shared_ptr<DataQueue> data(new DataQueue);
+        data->type = eTypeQ::Claw;
+        data->idJoints = id;
+        data->pos = pos;
+        data->time = tim;
+        data->speed = speed;
         data->block = _blocking;
         if(_blocking){
             mQueueGuard.lock();

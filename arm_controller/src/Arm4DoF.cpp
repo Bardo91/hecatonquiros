@@ -97,7 +97,7 @@ namespace hecatonquiros{
     std::vector<float> Arm4DoF::joints() const {
         if(mBackend != nullptr){
             // 666 will not work without model solver
-            return mBackend->joints(mModelSolver->joints().size(), true); 
+            return mBackend->joints(mModelSolver->joints().size(), true);
         }else{
             if(mModelSolver != nullptr){
                 return mModelSolver->joints();
