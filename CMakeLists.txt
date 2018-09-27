@@ -84,3 +84,6 @@ file(GLOB_RECURSE TOOL_SRC_plotter_poses "tools/plotter_poses/src/*.h" "tools/pl
 
 compile_tool_qt(plotter_poses)
 
+file(GLOB_RECURSE TOOL_SRC_plotter_joints "tools/plotter_joints/src/*.h" "tools/plotter_joints/src/*.inl" "tools/plotter_joints/src/*.cpp")
+
+compile_tool_qt(plotter_joints)
