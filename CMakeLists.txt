@@ -47,26 +47,23 @@ add_subdirectory(arm_controller)
 
 # Add set of tools
 file(GLOB_RECURSE TOOL_SRC_arm_joystick "tools/arm_joystick/src/*.h"  "tools/arm_joystick/src/*.inl" "tools/arm_joystick/src/*.cpp")
-
 compile_tool(arm_joystick)
 
 file(GLOB_RECURSE TOOL_SRC_arm_tester "tools/arm_tester/src/*.h" "tools/arm_tester/src/*.inl" "tools/arm_tester/src/*.cpp")
-
 compile_tool(arm_tester)
 
 file(GLOB_RECURSE TOOL_SRC_calibration_feetech "tools/calibration_feetech/src/*.h" "tools/calibration_feetech/src/*.inl" "tools/calibration_feetech/src/*.cpp")
-
 compile_tool(calibration_feetech)
 
 file(GLOB_RECURSE TOOL_SRC_joystick_controller "tools/joystick_controller/src/*.h" "tools/joystick_controller/src/*.inl" "tools/joystick_controller/src/*.cpp")
-
 compile_library_tool(joystick_controller)
 
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller "tools/manipulator_controller/src/*.h" "tools/manipulator_controller/src/*.inl" "tools/manipulator_controller/src/*.cpp")
-
 compile_tool(manipulator_controller)
 
 file(GLOB_RECURSE TOOL_SRC_manipulator_controller_tester "tools/manipulator_controller_tester/src/*.h" "tools/manipulator_controller_tester/src/*.inl" "tools/manipulator_controller_tester/src/*.cpp")
-
 compile_tool(manipulator_controller_tester)
+
+file(GLOB_RECURSE TOOL_SRC_positioner_test "tools/positioner_tester/src/*.h" "tools/positioner_tester/src/*.inl" "tools/positioner_tester/src/*.cpp")
+compile_tool(positioner_test)
 
