@@ -30,7 +30,7 @@
 
 #include <tf/transform_broadcaster.h>
 
-geometry_msgs::PoseStamped eigen2PoseStamped(Eigen::Matrix4f _pose, ros::Time _time = ros::Time::now());
+geometry_msgs::PoseStamped eigen2PoseStamped(Eigen::Matrix4f _pose, ros::Time _time = ros::Time::now(), std::string  _frameId = "base_docking");
 tf::Transform eigen2tf(Eigen::Matrix4f _pose, ros::Time _time = ros::Time::now());
 Eigen::Matrix4f poseStamped2Eigen(geometry_msgs::PoseStamped _msg);
 
@@ -72,9 +72,11 @@ int main(int _argc, char **_argv) {
 		sensor_msgs::Imu imuData;
 
 		jointData.header.stamp = timeNow;
+		jointData.header.frame_id = "base_docking";
 		jointData.position.insert(jointData.position.end(), angles.begin(), angles.end());
 
 		imuData.header.stamp = timeNow;
+		imuData.header.frame_id = "base_docking";
 		imuData.linear_acceleration.x = accel[0];
 		imuData.linear_acceleration.y = accel[1];
 		imuData.linear_acceleration.z = accel[2];
@@ -82,8 +84,8 @@ int main(int _argc, char **_argv) {
 		pubImu.publish(imuData);
 		pubJoints.publish(jointData);
 
-		pubBaseToHand.publish(eigen2PoseStamped(baseToHand, timeNow));
-		pubHandToBase.publish(eigen2PoseStamped(handToBase, timeNow));
+		pubBaseToHand.publish(eigen2PoseStamped(baseToHand, timeNow, "base_docking"));
+		pubHandToBase.publish(eigen2PoseStamped(handToBase, timeNow, "end_effector"));
 
 
 		Eigen::Matrix4f t01,t12,t23,t34,t4f;
@@ -101,8 +103,9 @@ int main(int _argc, char **_argv) {
 
 
 
-geometry_msgs::PoseStamped eigen2PoseStamped(Eigen::Matrix4f _pose, ros::Time _time){
+geometry_msgs::PoseStamped eigen2PoseStamped(Eigen::Matrix4f _pose, ros::Time _time, std::string _frameId){
 	geometry_msgs::PoseStamped msg;
+	msg.header.frame_id = _frameId;
 	msg.header.stamp = _time;
 	msg.pose.position.x = _pose(0,3);
 	msg.pose.position.y = _pose(1,3);
