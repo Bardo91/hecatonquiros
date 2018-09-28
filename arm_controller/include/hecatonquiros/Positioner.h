@@ -28,6 +28,7 @@
 namespace hecatonquiros {
 
 	struct Potentiometer {
+		/// returns map of potentiometer value to angle in radians
 		float valToAngle(float _val) {
 			return ((_val - intercept)/slope);
 		}
@@ -71,6 +72,9 @@ namespace hecatonquiros {
 		/// \param _j3: 
 		/// \param _j4:
 		void rawJoints  (float &_j0, float &_j1, float &_j2, float &_j3, float &_j4);
+
+		/// Returns the raw values of the potentiomenters from 0 to 1023
+		std::vector<float> rawJoints  ();
 		
 		/// Returns the angles of the joints
 		/// \return angles of the potentiometer in a vector

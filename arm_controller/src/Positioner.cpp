@@ -39,11 +39,11 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Positioner::init() {
-        mP0 = {4.39444444444,   513.333333333,  8.0};
-        mP1 = {4.42777777778,   511.0,          0.0}; 
-        mP2 = {4.46111111111,   494.333333333,  0.0}; 
-        mP3 = {4.35,            500.0,          0.0}; 
-        mP4 = {4.31666666667,   487.333333333,  0.0};
+        mP0 = {247.778,         486.778,  0.0};
+        mP1 = {250.827,         504.296,  0.0}; 
+        mP2 = {-254.328,        492.932,  0.0}; 
+        mP3 = {-250.889,        521.304,  0.0}; 
+        mP4 = {251.814,         523.955,  0.0};
 
         mSerialThread = std::thread([&]() {
             std::string data = "";
@@ -162,14 +162,20 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
+    std::vector<float> Positioner::rawJoints  (){
+        std::lock_guard<std::mutex> guard(mSecureRead);
+        return {mJ0, mJ1, mJ2, mJ3, mJ4};
+    }
+		
+    //---------------------------------------------------------------------------------------------------------------------
     std::vector<float> Positioner::angles(){
         std::vector<float> vals(5);
         mSecureRead.lock();
-        vals[0] = mP0.valToAngle(mJ0) / 180.0f*M_PI;
-        vals[1] = mP1.valToAngle(mJ1) / 180.0f*M_PI;
-        vals[2] = mP2.valToAngle(mJ2) / 180.0f*M_PI;
-        vals[3] = mP3.valToAngle(mJ3) / 180.0f*M_PI;
-        vals[4] = -mP4.valToAngle(mJ4) / 180.0f*M_PI;
+        vals[0] = mP0.valToAngle(mJ0);
+        vals[1] = mP1.valToAngle(mJ1);
+        vals[2] = mP2.valToAngle(mJ2);
+        vals[3] = mP3.valToAngle(mJ3);
+        vals[4] = mP4.valToAngle(mJ4);
         mSecureRead.unlock();
         return vals;
     }
