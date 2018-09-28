@@ -59,12 +59,29 @@ namespace hecatonquiros {
 		/// \param _z: 
 		void baseToHand (float &_x, float &_y, float &_z);
 		
+		/// Returns the relative position of the hand from the base of the positioner
+		/// \param _position: vector containting the 3D position
+		void baseToHand (Eigen::Vector3f &_position);
+
+		/// Returns the relative pose of the hand from the base of the positioner
+		/// \param _pose: vector containting the 3D pose
+		void baseToHand (Eigen::Matrix4f &_pose);
+		
 		/// Returns the relative position of the base from the handle of the positioner
-		/// \param _x: /// \param _t0:
+		/// \param _x: 
 		/// \param _y: 
 		/// \param _z:
 		void handToBase (float &_x, float &_y, float &_z);
 		
+		/// Returns the relative position of the base from the handle of the positioner
+		/// \param _position: vector containting the 3D position
+		void handToBase (Eigen::Vector3f &_position);
+		
+		/// Returns the relative pose of the base from the handle of the positioner
+		/// \param _pose: vector containting the 3D pose
+		void handToBase (Eigen::Matrix4f &_pose);
+		
+
 		/// Returns the raw values of the potentiomenters from 0 to 1023
 		/// \param _j0: 
 		/// \param _j1: 

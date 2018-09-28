@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 			std_msgs
 			roscpp
 			message_generation
+			tf
 			)
 if(${catkin_FOUND})
 	add_definitions(-DHAS_ROS)
@@ -35,12 +36,12 @@ add_service_files(
 )
 
 generate_messages(
-    DEPENDENCIES std_msgs geometry_msgs sensor_msgs
+    DEPENDENCIES std_msgs geometry_msgs sensor_msgs tf
 )
 
 catkin_package(
 	INCLUDE_DIRS ./arm_controller/include
-	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
+	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs tf
 )
 
 add_subdirectory(arm_controller)
@@ -66,4 +67,7 @@ compile_tool(manipulator_controller_tester)
 
 file(GLOB_RECURSE TOOL_SRC_positioner_test "tools/positioner_tester/src/*.h" "tools/positioner_tester/src/*.inl" "tools/positioner_tester/src/*.cpp")
 compile_tool(positioner_test)
+
+file(GLOB_RECURSE TOOL_SRC_positioner_ros_interface "tools/positioner_ros_interface/src/*.h" "tools/positioner_ros_interface/src/*.inl" "tools/positioner_ros_interface/src/*.cpp")
+compile_tool(positioner_ros_interface)
 

@@ -107,7 +107,7 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Positioner::baseToHand(float &_x, float &_y, float &_z){
+    void Positioner::baseToHand (Eigen::Matrix4f &_pose){
         std::vector<float> vals = angles();
     
 
@@ -137,18 +137,51 @@ namespace hecatonquiros{
                 0, 0, 1, 0,
                 0, 0, 0, 1;
 
-        Eigen::Matrix4f finalT = mT01*mT12*mT23*mT34*mT4f;
+        _pose = mT01*mT12*mT23*mT34*mT4f;
+    }
 
-        _x = finalT(0,3);
-        _y = finalT(1,3);
-        _z = finalT(2,3);
+    //---------------------------------------------------------------------------------------------------------------------
+    void Positioner::baseToHand (Eigen::Vector3f &_position){
+        Eigen::Matrix4f pose;
+        baseToHand(pose);
+        _position = pose.block<3,1>(0,3);
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    void Positioner::baseToHand(float &_x, float &_y, float &_z){
+        Eigen::Matrix4f pose;
+        baseToHand(pose);
+
+        _x = pose(0,3);
+        _y = pose(1,3);
+        _z = pose(2,3);
     
     }
 
     //---------------------------------------------------------------------------------------------------------------------
     void Positioner::handToBase(float &_x, float &_y, float &_z){
-    
+        Eigen::Matrix4f pose;
+        handToBase(pose);
+
+        _x = pose(0,3);
+        _y = pose(1,3);
+        _z = pose(2,3);
     }
+
+    //---------------------------------------------------------------------------------------------------------------------
+    void Positioner::handToBase (Eigen::Vector3f &_position){
+        Eigen::Matrix4f pose;
+        handToBase(pose);
+        _position = pose.block<3,1>(0,3);
+    }
+    
+    //---------------------------------------------------------------------------------------------------------------------
+    void Positioner::handToBase (Eigen::Matrix4f &_pose){
+        Eigen::Matrix4f pose;
+        baseToHand(pose);
+        _pose  = pose.inverse();
+    }
+    
 
     //---------------------------------------------------------------------------------------------------------------------
     void Positioner::rawJoints(float &_j0, float &_j1, float &_j2, float &_j3, float &_j4){
@@ -173,9 +206,9 @@ namespace hecatonquiros{
         mSecureRead.lock();
         vals[0] = mP0.valToAngle(mJ0);
         vals[1] = mP1.valToAngle(mJ1);
-        vals[2] = mP2.valToAngle(mJ2);
-        vals[3] = mP3.valToAngle(mJ3);
-        vals[4] = mP4.valToAngle(mJ4);
+        vals[2] = -mP2.valToAngle(mJ2);
+        vals[3] = -mP3.valToAngle(mJ3);
+        vals[4] = -mP4.valToAngle(mJ4);
         mSecureRead.unlock();
         return vals;
     }
