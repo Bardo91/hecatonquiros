@@ -183,10 +183,10 @@ int main(int _argc, char **_argv){
 				float duration = 0;
 				float cont = 0;
 
-				// std::cout << "Time(ms): ";
-				// int time;
-				// std::cin >> time;
-				int time = 50000;
+				std::cout << "Time(ms): ";
+				int time;
+				std::cin >> time;
+				// int time = 50000;
 
 				int i = 0;
 
