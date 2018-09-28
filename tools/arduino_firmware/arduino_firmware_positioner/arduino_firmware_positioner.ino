@@ -21,12 +21,33 @@
 
 
 #include "Positioner.h"
+#include "LSM6.h"
+#include <Wire.h>
+#include <Servo.h>
+
+// Arduino   LSM6 board
+// -------   ----------
+//      5V - VIN
+//     GND - GND
+//     SDA - SDA
+//     SCL - SCL
+
 
 Positioner tool(A0, A1, A2, A3, A4);
+LSM6 imu;
+Servo baseLocker;
+bool isLocked = true;
 
 void setup() {
   Serial.begin(115200);
+  Wire.begin();
 
+  if (!imu.init()) {
+    while (1);
+  }
+  baseLocker.attach(8); 
+  baseLocker.write(180);
+  imu.enableDefault();
 }
 
 void exec             (String _cmd);
@@ -61,6 +82,14 @@ void exec(String _cmd){
   if(_cmd[0] == 'p'){
     //Serial.println("Command of type positioner");
     execPositioner(_cmd.substring(1));
+  }else if(_cmd[0] == 'l'){
+    if(isLocked){
+      baseLocker.write(0);
+      isLocked = false;  
+    }else{
+      baseLocker.write(180);
+      isLocked = true;
+    }
   }else{
     // Do nothing
   }
@@ -69,7 +98,10 @@ void exec(String _cmd){
 void execPositioner(String _cmd){
   float t0,t1,t2,t3, t4;
   tool.rawJoints(t0,t1,t2,t3, t4);
-  String strJoints = String(t0) + ", " +String(t1) + ", " +String(t2)+ ", " +String(t3)+ ", " +String(t4);
+  imu.read();
+  String strJoints = String(t0) + ", " +String(t1) + ", " +String(t2)+ ", " +String(t3)+ ", " +String(t4)+", "+
+                     String(imu.a.x) + ", " +String(imu.a.y) + ", " +String(imu.a.z) ;
+                     
   Serial.println(strJoints);
 }
 

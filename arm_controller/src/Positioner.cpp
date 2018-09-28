@@ -39,20 +39,25 @@ namespace hecatonquiros{
 
     //---------------------------------------------------------------------------------------------------------------------
     void Positioner::init() {
-        mP0 = {-230.0f/2,   230.0f/2}; //{-230.0f/2,   230.0f/2};
-        mP1 = {-130.0f,     125.0f }; //{-120.0f, 140.0f };
-        mP2 = {-110.0f,     115.0f }; //{-130.0f, 115.0f };
-        mP3 = { -115.0f,    115.0f }; //{ -130.0f, 135.0f };
-        mP4 = { -130.0f,    135.0f }; //{ -130.0f, 135.0f };
+        mP0 = {4.39444444444,   513.333333333,  8.0};
+        mP1 = {4.42777777778,   511.0,          0.0}; 
+        mP2 = {4.46111111111,   494.333333333,  0.0}; 
+        mP3 = {4.35,            500.0,          0.0}; 
+        mP4 = {4.31666666667,   487.333333333,  0.0};
 
         mSerialThread = std::thread([&]() {
             std::string data = "";
             while (mRun) {
                 mSecureRead.lock();
+                if(mToggleLock){
+                    mArduinoCom->write("l\r\n");
+                    mToggleLock = false;
+                }
                 mArduinoCom->write("p\r\n");
                 std::string data = mArduinoCom->readline();
                 try {
                     if (data.find_first_of(",") != data.npos) {
+                        // Get joints   666 Make this more efficient
                         mJ4 = atof(data.substr(0, data.find_first_of(",")).c_str());
                         data = data.substr(data.find_first_of(",") + 1, data.size());
                         mJ3 = atof(data.substr(0, data.find_first_of(",")).c_str());
@@ -61,7 +66,19 @@ namespace hecatonquiros{
                         data = data.substr(data.find_first_of(",") + 1, data.size());
                         mJ1 = atof(data.substr(0, data.find_first_of(",")).c_str());
                         data = data.substr(data.find_first_of(",") + 1, data.size());
-                        mJ0 = atof(data.c_str());
+                        mJ0 = atof(data.substr(0, data.find_first_of(",")).c_str());
+                        data = data.substr(data.find_first_of(",") + 1, data.size());
+                        
+                        // Get acceleration vector
+                        float ax = atof(data.substr(0, data.find_first_of(",")).c_str());
+                        data = data.substr(data.find_first_of(",") + 1, data.size());
+                        float ay = atof(data.substr(0, data.find_first_of(",")).c_str());
+                        data = data.substr(data.find_first_of(",") + 1, data.size());
+                        float az = atof(data.c_str());
+
+                        Eigen::Vector3f n = {ax,ay,az};
+                        n /= n.norm();
+                        mAccelerationDirection = n;
                     }
                 }
                 catch (int _e){
@@ -83,6 +100,10 @@ namespace hecatonquiros{
         mSerialThread.join();
 
         return true;
+    }
+
+    void Positioner::toggleLock(){
+        mToggleLock = true;
     }
 
     //---------------------------------------------------------------------------------------------------------------------
@@ -144,13 +165,19 @@ namespace hecatonquiros{
     std::vector<float> Positioner::angles(){
         std::vector<float> vals(5);
         mSecureRead.lock();
-        vals[0] = mP0.valToAngle(mJ0) / 180.0f*M_PI;//((mJ0 - 512.0f) / 512.0f) * (135.0f / 180.0f * M_PI);
-        vals[1] = mP1.valToAngle(mJ1) / 180.0f*M_PI;//((mJ1 - 512.0f) / 512.0f) * (135.0f / 180.0f * M_PI);
-        vals[2] = mP2.valToAngle(mJ2) / 180.0f*M_PI;//((mJ2 - 512.0f) / 512.0f) * (135.0f / 180.0f * M_PI);
-        vals[3] = mP3.valToAngle(mJ3) / 180.0f*M_PI;//((mJ3 - 512.0f) / 512.0f) * (135.0f / 180.0f * M_PI);
-        vals[4] = -mP4.valToAngle(mJ4) / 180.0f*M_PI;//((mJ3 - 512.0f) / 512.0f) * (135.0f / 180.0f * M_PI);
+        vals[0] = mP0.valToAngle(mJ0) / 180.0f*M_PI;
+        vals[1] = mP1.valToAngle(mJ1) / 180.0f*M_PI;
+        vals[2] = mP2.valToAngle(mJ2) / 180.0f*M_PI;
+        vals[3] = mP3.valToAngle(mJ3) / 180.0f*M_PI;
+        vals[4] = -mP4.valToAngle(mJ4) / 180.0f*M_PI;
         mSecureRead.unlock();
         return vals;
+    }
+
+
+    //---------------------------------------------------------------------------------------------------------------------
+    Eigen::Vector3f Positioner::accelerationVector(){
+        return mAccelerationDirection;
     }
 
     //---------------------------------------------------------------------------------------------------------------------

@@ -27,6 +27,8 @@ int main(int _argc, char **_argv) {
 
 	std::vector<float> angles(5);
 
+	dockingTool.toggleLock();
+
 	for(;;){
 		angles = dockingTool.angles();
 
@@ -36,5 +38,8 @@ int main(int _argc, char **_argv) {
 						angles[2]/M_PI*180.0 << ", " << 
 						angles[3]/M_PI*180.0 << ", " << 
 						angles[4]/M_PI*180.0 << std::endl;
+
+		std::cout << dockingTool.accelerationVector().transpose() << std::endl;
+		std::cout << "---------------------------" << std::endl;
 	}
 }

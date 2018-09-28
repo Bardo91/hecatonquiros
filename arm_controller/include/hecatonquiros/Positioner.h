@@ -29,11 +29,12 @@ namespace hecatonquiros {
 
 	struct Potentiometer {
 		float valToAngle(float _val) {
-			return _val / 1023 * (mMaxAngle - mMinAngle) + mMinAngle;
+			return ((_val - intercept)/slope);
 		}
 
-		float mMinAngle;
-		float mMaxAngle;
+		float slope;
+		float intercept;
+		float offsetDeg;
 	};
 
 	class Positioner{
@@ -75,6 +76,13 @@ namespace hecatonquiros {
 		/// \return angles of the potentiometer in a vector
 		std::vector<float> angles     ();
 
+		/// Returns the direction of the acceleration vector measured in the base of the positioner.
+		/// \return 3d vector containing the direction of the acceleration vector
+		Eigen::Vector3f accelerationVector();
+
+		/// Toggle base lock
+		void toggleLock();
+
 		/// Returns the transforms of the joints
 		/// \param _T01:
 		/// \param _T12:
@@ -91,10 +99,12 @@ namespace hecatonquiros {
 		std::mutex		mSecureRead;
 		std::thread		mSerialThread;
 		bool			mRun = true;
+		bool 			mToggleLock = false;
 
 		float mJ0, mJ1, mJ2, mJ3, mJ4;
 		Eigen::Matrix<float,4,4,Eigen::DontAlign> mT01, mT12, mT23, mT34, mT4f;
 		Potentiometer mP0, mP1, mP2, mP3, mP4;
+		Eigen::Vector3f mAccelerationDirection;
 
 		const float cL01 = 0.066f; //0.068f;
 		const float cL12 = 0.104f; //0.169f;
