@@ -200,12 +200,16 @@ void IndividualArmController::stateMachine(){
         switch(mState){
             case STATES::HOME:
                 mTargetJoints = cHomeJoints;
+                mGuard.lock();
                 mLastAimedJoints = mTargetJoints;
+                mGuard.unlock();
                 mArm->joints(cHomeJoints, mActuateBackend);
                 break;
             case STATES::IDLE:
                 mTargetJoints = cHomeJoints;
+                mGuard.lock();
                 mLastAimedJoints = mTargetJoints;
+                mGuard.unlock();
                 mArm->joints(cHomeJoints, mActuateBackend);
                 break;
             case STATES::STOP:
@@ -269,7 +273,9 @@ void IndividualArmController::MovingArmThread(){
 
     auto moveIncLambda = [&](std::vector<float> _targetJoints)->std::vector<float>{  // INTEGRATE IN callback to limit speed
         
+        mGuard.lock();
         std::vector<float> currJoints = mCurrJoints; // 666 thread safe?
+        mGuard.unlock();
         float MAX_JOINT_DIST = 20.0*M_PI/180.0; // 666 parametrize
 
         for(unsigned i = 0; i < _targetJoints.size();i++){
@@ -286,7 +292,10 @@ void IndividualArmController::MovingArmThread(){
         switch(mState){
             case STATES::MOVING:
             {   
-                mLastAimedJoints = moveIncLambda(mTargetJoints);
+                std::vector<float> lastAimedJoints = moveIncLambda(mTargetJoints);
+                mGuard.lock();
+                mLastAimedJoints = lastAimedJoints;
+                mGuard.unlock();
                 rate.sleep();
                 break;
             }
@@ -320,11 +329,12 @@ void IndividualArmController::publisherLoop(){
         targetJointsPublisher.publish(targetJointsMsg);
 
         // Publish state joints
-        std::vector<float> joints;
         sensor_msgs::JointState jointsMsg;
 	    jointsMsg.header.stamp = targetJointsMsg.header.stamp;
-        mCurrJoints = mArm->joints();
-        joints = mCurrJoints;
+        std::vector<float> joints = mArm->joints();
+        mGuard.lock();
+        mCurrJoints = joints;
+        mGuard.unlock();
         for(auto&j:joints){
             jointsMsg.position.push_back(j);
         }
@@ -333,7 +343,9 @@ void IndividualArmController::publisherLoop(){
         // Publish aiming joints
         sensor_msgs::JointState aimingJointsMsg;
 	    aimingJointsMsg.header.stamp = targetJointsMsg.header.stamp;
+        mGuard.lock();
         std::vector<float> aimJoints = mLastAimedJoints;
+        mGuard.unlock();
         for(auto&j:aimJoints){
             aimingJointsMsg.position.push_back(j);
         }
