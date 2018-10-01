@@ -97,3 +97,6 @@ compile_tool(positioner_ros_interface)
 file(GLOB_RECURSE TOOL_SRC_positioner_ros_visualization "tools/positioner_ros_visualization/src/*.h" "tools/positioner_ros_visualization/src/*.inl" "tools/positioner_ros_visualization/src/*.cpp")
 compile_tool(positioner_ros_visualization)
 
+file(GLOB_RECURSE TOOL_SRC_arm_position_holder_publisher_vicon "tools/arm_position_holder_publisher_vicon/src/*.h" "tools/arm_position_holder_publisher_vicon/src/*.inl" "tools/arm_position_holder_publisher_vicon/src/*.cpp")
+compile_tool(arm_position_holder_publisher_vicon)
+
