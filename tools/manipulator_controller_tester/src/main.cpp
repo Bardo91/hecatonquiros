@@ -25,6 +25,8 @@
 #include <chrono>
 #include <thread>
 
+#include <stdlib.h>     /* srand, rand */
+
 void rosToEigen(const geometry_msgs::PoseStamped::ConstPtr &_msg, Eigen::Matrix4f &_pose);
 void eigenToRos(Eigen::Matrix4f &_pose, geometry_msgs::PoseStamped &_msg);
 
@@ -37,8 +39,9 @@ int main(int _argc, char **_argv){
 	ros::NodeHandle nh;
 	char test;
 	bool finish = true;
-	while(finish){
+	while(finish && ros::ok()){
 		std::cout << "Circle Test -> c" << std::endl;
+		std::cout << "Line test with some WP -> l" << std::endl;
 		std::cout << "Fix Point Test -> f" << std::endl;
 		std::cout << "Some Points Test -> p" << std::endl;
 		std::cout << "Some Joints Test -> j" << std::endl;
@@ -52,7 +55,7 @@ int main(int _argc, char **_argv){
 				break;
 			case 'c':
 			{	
-				std::cout << "Time: ";
+				std::cout << "Time(ms): ";
 				int time;
 				std::cin >> time;
 
@@ -93,7 +96,7 @@ int main(int _argc, char **_argv){
 				
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
-				while(duration < time){
+				while(duration < time && ros::ok()){
 
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					auto t1 = std::chrono::high_resolution_clock::now();
@@ -128,6 +131,97 @@ int main(int _argc, char **_argv){
 				}
 				break;
 			}
+			case 'l':
+			{
+				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose_line3d", 1);
+				ros::Publisher rightPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/in/target_pose_line3d", 1);
+
+				Eigen::Matrix4f leftPose;
+				Eigen::Matrix4f rightPose;
+				
+				ros::Subscriber leftPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/out/pose", 1, 
+							[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
+								rosToEigen(_msg, leftPose);
+							});
+				ros::Subscriber rightPoseSubscriber = nh.subscribe<geometry_msgs::PoseStamped>("/hecatonquiros/right_arm/out/pose", 1, 
+							[&](const geometry_msgs::PoseStamped::ConstPtr &_msg){
+								rosToEigen(_msg, rightPose);
+							});
+
+				std::cout << "Wait for pose" << std::endl;
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
+				Eigen::Matrix4f leftInitPose = leftPose, rightInitPose = rightPose;
+
+				std::vector<Eigen::Matrix4f> leftArm, rightArm;
+
+				/* initialize random seed: */
+				srand (time(NULL));
+
+				std::cout << "How many points rand you want: ";
+				int npoints;
+				std::cin >> npoints;
+				auto randf01 = [](){ return ((float)rand())/RAND_MAX;};
+
+				for(unsigned i = 0; i < npoints; i ++){
+						float numbRandXY = randf01() * 0.2;
+						float numbRandZ = randf01() * 0.1;
+
+						Eigen::Matrix4f pose = rightInitPose;
+						pose(0,3) += numbRandXY;
+						pose(1,3) += numbRandXY;
+						pose(2,3) += numbRandZ;
+						rightArm.push_back(pose);
+
+						pose(1,3) = -pose(1,3);
+						leftArm.push_back(pose);
+	
+						
+				}
+				
+				auto t0 = std::chrono::high_resolution_clock::now();
+				float duration = 0;
+				float cont = 0;
+
+				std::cout << "Time(ms): ";
+				int time;
+				std::cin >> time;
+				// int time = 50000;
+
+				int i = 0;
+
+				cont = 3000;
+				while(duration < time && ros::ok()){
+
+					std::cout << "Moving to:  " << rightArm[i](0,3) << "  " << rightArm[i](1,3) << "  " << rightArm[i](2,3) << std::endl; 
+
+					geometry_msgs::PoseStamped leftMsg;	
+					eigenToRos(leftArm[i], leftMsg);
+					leftMsg.header.stamp = ros::Time::now();
+
+					geometry_msgs::PoseStamped rightMsg;
+					eigenToRos(rightArm[i], rightMsg);
+					rightMsg.header.stamp = ros::Time::now();
+
+					i++;
+					if(i >= npoints){
+						i = 0;
+					}
+
+					while(duration < cont && ros::ok()){
+						
+						leftPosePublisher.publish(leftMsg);
+						rightPosePublisher.publish(rightMsg);
+						std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+						auto t1 = std::chrono::high_resolution_clock::now();
+						duration = std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count();
+					}
+				
+					cont = cont + 3000;
+				}				
+				break;
+			}
 			case 'p':
 			{
 				ros::Publisher leftPosePublisher = nh.advertise<geometry_msgs::PoseStamped>("/hecatonquiros/left_arm/in/target_pose3d", 1);
@@ -135,13 +229,13 @@ int main(int _argc, char **_argv){
 
 				auto t0 = std::chrono::high_resolution_clock::now();
 				float duration = 0;
-				float incX = 0.29, incY = 0.15, incZ = 0.29;
+				float incX = 0.25, incY = 0.15, incZ = 0.35;
 
-				std::cout << "Time: ";
+				std::cout << "Time(ms): ";
 				int time;
 				std::cin >> time;
 
-				while(duration < time){
+				while(duration < time && ros::ok()){
 
 					incX += 0;
 					incY += 0.01;
@@ -205,7 +299,7 @@ int main(int _argc, char **_argv){
 				std::cout << "Z: ";
 				std::cin >> z;
 
-				while(true){
+				while(ros::ok()){
 					geometry_msgs::PoseStamped leftMsg;
 					leftMsg.pose.position.x = x;
 					leftMsg.pose.position.y = -y;
@@ -242,11 +336,11 @@ int main(int _argc, char **_argv){
 				float duration = 0;
 				int incA = 90;
 
-				std::cout << "Time: ";
+				std::cout << "Time(ms): ";
 				int time;
 				std::cin >> time;
 				
-				while(duration < time){
+				while(duration < time && ros::ok()){
 
 					incA = incA - 5;
 

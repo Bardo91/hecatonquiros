@@ -45,6 +45,13 @@ PlotterJointsGui::PlotterJointsGui(std::string _refTopic, std::string _valTopic,
     mChangeSubscribers = new QPushButton("Change subscribers");
     mButtonsOptionsLayout->addWidget(mChangeSubscribers);
     connect(mChangeSubscribers, SIGNAL (released()), this, SLOT (connectTopics()));
+
+    mTargetJoints.resize(6);
+    mStateJoints.resize(6);
+    for(unsigned i = 0; i < mTargetJoints.size(); i++){
+        mTargetJoints[i] = 0;
+        mStateJoints[i] = 0;
+    }
     
     // JOINT 0
     mGraphLayout = new QVBoxLayout();
@@ -147,8 +154,8 @@ void PlotterJointsGui::realTimePlot(){
     }
     // make key axis range scroll with the data (at a constant range size of 8):
     
-    double min = mLastX-0.5 < mLastRefX - 0.5? mLastX -0.5: mLastRefX -0.5;
-    double max = mLastX+0.5 > mLastRefX + 0.5? mLastX +0.5: mLastRefX +0.5;
+    double min = mLast-2 < mLastRef - 2? mLast -2: mLastRef -2;
+    double max = mLast+2 > mLastRef + 2? mLast +2: mLastRef +2;
     mGraphJoints->yAxis->setRange(min, max);
 
     mGraphJoints->xAxis->setRange(key, 8, Qt::AlignRight);
@@ -165,16 +172,20 @@ void PlotterJointsGui::connectTopics(){
 
 void PlotterJointsGui::jointsCallback(const sensor_msgs::JointState::ConstPtr &_data){
     std::vector<float> joints;
+    mStateJoints.resize(_data->position.size());
     for(auto j:_data->position){
         joints.push_back(j);
     }
     mStateJoints = joints; // 666 Thread safe?
+    mLast = mStateJoints[0];
 }
 
 void PlotterJointsGui::referenceCallback(const sensor_msgs::JointState::ConstPtr &_data){
     std::vector<float> joints;
+    mTargetJoints.resize(_data->position.size());
     for(auto j:_data->position){
         joints.push_back(j);
     }
     mTargetJoints = joints; // 666 Thread safe?
+    mLastRef = mTargetJoints[0];
 }

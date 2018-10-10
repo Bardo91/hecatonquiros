@@ -17,7 +17,7 @@ int main(int _argc, char **_argv){
     });
 
     QApplication a(_argc, _argv);
-    PlotterJointsGui gui( "/hecatonquiros/left_arm/in/target_joints", 
+    PlotterJointsGui gui( "/hecatonquiros/left_arm/out/target_joints", 
                     "/hecatonquiros/left_arm/out/joints_state");
     gui.show();
     

@@ -114,4 +114,5 @@ private:
     rapidjson::Document mConfigFile;
     bool mActuateBackend = false;
     std::string mName = "";
+
 };

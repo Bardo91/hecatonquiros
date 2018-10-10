@@ -44,6 +44,8 @@
         QLineEdit *mJointEdit, *mRefEdit;
         QPushButton *mChangeSubscribers;
        
+        float mLast = 0.0, mLastRef = 0.0;
+
         QCustomPlot *mGraphJoints;
         QTimer *mDataTimer;
         ros::Subscriber mSubJoint, mSubRef;

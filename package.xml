@@ -27,6 +27,10 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>joy</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>tf_conversions</build_depend>
+  <run_depend>tf_conversions</run_depend>
+  <run_depend>tf</run_depend>
   <run_depend>joy</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>geometry_msgs</run_depend>
