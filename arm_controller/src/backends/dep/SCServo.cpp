@@ -12,9 +12,9 @@
 SCServo::SCServo(std::string _serialPort) {
 	Level = 1;
 	End = 1;
-	if(mSerialConnection == nullptr){
+	if(mSerial == nullptr){
 		if(this->init(_serialPort)){
-			mSerialConnection = mSerialPorts[_serialPort];
+			mSerial = mSerialPorts[_serialPort];
 		}
 	}
 	
@@ -22,7 +22,12 @@ SCServo::SCServo(std::string _serialPort) {
 
 //---------------------------------------------------------------------------------------------------------------------
 bool SCServo::isConnected(){
-	return mSerialConnection != nullptr && mSerialConnection->isOpen();
+	try {
+		return mSerial != nullptr && mSerial->isOpen();
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
+	return false;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -42,17 +47,21 @@ int SCServo::RegWritePos(u8 ID, u16 Position, u16 Time, u16 Speed) {
 
 //---------------------------------------------------------------------------------------------------------------------
 void SCServo::SyncWritePos(u8 ID[], u8 IDN, u16 Position[], u16 Time[], u16 Speed[]) {
-	mSerialConnection->flush();
-	u8 *buf_send[IDN];					
-	u8 buf[6];
-	for (int i = 0; i<IDN; i++){
-		Host2SCS(buf+0, buf+1, Position[i]);
-		Host2SCS(buf+2, buf+3, Time[i]);
-		Host2SCS(buf+4, buf+5, Speed[i]);
-		buf_send[i] = new u8 [6];						// 666 TODO FREE MEMORY
-		std::memcpy(buf_send[i], buf, sizeof(u8)*6);
+	try {
+		mSerial->flush();		
+		u8 *buf_send[IDN];					
+		u8 buf[6];
+		for (int i = 0; i<IDN; i++){
+			Host2SCS(buf+0, buf+1, Position[i]);
+			Host2SCS(buf+2, buf+3, Time[i]);
+			Host2SCS(buf+4, buf+5, Speed[i]);
+			buf_send[i] = new u8 [6];						// 666 TODO FREE MEMORY
+			std::memcpy(buf_send[i], buf, sizeof(u8)*6);
+		}
+		syncWrite(ID, IDN, P_GOAL_POSITION_L, buf_send, 6);	
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
 	}
-	syncWrite(ID, IDN, P_GOAL_POSITION_L, buf_send, 6);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -93,89 +102,113 @@ int SCServo::SCS2Host(u8 DataL, u8 DataH) {
 
 //---------------------------------------------------------------------------------------------------------------------
 void SCServo::writeBuf(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen, u8 Fun) {
-	u8 msgLen = 2;
-	u8 bBuf[6];
-	u8 CheckSum = 0;
-	bBuf[0] = 0xff;
-	bBuf[1] = 0xff;
-	bBuf[2] = ID;
-	bBuf[4] = Fun;
-	if(nDat){
-		msgLen += nLen + 1;
-		bBuf[3] = msgLen;
-		bBuf[5] = MemAddr;
-		mSerialConnection->write(bBuf, 6);
-		
-	}else{
-		bBuf[3] = msgLen;
-		mSerialConnection->write(bBuf, 5);
-	}
-	CheckSum = ID + msgLen + Fun + MemAddr;
-	u8 i = 0;
-	if(nDat){
-		for(i=0; i<nLen; i++){
-			CheckSum += nDat[i];
+
+	try {
+		u8 msgLen = 2;
+		u8 bBuf[6];
+		u8 CheckSum = 0;
+		bBuf[0] = 0xff;
+		bBuf[1] = 0xff;
+		bBuf[2] = ID;
+		bBuf[4] = Fun;
+		if(nDat){
+			msgLen += nLen + 1;
+			bBuf[3] = msgLen;
+			bBuf[5] = MemAddr;
+			mSerial->write(bBuf, 6);		
+		}else{
+			bBuf[3] = msgLen;
+			mSerial->write(bBuf, 5);		
 		}
-	}
-	mSerialConnection->write(nDat, nLen);
-	u8 negCheckSum = ~CheckSum;
-	mSerialConnection->write(&negCheckSum, 1);
+		CheckSum = ID + msgLen + Fun + MemAddr;
+		u8 i = 0;
+		if(nDat){
+			for(i=0; i<nLen; i++){
+				CheckSum += nDat[i];
+			}
+		}
+		mSerial->write(nDat, nLen);
+		u8 negCheckSum = ~CheckSum;
+		mSerial->write(&negCheckSum, 1);	
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}		
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::genWrite(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen) {
-	mSerialConnection->flush();
+	try {
+		mSerial->flush();		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
 	writeBuf(ID, MemAddr, nDat, nLen, INST_WRITE);
 	return Ack(ID);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::regWrite(u8 ID, u8 MemAddr, u8 *nDat, u8 nLen) {
-	mSerialConnection->flush();
+	try {
+		mSerial->flush();		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
 	writeBuf(ID, MemAddr, nDat, nLen, INST_REG_WRITE);
 	return Ack(ID);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 void SCServo::syncWrite(u8 ID[], u8 IDN, u8 MemAddr, u8 *nDat[], u8 nLen) {
-	u8 mesLen = ((nLen+1)*IDN+4);
-	u8 Sum = 0;
-	u8 bBuf[7];
-	bBuf[0] = 0xff;
-	bBuf[1] = 0xff;
-	bBuf[2] = 0xfe;
-	bBuf[3] = mesLen;
-	bBuf[4] = INST_SYNC_WRITE;
-	bBuf[5] = MemAddr;
-	bBuf[6] = nLen;
-	mSerialConnection->write(bBuf, 7);
+	try {
+		u8 mesLen = ((nLen+1)*IDN+4);
+		u8 Sum = 0;
+		u8 bBuf[7];
+		bBuf[0] = 0xff;
+		bBuf[1] = 0xff;
+		bBuf[2] = 0xfe;
+		bBuf[3] = mesLen;
+		bBuf[4] = INST_SYNC_WRITE;
+		bBuf[5] = MemAddr;
+		bBuf[6] = nLen;
+		mSerial->write(bBuf, 7);
 
-	Sum = 0xfe + mesLen + INST_SYNC_WRITE + MemAddr + nLen;
-	u8 i, j, k;
-	for(i=0; i<IDN; i++){
-		mSerialConnection->write(&ID[i],1);
-		mSerialConnection->write(nDat[i], nLen);
-		//std::cout << "nDat: " << (int) *nDat[i] << std::endl;
+		Sum = 0xfe + mesLen + INST_SYNC_WRITE + MemAddr + nLen;
+		u8 i, j, k;
+		for(i=0; i<IDN; i++){
+			mSerial->write(&ID[i],1);
+			mSerial->write(nDat[i], nLen);
+			//std::cout << "nDat: " << (int) *nDat[i] << std::endl;
 
-		Sum += ID[i];
-		for(j=0; j<nLen; j++){
-				Sum += nDat[i][j];
+			Sum += ID[i];
+			for(j=0; j<nLen; j++){
+					Sum += nDat[i][j];
+			}
 		}
+		u8 negSum = ~Sum;
+		mSerial->write(&negSum,1);		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
 	}
-	u8 negSum = ~Sum;
-	mSerialConnection->write(&negSum,1);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::writeByte(u8 ID, u8 MemAddr, u8 bDat) {
-	mSerialConnection->flush();
+	try {
+		mSerial->flush();		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
 	writeBuf(ID, MemAddr, &bDat, 1, INST_WRITE);
 	return Ack(ID);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::writeWord(u8 ID, u8 MemAddr, u16 wDat) {
-	mSerialConnection->flush();
+	try {
+		mSerial->flush();		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
 	u8 buf[2];
 	Host2SCS(buf+0, buf+1, wDat);
 	writeBuf(ID, MemAddr, buf, 2, INST_WRITE);
@@ -185,7 +218,11 @@ int SCServo::writeWord(u8 ID, u8 MemAddr, u16 wDat) {
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::writePos(u8 ID, u16 Position, u16 Time, u16 Speed, u8 Fun) {
-	mSerialConnection->flush();
+	try {
+		mSerial->flush();		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
 	u8 buf[6];
 	Host2SCS(buf+0, buf+1, Position);
 	Host2SCS(buf+2, buf+3, Time);
@@ -205,15 +242,19 @@ void SCServo::RegWriteAction() {
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::Read(u8 ID, u8 MemAddr, u8 *nData, u8 nLen) {
-	mSerialConnection->flush();
-	writeBuf(ID, MemAddr, &nLen, 1, INST_READ);
-	u8 bBuf[5];
-	if(mSerialConnection->read(bBuf, 5)!=5){
-		return 0;
-	}
-	int Size = mSerialConnection->read(nData, nLen);
-	if(mSerialConnection->read(bBuf, 1)){
-		return Size;
+	try {
+		mSerial->flush();
+		writeBuf(ID, MemAddr, &nLen, 1, INST_READ);
+		u8 bBuf[5];
+		if(mSerial->read(bBuf, 5)!=5){
+			return 0;
+		}
+		int size = mSerial->read(nData, nLen);
+		if(mSerial->read(bBuf, 1)){
+			return size;
+		}		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
 	}
 	return 0;
 }
@@ -273,15 +314,18 @@ int SCServo::ReadLoadH(u8 ID) {
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::Ping(u8 ID) {
-	mSerialConnection->flush();
-	u8 bBuf[6];
-	writeBuf(ID, 0, NULL, 0, INST_PING);
-	int Size = mSerialConnection->read(bBuf, 6);
-	if(Size==6){
-		return bBuf[2];
-	}else{
-		return -1;
+	try {
+		mSerial->flush();
+		u8 bBuf[6];
+		writeBuf(ID, 0, NULL, 0, INST_PING);
+		int size = mSerial->read(bBuf, 6);
+		if(size==6){
+			return bBuf[2];
+		}		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
 	}
+	return -1;
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -309,7 +353,11 @@ int SCServo::joinMode(u8 ID, u16 minAngle, u16 maxAngle) {
 
 //---------------------------------------------------------------------------------------------------------------------
 int SCServo::Reset(u8 ID) {
-	mSerialConnection->flush();
+	try {
+		mSerial->flush();		
+	}catch (std::exception& e){
+		std::cerr << e.what() << std::endl;
+	}
 	writeBuf(ID, 0, NULL, 0, INST_RESET);
 	return Ack(ID);
 }
@@ -318,13 +366,17 @@ int SCServo::Reset(u8 ID) {
 int	SCServo::Ack(u8 ID) {
 	if(ID != 0xfe && Level){
 		u8 buf[6];
-		u8 Size = mSerialConnection->read(buf, 6);
-		if(Size!=6){
-			return 0;
+		try {
+			u8 Size = mSerial->read(buf, 6);
+			if(Size!=6){
+				return 0;
+			}		
+		}catch (std::exception& e){
+			std::cerr << e.what() << std::endl;
 		}
 	}
 	return 1;
 }
 
 
-std::map<std::string, SCServo::SafeSerial*> SCServo::mSerialPorts;
+std::map<std::string, serial::Serial*> SCServo::mSerialPorts;
