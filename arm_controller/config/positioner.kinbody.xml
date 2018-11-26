@@ -10,8 +10,6 @@
     <!-- Joint 0 -->
     <Body name="arm_0_bottom" type="dynamic">
         <offsetfrom>arm_0_top</offsetfrom>
-        <Translation>0 0.0 0.07</Translation>
-        <rotationaxis>1 0 0 90</rotationaxis>
         <Geom type="trimesh">
             <render>../model/positioner/bar1.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
@@ -19,6 +17,7 @@
     </Body>
     <joint name="arm_0_joint" type="hinge">
         <offsetfrom>arm_0_bottom</offsetfrom>
+        <Translation>0 0.0 0.01</Translation>
         <body>arm_0_top</body>
         <body>arm_0_bottom</body>
         <limitsdeg>-110 110</limitsdeg>
@@ -29,13 +28,13 @@
     <!-- Joint 1 -->
     <Body name="arm_1" type="dynamic">
         <offsetfrom>arm_0_bottom</offsetfrom>
-        <Translation>0 0.0 0.03</Translation>
+        <Translation>0 0.0 0.07</Translation>
         <rotationaxis>1 0 0 0</rotationaxis>
-        <rotationaxis>0 1 0 0</rotationaxis>
-        <rotationaxis>0 0 1 90</rotationaxis>
+        <rotationaxis>0 1 0 90</rotationaxis>
+        <rotationaxis>0 0 1 -90</rotationaxis>
         <Geom type="trimesh">
             <render>../model/positioner/bar2.stl</render>
-            <diffuseColor>0.8 0.0 0.0</diffuseColor>
+            <diffuseColor>0.5 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
     <joint name="arm_1_joint" type="hinge">
@@ -49,7 +48,7 @@
     <!-- Joint 2 -->
     <Body name="arm_2" type="dynamic">
         <offsetfrom>arm_1</offsetfrom>
-        <Translation>0.148 0 0</Translation>
+        <Translation>-0.105 0 -0.02</Translation>
         <Geom type="trimesh">
             <render>../model/positioner/bar3.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
@@ -66,8 +65,9 @@
     <!-- Joint 3 wirst-->
     <Body name="effector_connector" type="dynamic">
         <offsetfrom>arm_2</offsetfrom>
-        <rotationaxis>0 1 0 90</rotationaxis>
-        <Translation>0.06 0 0 </Translation>
+        <rotationaxis>0 1 0 0</rotationaxis>
+        <rotationaxis>0 0 1 180</rotationaxis>
+        <Translation>-0.155 0 0.02 </Translation>
         <Geom type="trimesh">
             <render>../model/positioner/bar4.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
@@ -85,8 +85,10 @@
     <!--end_effector-->
     <Body name="end_effector" type="dynamic">
         <offsetfrom>effector_connector</offsetfrom>
+        <Translation>0.07 0 0.0 </Translation>
+        <rotationaxis>1 0 0 -90</rotationaxis>
         <Geom type="trimesh">
-            <render>../model/gripper2dof/bar5.stl</render>
+            <render>../model/positioner/bar5.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
