@@ -1,6 +1,6 @@
-<KinBody name ="arm_gripper_5dof">
+<KinBody name ="positioner">
     <!-- Attachment -->
-    <Body name="arm_0_top" type="dynamic">
+    <Body name="fixed_base" type="dynamic">
         <Geom type="trimesh">
             <render>../model/positioner/bar0.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
@@ -8,26 +8,26 @@
     </Body>
     
     <!-- Joint 0 -->
-    <Body name="arm_0_bottom" type="dynamic">
-        <offsetfrom>arm_0_top</offsetfrom>
+    <Body name="bar_0" type="dynamic">
+        <offsetfrom>fixed_base</offsetfrom>
         <Geom type="trimesh">
             <render>../model/positioner/bar1.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
-    <joint name="arm_0_joint" type="hinge">
-        <offsetfrom>arm_0_bottom</offsetfrom>
+    <joint name="bar_0_joint" type="hinge">
+        <offsetfrom>bar_0</offsetfrom>
         <Translation>0 0.0 0.01</Translation>
-        <body>arm_0_top</body>
-        <body>arm_0_bottom</body>
+        <body>fixed_base</body>
+        <body>bar_0</body>
         <limitsdeg>-110 110</limitsdeg>
         <initial>0</initial>
         <Axis>0 0 1</Axis>
     </joint>
 
     <!-- Joint 1 -->
-    <Body name="arm_1" type="dynamic">
-        <offsetfrom>arm_0_bottom</offsetfrom>
+    <Body name="bar_2" type="dynamic">
+        <offsetfrom>bar_1</offsetfrom>
         <Translation>0 0.0 0.07</Translation>
         <rotationaxis>1 0 0 0</rotationaxis>
         <rotationaxis>0 1 0 90</rotationaxis>
@@ -37,34 +37,34 @@
             <diffuseColor>0.5 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
-    <joint name="arm_1_joint" type="hinge">
-        <offsetfrom>arm_1</offsetfrom>
-        <body>arm_0_bottom</body>
-        <body>arm_1</body>
+    <joint name="bar_2_joint" type="hinge">
+        <offsetfrom>bar_2</offsetfrom>
+        <body>bar_0</body>
+        <body>bar_2</body>
         <limitsdeg>-110 110</limitsdeg>
         <Axis>0 0 1</Axis>
     </joint>
 
     <!-- Joint 2 -->
-    <Body name="arm_2" type="dynamic">
-        <offsetfrom>arm_1</offsetfrom>
+    <Body name="bar_3" type="dynamic">
+        <offsetfrom>bar_2</offsetfrom>
         <Translation>-0.105 0 -0.02</Translation>
         <Geom type="trimesh">
             <render>../model/positioner/bar3.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
-    <joint name="arm_2_joint" type="hinge">
-        <offsetfrom>arm_2</offsetfrom>
-        <body>arm_1</body>
-        <body>arm_2</body>
+    <joint name="bar_3_joint" type="hinge">
+        <offsetfrom>bar_3</offsetfrom>
+        <body>bar_2</body>
+        <body>bar_3</body>
         <Axis>0 0 1</Axis>
         <limitsdeg>-110 110</limitsdeg>
     </joint>
 
-    <!-- Joint 3 wirst-->
-    <Body name="effector_connector" type="dynamic">
-        <offsetfrom>arm_2</offsetfrom>
+    <!-- Joint 3-->
+    <Body name="bar_4" type="dynamic">
+        <offsetfrom>bar_3</offsetfrom>
         <rotationaxis>0 1 0 0</rotationaxis>
         <rotationaxis>0 0 1 180</rotationaxis>
         <Translation>-0.155 0 0.02 </Translation>
@@ -73,18 +73,17 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
-    <joint name="effector_connector_joint" type="hinge">
-        <offsetfrom>effector_connector</offsetfrom>
-        <body>arm_2</body>
-        <body>effector_connector</body>
+    <joint name="bar_4_joint" type="hinge">
+        <offsetfrom>bar_4</offsetfrom>
+        <body>bar_3</body>
+        <body>bar_4</body>
         <Axis>0 0 1</Axis>
         <limitsdeg>-110 110</limitsdeg>
     </joint>
 
-    <!--GRIPPER-->
-    <!--end_effector-->
-    <Body name="end_effector" type="dynamic">
-        <offsetfrom>effector_connector</offsetfrom>
+    <!--joint 4-->
+    <Body name="bar_5" type="dynamic">
+        <offsetfrom>bar_4</offsetfrom>
         <Translation>0.07 0 0.0 </Translation>
         <rotationaxis>1 0 0 -90</rotationaxis>
         <Geom type="trimesh">
@@ -92,10 +91,38 @@
             <diffuseColor>0.8 0.0 0.0</diffuseColor>
         </Geom>
     </Body>
-    <joint name="wirst_1_joint" type="hinge" enable="False">
-        <offsetfrom>wirst_1</offsetfrom>
-        <body>effector_connector</body>
-        <body>end_effector</body>
+    <joint name="bar_5_joint" type="hinge">
+        <offsetfrom>bar_5</offsetfrom>
+        <body>bar_4</body>
+        <body>bar_5</body>
+        <Axis>0 0 1</Axis>
+        <limitsdeg>-110 110</limitsdeg>
+    </joint>
+    <!--End effector pose-->
+    <Body name="end_effector_pos" type="dynamic">
+        <offsetfrom>bar_5</offsetfrom>
+        <Translation>0.07 0 0.0 </Translation>
+        <rotationaxis>1 0 0 -90</rotationaxis>
+        <Geom type="cylinder">
+            <rotationaxis>1 0 0 90</rotationaxis>
+            <radius>0.01</radius>
+            <height>0.02</height>
+            <diffuseColor>0.02 0.02 0.02</diffuseColor>
+        </Geom>
+    </Body>
+    <joint name="end_effector_pos_joint" type="hinge" enable="false">
+        <offsetfrom>end_effector_pos</offsetfrom>
+        <body>bar_5</body>
+        <body>end_effector_pos</body>
         <limitsdeg>0 0</limitsdeg>
     </joint>
+
+
+    <!-- Adjacents elements for selfcollision -->
+    <adjacent>fixed_base bar_0</adjacent>
+    <adjacent>bar_0 bar_2</adjacent>
+    <adjacent>bar_2 bar_3</adjacent>
+    <adjacent>bar_3 end_bar_4</adjacent>
+    <adjacent>end_bar_4 wirst1</adjacent>
+    <adjacent>bar_3 wirst_1</adjacent>
 </KinBody>
