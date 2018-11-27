@@ -21,47 +21,23 @@
 /// The class takes control of the given serial port and it is thread safe
 class SCServo{
 	private: // Static methods
-		class SafeSerial{	/// 666 ugly old unnecessary class, please remove asap
-			public:
-				bool init(std::string &_port){
-					mSerial = new serial::Serial(_port, 1000000, serial::Timeout::simpleTimeout(30));
-					return mSerial->isOpen();
-				}
-				std::string readline(){
-					return mSerial->readline();
-				}
-				int read(unsigned char *_buffer, int _len){
-					return mSerial->read(_buffer, _len);
-				}
-				void write(std::string &_cmd){
-            		mSerial->write(_cmd);
-				}
-				void write(unsigned char *_buffer, int _len){
-            		mSerial->write(_buffer, _len);
-				}
-				void flush(){
-            		mSerial->flush();
-				}
-				bool isOpen(){
-            		return mSerial->isOpen();
-				}
-			private:
-				serial::Serial *mSerial;
-		};
-
-		static std::map<std::string, SafeSerial*> mSerialPorts;
+		static std::map<std::string, serial::Serial*> mSerialPorts;
 
 		// Initialize or get serial port if exists
 		static bool init(std::string &_portName){
 			if(mSerialPorts.find(_portName) != mSerialPorts.end()){
 				return true;
 			}else{
-				SafeSerial *serial = new SafeSerial;
-				if(serial->init(_portName)){
-					mSerialPorts[_portName] = serial;
-					return true;
-				}else{
-					return false;
+				try {
+					serial::Serial *serial = new serial::Serial(_portName, 1000000, serial::Timeout::simpleTimeout(30));
+					if(serial->isOpen()){
+						mSerialPorts[_portName] = serial;
+						return true;
+					}else{
+						return false;
+					}
+				}catch (std::exception& e){
+					std::cerr << e.what() << std::endl;
 				}
 			}
 		}
@@ -113,7 +89,7 @@ class SCServo{
 		u8	End;//��������С�˽ṹ
 
 	private:
-		SafeSerial *mSerialConnection = nullptr;
+		serial::Serial *mSerial = nullptr;
 		std::mutex mLocker;
 		
 	private:
