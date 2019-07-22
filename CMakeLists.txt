@@ -87,7 +87,6 @@ compile_tool_qt(plotter_poses)
 file(GLOB_RECURSE TOOL_SRC_positioner_test "tools/positioner_tester/src/*.h" "tools/positioner_tester/src/*.inl" "tools/positioner_tester/src/*.cpp")
 compile_tool(positioner_test)
 
-
 file(GLOB_RECURSE TOOL_SRC_plotter_joints "tools/plotter_joints/src/*.h" "tools/plotter_joints/src/*.inl" "tools/plotter_joints/src/*.cpp")
 compile_tool_qt(plotter_joints)
 
@@ -99,4 +98,7 @@ compile_tool(positioner_ros_visualization)
 
 file(GLOB_RECURSE TOOL_SRC_arm_position_holder_publisher_vicon "tools/arm_position_holder_publisher_vicon/src/*.h" "tools/arm_position_holder_publisher_vicon/src/*.inl" "tools/arm_position_holder_publisher_vicon/src/*.cpp")
 compile_tool(arm_position_holder_publisher_vicon)
+
+file(GLOB_RECURSE TOOL_SRC_feetech_arm_tester "tools/feetech_arm_tester/src/*.h" "tools/feetech_arm_tester/src/*.inl" "tools/feetech_arm_tester/src/*.cpp")
+compile_tool(feetech_arm_tester)
 

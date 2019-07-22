@@ -88,7 +88,7 @@ int main(int _argc, char **_argv) {
 				showPos = true;
 				break;	
 			case 's':
-				std::cout << "Saved point" <<std::endl;
+				std::cout << "Saved point: " << pointToSave <<std::endl;
 				pointsLock.lock();
 				savedPoints.push_back(pointToSave);
 				pointsLock.unlock();

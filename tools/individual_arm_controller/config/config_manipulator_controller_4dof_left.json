@@ -4,7 +4,7 @@
 	"ndof": 4,
 	"visualize":false,
 	"enable_backend":true,
-	"arm_model":"/home/belerofonte/programming/catkin_hecatonquiros/src/hecatonquiros/arm_controller/config/arm_gripper_6dof_4dof_strong.robot.xml",
+	"arm_model":"/home/belerofonte/programming/catkin_hecatonquiros/src/hecatonquiros/arm_controller/config/arm_4dof.robot.xml",
 	"offset": [0.0, -0.1525, 0.04],
 	"serial_port": "/dev/ttyUSB0",
 	"configXML": "/home/belerofonte/programming/catkin_hecatonquiros/src/hecatonquiros/arm_controller/config/config_arm1.xml"

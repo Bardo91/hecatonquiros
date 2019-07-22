@@ -1,0 +1,27 @@
+
+<Config>
+    <MinMaxValues>
+        <Joint1E1>-177.541</Joint1E1>
+        <Joint2E1>-111.258</Joint2E1>
+        <Joint3E1>-105.502</Joint3E1>
+        <Joint4E1>-117.883</Joint4E1>
+        <Joint5E1>-135.267</Joint5E1>
+        <Joint6E1>-156.874</Joint6E1>
+
+        <Joint1E2>83.289</Joint1E2>
+        <Joint2E2>104.850</Joint2E2>
+        <Joint3E2>115.814</Joint3E2>
+        <Joint4E2>98.495</Joint4E2>
+        <Joint5E2>142.044</Joint5E2>
+        <Joint6E2>139.401</Joint6E2>
+    </MinMaxValues>
+    <Offsets>
+        <Joint1>0.2</Joint1>
+        <Joint2>0.0</Joint2>
+        <Joint3>0.0</Joint3>
+        <Joint4>0.8</Joint4>
+        <Joint5>0.0</Joint5>
+        <Joint6>0.0</Joint6>
+    </Offsets>
+    
+</Config>
