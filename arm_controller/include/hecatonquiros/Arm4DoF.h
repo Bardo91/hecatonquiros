@@ -57,7 +57,7 @@ namespace hecatonquiros{
         std::vector<float> joints() const;
 
         /// Position in cartesian coordinates (meters)
-        void position(Eigen::Vector3f _position, float _wirst = 0);
+        void position(Eigen::Vector3f _position, float _wirst = 0, bool _actuateBackend = false);
         Eigen::Vector3f position();
 
         Eigen::Matrix4f pose() const;

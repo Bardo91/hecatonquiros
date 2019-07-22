@@ -110,14 +110,14 @@ namespace hecatonquiros{
     }
 
     //---------------------------------------------------------------------------------------------------------------------
-    void Arm4DoF::position(Eigen::Vector3f _position, float _wirst) {
+    void Arm4DoF::position(Eigen::Vector3f _position, float _wirst, bool _actuateBackend) {
         if(mModelSolver != nullptr){
             Eigen::Matrix4f pose = Eigen::Matrix4f::Identity();
             pose.block<3,1>(0,3) = _position;
             std::vector<float> angles;
             if(mModelSolver->checkIk(pose, angles, ModelSolver::IK_TYPE::IK_3D)){
                 angles[3] = _wirst; //
-                joints(angles);
+                joints(angles, _actuateBackend);
             }
         }else{
             std::cout << "No model solver instantiated" << std::endl;
