@@ -1,0 +1,9 @@
+<Robot name="arm">
+    <kinbody name="arm" file="arm_4dof.kinbody.xml"/>
+    <Translation>0 0 0</Translation>
+    <manipulator name="manipulator">
+        <base>arm_0_top</base>
+        <effector>effector_connector</effector>
+        <direction>0 0 1</direction>
+    </manipulator>
+</Robot>
