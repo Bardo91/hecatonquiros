@@ -62,7 +62,7 @@ cd openrave
 git checkout 2befaa1b842320633a2a93046ebd456051f16bdc
 mkdir build ; cd build
 cmake ..
-make -j `nproc`
+make -j4
 sudo make install
 
 
