@@ -38,7 +38,7 @@ if(${catkin_FOUND})
 	)
 
 	catkin_package(
-		INCLUDE_DIRS ./arm_controller/include
+		INCLUDE_DIRS include
 		CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs tf tf_conversions
 	)
 
@@ -72,11 +72,6 @@ endif()
 
 ## Load PCL
 find_package(PCL QUIET)
-if(${PCL_FOUND})
-	MESSAGE( STATUS "Adding properly PCL and its dependencies")
-	add_definitions(-DENABLE_PCL)
-	add_definitions(${PCL_DEFINITIONS})
-endif()
 
 ## Loading boost
 if(WIN32)
@@ -90,9 +85,8 @@ find_package(Boost REQUIRED COMPONENTS chrono)
 
 file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
-GroupSources(src)
 add_library(hecatonquiros ${SRC_FILES})
-set_property(TARGET hecatonquiros PROPERTY CXX_STANDARD 11)
+target_compile_features(hecatonquiros PUBLIC cxx_std_11)
 target_include_directories(hecatonquiros PUBLIC ./include)
 
 target_include_directories(hecatonquiros PUBLIC ${OpenCV_INCLUDE_DIRS})
@@ -107,6 +101,13 @@ target_link_libraries(hecatonquiros LINK_PUBLIC ${SERIAL_LIBRARIES})
 target_link_libraries(hecatonquiros LINK_PUBLIC tinyxml2)
 
 target_include_directories(hecatonquiros PUBLIC "/usr/include/eigen3")
+
+
+if(${PCL_FOUND})
+	MESSAGE( STATUS "Adding properly PCL and its dependencies")
+	target_compile_definitions(hecatonquiros PUBLIC ENABLE_PCL)
+	target_compile_definitions(hecatonquiros PUBLIC ${PCL_DEFINITIONS})
+endif()
 
 if(${catkin_FOUND})
 	target_include_directories(hecatonquiros PUBLIC ${catkin_INCLUDE_DIRS})
