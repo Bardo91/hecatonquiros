@@ -5,8 +5,7 @@
 ###############################################################
 
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
-project(hecatonquiros)
-set(PROJECT_VERSION 0.4.1)
+project(hecatonquiros VERSION 0.4.1 LANGUAGES CXX)
 
 # Load macros
 include(cmake/hecatonquiros_macros.cmake)
@@ -28,3 +27,7 @@ if(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 ### INSTALL TARGET
+include(cmake/install_macro.cmake)
+
+install_hecatonquiros()
+install_hecatonquiros_apps()

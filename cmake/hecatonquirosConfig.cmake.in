@@ -1,0 +1,6 @@
+get_filename_component(hecatonquiros_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET hecatonquiros::hecatonquiros)
+    include("${hecatonquiros_CMAKE_DIR}/hecatonquirosTargets.cmake")
+endif()

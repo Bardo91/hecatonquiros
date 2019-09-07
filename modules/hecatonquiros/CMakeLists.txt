@@ -87,7 +87,8 @@ file(GLOB_RECURSE SRC_FILES "src/*.cpp" "include/*.h" "include/*.inl" )
 
 add_library(hecatonquiros ${SRC_FILES})
 target_compile_features(hecatonquiros PUBLIC cxx_std_11)
-target_include_directories(hecatonquiros PUBLIC ./include)
+target_include_directories(hecatonquiros PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+												$<INSTALL_INTERFACE:include)
 
 target_include_directories(hecatonquiros PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(hecatonquiros LINK_PUBLIC ${OpenCV_LIBS})
