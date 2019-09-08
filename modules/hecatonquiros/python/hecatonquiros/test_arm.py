@@ -15,7 +15,7 @@ data["enable_physics"] = True
 ms = ModelSolverOR(data)
 
 ms.setJoints([0, math.pi/4, math.pi/4, 0])
-# counter = 0
+counter = 0
 # rot = 0
 # rotSpeed = 0.1
 start = time.time()
