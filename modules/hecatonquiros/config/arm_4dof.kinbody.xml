@@ -1,5 +1,5 @@
 <KinBody name ="arm_gripper_4dof">
-    <Body name="arm_0_attachment" type="dynamic">
+    <Body name="arm_0_attachment" type="static" >
         <Geom type="trimesh">
             <render>../model/arm4dof/arm_0_attachment.stl</render>
             <diffuseColor>0.8 0.0 0.0</diffuseColor>

@@ -39,9 +39,24 @@ class ModelSolverOR(ModelSolver):
         if(_data["visualize"]):
             self.orEnv_.SetViewer('qtcoin') # attach viewer (optional)
         
-        success = self.orEnv_.Load(_data["robot_file"]) # load a simple scene
-        if(not success):
+        self.orEnv_.Load("/home/bardo-reborn/programming/hecatonquiros/modules/hecatonquiros/config/empty.env.xml")
+        self.orEnv_.GetViewer().SetCamera(np.array([    [ 0.76120956 ,0.10644552 , 0.63971037, -0.48476961],
+                                                        [ 0.62537234,  0.14063313, -0.76754919 , 0.60650802],
+                                                        [-0.17166664,  0.98432295 , 0.0404832  , 0.14137109],
+                                                        [ 0.         , 0. ,         0. ,         1.        ]] ))
+
+        robot = self.orEnv_.ReadRobotXMLFile(_data["robot_file"]) # load a simple scene
+        if(not robot):
             raise BaseException("Bad arm file")
+        self.orEnv_.Add(robot)
+
+        if(_data["enable_physics"]):
+            with self.orEnv_:
+                self.physics_ = RaveCreatePhysicsEngine(self.orEnv_,'ode')
+                self.orEnv_.SetPhysicsEngine(self.physics_)
+                self.orEnv_.GetPhysicsEngine().SetGravity([0,0,-9.8])
+                self.orEnv_.StopSimulation()
+                self.orEnv_.StartSimulation(timestep=0.001)
 
         with self.orEnv_: # lock the environment since robot will be used
             self.viewer_ = self.orEnv_.GetViewer()
@@ -60,6 +75,7 @@ class ModelSolverOR(ModelSolver):
         if(self.ikModels[_ikType] == None):
             self.ikModels[_ikType] = databases.inversekinematics.InverseKinematicsModel(self.robot_, iktype=_ikType.value)
             if not self.ikModels[_ikType].load():
+                print("Failed to find IK solver for requested type. Creating solver, it might take some time")
                 self.ikModels[_ikType].autogenerate()
 
 
