@@ -7,12 +7,15 @@
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 project(hecatonquiros VERSION 0.4.1 LANGUAGES CXX)
 
+# CONFIG
+set(BUILD_APPS OFF)
+
 # Load macros
 include(cmake/hecatonquiros_macros.cmake)
+include(cmake/install_macro.cmake)
 
+# Compile
 add_subdirectory(modules/hecatonquiros)
-
-add_subdirectory(modules/apps)
 
 add_subdirectory(modules/ros_manip_description)
 
@@ -26,8 +29,11 @@ if(DOXYGEN_FOUND)
 	COMMENT "Generating API documentation with Doxygen" VERBATIM )
 endif(DOXYGEN_FOUND)
 
-### INSTALL TARGET
-include(cmake/install_macro.cmake)
+
+# install 
 
 install_hecatonquiros()
-install_hecatonquiros_apps()
+if(BUILD_APPS)
+	add_subdirectory(modules/apps)
+	install_hecatonquiros_apps()
+endif()

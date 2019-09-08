@@ -25,107 +25,68 @@ from enum import Enum
 from openravepy import *
 
 class IK_TYPE(Enum):
-    IK_3D=3
-    IK_4D=4
-    IK_5D=5
-    IK_6D=6
-    IK_LOOK = 31
+    IK_3D = IkParameterization.Type.Translation3D
+    IK_4D = IkParameterization.Type.TranslationXAxisAngle4D
+    IK_5D = IkParameterization.Type.TranslationDirection5D
+    IK_6D = IkParameterization.Type.Transform6D
+    IK_LOOK = IkParameterization.Type.Lookat3D
     
 class ModelSolver:
 
     def __init__(self, _data):
-        self.orEnv_ = Environment() # create openrave environment
-        if(_data.visualize_):
-            self.orEnv_.SetViewer('qtcoin') # attach viewer (optional)
+        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
         
-        success = self.orEnv_.Load(_data.robotFile_) # load a simple scene
-        if(not success):
-            raise BaseException("Bad arm file")
-
-        with self.orEnv_: # lock the environment since robot will be used
-            self.viewer_ = self.orEnv_.GetViewer()
-            self.viewer_.SetBkgndColor([.8, .85, .9])  # RGB tuple
-
-        self.robot_ = self.orEnv_.GetRobots()[0] # get the first robot
-
-        self.robotManip_ = self.robot_.SetActiveManipulator('manipulator') # Generalize!
-
-        # initialize dict with IK_TYPES.
-        self.ikModels = {}
-        for ik in IK_TYPE:
-            self.ikModels[ik] = None
-
-
-
-    def __checkIkDbs(self, _ikType):
-        if(self.ikModels[_ikType] == None):
-            self.ikModels[_ikType] = databases.inversekinematics.InverseKinematicsModel(self.robot_, iktype=IkParameterization.Type.Translation3D)
-            if not self.ikModels[_ikType].load():
-                self.ikModels[_ikType].autogenerate()
-
-
     ### Set joints of robot
     ### \param _joints: desired joints
     def setJoints(self, _joints):
-        self.robot_.SetDOFValues(_joints, self.robotManip_.GetArmIndices())
-        self.orEnv_.UpdatePublishedBodies()
-    
+        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
+        
     ### Get current joints of robot
     def getJoints(self):
-        return self.robot_.GetDOFValues()
-
+        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
+        
     ### Get transforms of joints
     def jointsTransform(self):
-        T = []
-        for body in self.robot_.GetLinks():
-            T.append(body.GetTransform())
-        return T
-
+        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
+        
     ### Get transforms of specific joint
     def jointTransform(self, _idx):
-        return self.robot_.GetLinks()[_idx].GetTransform()
-
+        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
+        
     ### Check if exists IK for a given pose
     ### \param _pose: desired pose. If 5DoF, the Z axis is used as target direction.
     ### \param _joints: joints for given pose
     ### \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-    def checkIk(self, _pose, _type = IK_TYPE.IK_3D):
+    def checkIk(self, _target, _type = IK_TYPE.IK_3D):
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return False, []
-
+        
     ### Check if exists IK for a given pose
     ### \param _pose: desired pose. If 5DoF, the Z axis is used as target direction.
     ### \param _joints: list of possible solutions joints for given pose
     ### \param _forceOri: if true target pose need to be reachable in position and orientation. If false target orientation can be ignored.
-    def checkIk(self, _pose, _type = IK_TYPE.IK_3D):
+    def checkIks(self, _target, _type = IK_TYPE.IK_3D):
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return False, [[]]
-
+        
     ### End effector pose given joints
     ### \param _joints: joints to test endeffector
     def testFK(self, _joints):
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return np.identity(3) 
-
+        
     ### Get the points of the desired trajectory
     ### \param _pose: desired points that the trajectory must have
     ### \param _traj: list of possible solutions joints for given poses
     ### \param _time: total time of the trajectory
     def getPointsTrajectory(self, _pose):
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return False, [[]], 0.0
-
+        
     ### Get cartesian jacobian
     def jacobian(self):
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return np.array([])
 
     ### Get rotation jacobian in quaternions (X, Y, Z, W)
     def rotationJacobian(self):
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return np.array([])
     
     ### Get rotation jacobian in angle axis (unknown angle order!! WARNING)
     def angularRotationJacobian():
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return np.array([])
