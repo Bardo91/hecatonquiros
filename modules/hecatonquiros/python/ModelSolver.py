@@ -22,33 +22,68 @@
 import numpy as np
 from enum import Enum
 
+from openravepy import *
+
+class IK_TYPE(Enum):
+    IK_3D=3
+    IK_4D=4
+    IK_5D=5
+    IK_6D=6
+    IK_LOOK = 31
+    
 class ModelSolver:
-    class IK_TYPE(Enum):
-        IK_3D=3
-        IK_4D=4
-        IK_5D=5
-        IK_6D=6
-        IK_LOOK = 31
+
+    def __init__(self, _data):
+        self.orEnv_ = Environment() # create openrave environment
+        if(_data.visualize_):
+            self.orEnv_.SetViewer('qtcoin') # attach viewer (optional)
+        
+        success = self.orEnv_.Load(_data.robotFile_) # load a simple scene
+        if(not success):
+            raise BaseException("Bad arm file")
+
+        with self.orEnv_: # lock the environment since robot will be used
+            self.viewer_ = self.orEnv_.GetViewer()
+            self.viewer_.SetBkgndColor([.8, .85, .9])  # RGB tuple
+
+        self.robot_ = self.orEnv_.GetRobots()[0] # get the first robot
+
+        self.robotManip_ = self.robot_.SetActiveManipulator('manipulator') # Generalize!
+
+        # initialize dict with IK_TYPES.
+        self.ikModels = {}
+        for ik in IK_TYPE:
+            self.ikModels[ik] = None
+
+
+
+    def __checkIkDbs(self, _ikType):
+        if(self.ikModels[_ikType] == None):
+            self.ikModels[_ikType] = databases.inversekinematics.InverseKinematicsModel(self.robot_, iktype=IkParameterization.Type.Translation3D)
+            if not self.ikModels[_ikType].load():
+                self.ikModels[_ikType].autogenerate()
+
 
     ### Set joints of robot
     ### \param _joints: desired joints
-    def joints(self, _joints):
-        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
+    def setJoints(self, _joints):
+        self.robot_.SetDOFValues(_joints, self.robotManip_.GetArmIndices())
+        self.orEnv_.UpdatePublishedBodies()
     
     ### Get current joints of robot
-    def joints(self):
-        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return []
+    def getJoints(self):
+        return self.robot_.GetDOFValues()
 
     ### Get transforms of joints
     def jointsTransform(self):
-        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return []
+        T = []
+        for body in self.robot_.GetLinks():
+            T.append(body.GetTransform())
+        return T
 
     ### Get transforms of specific joint
     def jointTransform(self, _idx):
-        raise NotImplementedError( "This ModelSolver does not implements set pose method" )
-        return np.array([])
+        return self.robot_.GetLinks()[_idx].GetTransform()
 
     ### Check if exists IK for a given pose
     ### \param _pose: desired pose. If 5DoF, the Z axis is used as target direction.
