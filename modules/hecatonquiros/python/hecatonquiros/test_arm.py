@@ -14,10 +14,9 @@ data["robot_file"]= "/home/bardo-reborn/programming/hecatonquiros/modules/hecato
 data["enable_physics"] = True
 ms = ModelSolverOR(data)
 
-ms.setJoints([0, math.pi/4, math.pi/4, 0])
 counter = 0
-# rot = 0
-# rotSpeed = 0.1
+rot = 0
+rotSpeed = 0.1
 start = time.time()
 while(True):
     end = time.time()
@@ -31,8 +30,10 @@ while(True):
         body.SetTransform(T)
         counter = counter +1
         start = end
-    # rot = rot+rotSpeed
-    # if rot > math.pi/2 or rot < -math.pi/2:
-    #     rotSpeed*=-1
-    # print(rot)
+    rot = rot+rotSpeed
+    if rot > math.pi/2 or rot < -math.pi/2:
+        rotSpeed*=-1
+
+    ms.setJoints([rot, math.pi/4, math.pi/4, 0])
+
     time.sleep(0.03)

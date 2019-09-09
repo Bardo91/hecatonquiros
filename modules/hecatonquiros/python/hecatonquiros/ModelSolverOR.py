@@ -35,6 +35,7 @@ class IK_TYPE(Enum):
 class ModelSolverOR(ModelSolver):
 
     def __init__(self, _data):
+        self.data_=_data
         self.orEnv_ = Environment() # create openrave environment
         if(_data["visualize"]):
             self.orEnv_.SetViewer('qtcoin') # attach viewer (optional)
@@ -49,12 +50,17 @@ class ModelSolverOR(ModelSolver):
         if(not robot):
             raise BaseException("Bad arm file")
         self.orEnv_.Add(robot)
+        self.robot_ = self.orEnv_.GetRobots()[0] # get the first robot
 
         if(_data["enable_physics"]):
             with self.orEnv_:
                 self.physics_ = RaveCreatePhysicsEngine(self.orEnv_,'ode')
                 self.orEnv_.SetPhysicsEngine(self.physics_)
                 self.orEnv_.GetPhysicsEngine().SetGravity([0,0,-9.8])
+                # Work with ideal controller to prevent it to fall due to gravity
+                self.armController_ = RaveCreateController(self.orEnv_,"idealcontroller")
+                self.robot_.SetController(self.armController_, range(0,self.robot_.GetDOF()), 1)
+                # Restart simulation
                 self.orEnv_.StopSimulation()
                 self.orEnv_.StartSimulation(timestep=0.001)
 
@@ -62,7 +68,6 @@ class ModelSolverOR(ModelSolver):
             self.viewer_ = self.orEnv_.GetViewer()
             self.viewer_.SetBkgndColor([.8, .85, .9])  # RGB tuple
 
-        self.robot_ = self.orEnv_.GetRobots()[0] # get the first robot
 
         self.robotManip_ = self.robot_.SetActiveManipulator('manipulator') # Generalize!
 
@@ -82,7 +87,11 @@ class ModelSolverOR(ModelSolver):
     ### Set joints of robot
     ### \param _joints: desired joints
     def setJoints(self, _joints):
-        self.robot_.SetDOFValues(_joints, self.robotManip_.GetArmIndices())
+        if(self.data_["enable_physics"]):
+            self.armController_.SetDesired(_joints)
+        else:
+            self.robot_.SetDOFValues(_joints, self.robotManip_.GetArmIndices())
+
         self.orEnv_.UpdatePublishedBodies()
     
     ### Get current joints of robot
