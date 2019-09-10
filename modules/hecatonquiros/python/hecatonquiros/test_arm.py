@@ -14,6 +14,8 @@ data["robot_file"]= "/home/bardo-reborn/programming/hecatonquiros/modules/hecato
 data["enable_physics"] = True
 ms = ModelSolverOR(data)
 
+IPython.embed()
+
 counter = 0
 rot = 0
 rotSpeed = 0.1
