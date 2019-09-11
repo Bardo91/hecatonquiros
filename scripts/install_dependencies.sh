@@ -19,7 +19,7 @@ install_git_repo () {
 		
 		mkdir build ; cd build
 		cmake ..
-		make -j4
+		make -j$(nproc)
 		sudo make install 
 		cd ../..
 	fi
@@ -53,17 +53,16 @@ install_git_repo "OpenSceneGraph" "https://github.com/openscenegraph/OpenSceneGr
 ###################################################################
 ###########		INSTALL OPENRAVE		###########
 ###################################################################
-sudo apt-get install cmake g++ git ipython minizip python-dev python-h5py python-numpy python-scipy python-sympy qt4-dev-tools libassimp-dev libavcodec-dev libavformat-dev libavformat-dev libboost-all-dev libboost-date-time-dev libbullet-dev libfaac-dev libglew-dev libgsm1-dev liblapack-dev liblog4cxx-dev libmpfr-dev libode-dev libogg-dev libpcrecpp0v5 libpcre3-dev libqhull-dev libqt4-dev libsoqt-dev-common libsoqt4-dev libswscale-dev libswscale-dev libvorbis-dev libx264-dev libxml2-dev libxvidcore-dev libcairo2-dev libjasper-dev libpoppler-glib-dev libsdl2-dev libtiff5-dev libxrandr-dev libccd-dev
+sudo apt-get install cmake g++ git ipython minizip python-dev python-h5py python-numpy python-scipy python-sympy qt4-dev-tools libassimp-dev libavcodec-dev libavformat-dev libavformat-dev libboost-all-dev libboost-date-time-dev libbullet-dev libfaac-dev libglew-dev libgsm1-dev liblapack-dev liblog4cxx-dev libmpfr-dev libode-dev libogg-dev libpcrecpp0v5 libpcre3-dev libqhull-dev libqt4-dev libsoqt-dev-common libsoqt4-dev libswscale-dev libswscale-dev libvorbis-dev libx264-dev libxml2-dev libxvidcore-dev libcairo2-dev libpoppler-glib-dev libsdl2-dev libtiff5-dev libxrandr-dev libccd-dev
 
 pip install --user sympy==0.7.1.0 
 pip install --user numpy numpy-quaternion numba
 
-git clone https://github.com/rdiankov/openrave.git
+git clone https://github.com/bardo91/openrave.git
 cd openrave
-git checkout 2befaa1b842320633a2a93046ebd456051f16bdc
 mkdir build ; cd build
 cmake ..
-make -j4
+make -j$(nproc)
 sudo make install
 
 
