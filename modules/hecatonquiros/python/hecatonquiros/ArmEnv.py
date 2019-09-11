@@ -24,13 +24,20 @@ class ArmEnv(gym.Env):
         self.targetPosition_ = np.array(_targetPosition)
         self.currentStep = 0
 
-        self.action_space = gym.spaces.Box(	low=np.array([-0.01, -0.01, -0.01, -0.01]), 
-					high=np.array([0.01, 0.01, 0.01, 0.01]), 
-					dtype=np.float16)
+        self.action_space = gym.spaces.Discrete(4)
         self.observation_space = gym.spaces.Box(low=math.pi/2, high=math.pi/2, shape=(4, 1), dtype=np.float16)
 
     def step(self, action):
-        cj = np.squeeze(np.array(self.ms_.getJoints()) + np.array(action))
+        a_val = [0,0,0,0]
+        for i in range(4):
+            if(action[i] == 0):
+                a_val[i] = -0.1
+            if(action[i] == 1):
+                a_val[i] = 0.1
+            if(action[i] == 2):
+                a_val[i] = 0.1
+                
+        cj = np.squeeze(np.array(self.ms_.getJoints())+np.array(a_val))
         self.ms_.setJoints(cj)
         self.ms_.orEnv_.StepSimulation(0.03)
 
@@ -46,20 +53,10 @@ class ArmEnv(gym.Env):
         if(self.currentStep > 500 or distToTarget > 0.3):
             episode_over = True        
         
-        return ob, reward, episode_over
+        return ob, reward, episode_over, ""
 
     def reset(self):
         self.ms_.setJoints([0,0,0,0])
         self.currentStep = 0
-
-
-if __name__ == "__main__":
-    armEnv = ArmEnv([0,-0.1,0.1])
-
-    while(True):
-        action = armEnv.action_space.sample()
-        ob, reward, eo = armEnv.step(action)
-        time.sleep(0.01)
-        if(eo):
-            armEnv.reset()
+        return self.ms_.getJoints()
 
