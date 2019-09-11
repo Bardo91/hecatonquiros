@@ -96,7 +96,7 @@ class ModelSolverOR(ModelSolver):
     
     ### Get current joints of robot
     def getJoints(self):
-        return self.robot_.GetDOFValues()
+        return [x.GetValue(0) for x in self.robot_.GetJoints()] 
 
     ### Get transforms of joints
     def jointsTransform(self):
