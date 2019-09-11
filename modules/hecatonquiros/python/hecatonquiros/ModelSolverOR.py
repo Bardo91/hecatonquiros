@@ -37,6 +37,7 @@ class ModelSolverOR(ModelSolver):
     def __init__(self, _data):
         self.data_=_data
         self.orEnv_ = Environment() # create openrave environment
+        RaveSetDebugLevel(0)
         if(_data["visualize"]):
             self.orEnv_.SetViewer('qtcoin') # attach viewer (optional)
         
