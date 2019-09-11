@@ -8,7 +8,7 @@ import numpy as np
 import time
 import math
 import gym
-
+from gym import spaces
 
 class ArmEnv(gym.Env):
     metadata = {'render.modes': ['robot']}
@@ -23,6 +23,11 @@ class ArmEnv(gym.Env):
 
         self.targetPosition_ = np.array(_targetPosition)
         self.currentStep = 0
+
+        self.action_space = gym.spaces.Box(	low=np.array([-0.01, -0.01, -0.01, -0.01]), 
+					high=np.array([0.01, 0.01, 0.01, 0.01]), 
+					dtype=np.float16)
+        self.observation_space = gym.spaces.Box(low=math.pi/2, high=math.pi/2, shape=(4, 1), dtype=np.float16)
 
     def step(self, action):
         cj = np.squeeze(np.array(self.ms_.getJoints()) + np.array(action))
@@ -49,12 +54,12 @@ class ArmEnv(gym.Env):
 
 
 if __name__ == "__main__":
-    env = ArmEnv([0,-0.1,0.1])
+    armEnv = ArmEnv([0,-0.1,0.1])
 
     while(True):
-        action = (np.random.rand(1,4)*2-1)*0.01
-        ob, reward, eo = env.step(action)
+        action = armEnv.action_space.sample()
+        ob, reward, eo = armEnv.step(action)
         time.sleep(0.01)
         if(eo):
-            env.reset()
+            armEnv.reset()
 
