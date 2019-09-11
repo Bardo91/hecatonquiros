@@ -40,7 +40,7 @@ class ModelSolverOR(ModelSolver):
         if(_data["visualize"]):
             self.orEnv_.SetViewer('qtcoin') # attach viewer (optional)
         
-        self.orEnv_.Load("/home/bardo-reborn/programming/hecatonquiros/modules/hecatonquiros/config/empty.env.xml")
+        self.orEnv_.Load("/home/bardo91/programming/hecatonquiros/modules/hecatonquiros/config/empty.env.xml")
         self.orEnv_.GetViewer().SetCamera(np.array([    [ 0.76120956 ,0.10644552 , 0.63971037, -0.48476961],
                                                         [ 0.62537234,  0.14063313, -0.76754919 , 0.60650802],
                                                         [-0.17166664,  0.98432295 , 0.0404832  , 0.14137109],

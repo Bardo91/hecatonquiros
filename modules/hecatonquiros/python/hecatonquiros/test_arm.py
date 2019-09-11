@@ -10,11 +10,9 @@ import math
 
 data = {}
 data["visualize"] = True
-data["robot_file"]= "/home/bardo-reborn/programming/hecatonquiros/modules/hecatonquiros/config/arm_4dof.robot.xml"
+data["robot_file"]= "/home/bardo91/programming/hecatonquiros/modules/hecatonquiros/config/arm_4dof.robot.xml"
 data["enable_physics"] = True
 ms = ModelSolverOR(data)
-
-IPython.embed()
 
 counter = 0
 rot = 0
@@ -23,7 +21,7 @@ start = time.time()
 while(True):
     end = time.time()
     if(end-start > 1):
-        body = ms.orEnv_.ReadKinBodyXMLFile("/usr/local/share/openrave-0.9/data/lego2.kinbody.xml")
+        body = ms.orEnv_.ReadKinBodyXMLFile("/usr/local/share/openrave-0.15/data/lego2.kinbody.xml")
         body.SetName("body{}".format(counter))
 
         ms.orEnv_.AddKinBody(body,True)
