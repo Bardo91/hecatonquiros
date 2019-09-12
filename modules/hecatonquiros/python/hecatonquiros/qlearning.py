@@ -14,7 +14,7 @@ from rl.memory import SequentialMemory
 from ArmEnv import ArmEnv
 
 # Get the environment and extract the number of actions available in the Cartpole problem
-env = ArmEnv([-0.1, 0.0, 0.1])
+env = ArmEnv([-1.64651804e-01, 0,  1.84651804e-01])
 np.random.seed(123)
 env.seed(123)
 env.reset()
@@ -44,5 +44,4 @@ dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 dqn.fit(env, nb_steps=100000, visualize=True, verbose=2)
 
 dqn.test(env, nb_episodes=5, visualize=True)
-
-IPython.embed()
+model.save_weights("sample_train.hdf5")
