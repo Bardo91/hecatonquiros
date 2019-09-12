@@ -1,56 +1,48 @@
+import numpy as np
 import gym
-import numpy as np # 1. Load Environment and Q-table structure
-from ArmEnv import ArmEnv
-import math
+
 import IPython
-armEnv = ArmEnv([0,0.1,0.1])
-DIV_OBS = 32
-OBS_STEP = math.pi/DIV_OBS
-Q = np.zeros([DIV_OBS,DIV_OBS,DIV_OBS,DIV_OBS,armEnv.action_space.n,armEnv.action_space.n])
 
-def obsToIndex(obs):
-    a = [0,0,0,0]
-    for i in range(4):
-        val = obs[i] + math.pi/2
-        idx = int(val/OBS_STEP)
-        if idx > 31: 
-            idx = 31
-        a[i] = idx
-    return a
-# env.obeservation.n, env.action_space.n gives number of states and action in env loaded# 2. Parameters of Q-leanring
-eta = .628
-gma = .9
-epis = 5000
-rev_list = [] # rewards per episode calculate
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Flatten
+from keras.optimizers import Adam
 
-# 3. Q-learning Algorithmfor i in range(epis):
-for i in range(epis):
-    # Reset environment
-    s = armEnv.reset()
-    rAll = 0
-    d = False
-    j = 0
-    #The Q-Table learning algorithm
-    while not d:
-        j+=1
-        # Choose action from Q table
-        idxS = obsToIndex(s)
-        # IPython.embed()
-        action_table =  Q[idxS[0], idxS[1], idxS[2], idxS[3],:,:] +  np.array([np.random.randn(1,armEnv.action_space.n)*(1./(i+1)) for i in range(4)]).reshape(4,4)
+from rl.agents.dqn import DQNAgent
+from rl.policy import EpsGreedyQPolicy
+from rl.memory import SequentialMemory
 
-        a = np.argmin(action_table, axis=0)
-        #Get new state & reward from environment
-        s1,r,d,_ = armEnv.step(a)
-        #Update Q-Table with new knowledge
-        idxS1 = obsToIndex(s1)
-        Q[idxS[0], idxS[1], idxS[2], idxS[3],a] = Q[idxS[0], idxS[1], idxS[2], idxS[3],a] + eta*(r + gma*np.max(Q[idxS1[0], idxS1[1], idxS1[2], idxS1[3],:]) - Q[idxS[0], idxS[1], idxS[2], idxS[3],a])
-        rAll += r
-        s = s1
-        if d == True:
-            break
-    print(rAll)
-    rev_list.append(rAll)
+from ArmEnv import ArmEnv
 
-print "Reward Sum on all episodes " + str(sum(rev_list)/epis)
-print "Final Values Q-Table"
-print Q
+# Get the environment and extract the number of actions available in the Cartpole problem
+env = ArmEnv([-0.1, 0.0, 0.1])
+np.random.seed(123)
+env.seed(123)
+env.reset()
+nb_actions = env.action_space.n
+
+model = Sequential()
+model.add(Flatten(input_shape=(1,) + env.observation_space.shape))
+model.add(Dense(16, kernel_initializer='glorot_uniform', bias_initializer='zeros'))
+model.add(Activation('relu'))
+model.add(Dense(32, kernel_initializer='glorot_uniform', bias_initializer='zeros'))
+model.add(Activation('relu'))
+model.add(Dense(64, kernel_initializer='glorot_uniform', bias_initializer='zeros'))
+model.add(Activation('relu'))
+model.add(Dense(128, kernel_initializer='glorot_uniform', bias_initializer='zeros'))
+model.add(Activation('relu'))
+model.add(Dense(128, kernel_initializer='glorot_uniform', bias_initializer='zeros'))
+model.add(Activation('relu'))
+model.add(Dense(nb_actions))
+model.add(Activation('linear'))
+print(model.summary())
+
+policy = EpsGreedyQPolicy()
+memory = SequentialMemory(limit=50000, window_length=1)
+dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10, target_model_update=1e-2, policy=policy)
+dqn.compile(Adam(lr=1e-3), metrics=['mae'])
+# Okay, now it's time to learn something! We visualize the training here for show, but this slows down training quite a lot. 
+dqn.fit(env, nb_steps=100000, visualize=True, verbose=2)
+
+dqn.test(env, nb_episodes=5, visualize=True)
+
+IPython.embed()
