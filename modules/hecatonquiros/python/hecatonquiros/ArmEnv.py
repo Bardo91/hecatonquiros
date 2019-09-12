@@ -37,11 +37,11 @@ class ArmEnv(gym.Env):
         a_val = [0.0,0.0,0.0,0.0]
         for i in range(len(action_list)):
             if(action_list[i] == 0):
-                a_val[i] = -0.1
+                a_val[i] = -0.05
             if(action_list[i] == 1):
                 a_val[i] = 0
             if(action_list[i] == 2):
-                a_val[i] = 0.1
+                a_val[i] = 0.05
 
 
         cj = np.squeeze(np.array(self.ms_.getJoints())+np.array(a_val))
@@ -54,7 +54,7 @@ class ArmEnv(gym.Env):
         reward = -1
         self.currentStep +=1
 
-        ob = self.ms_.getJoints()
+        ob = self.observe()
         
         episode_over = False
         if(self.currentStep > 500 or distToTarget > 0.3):
@@ -69,7 +69,10 @@ class ArmEnv(gym.Env):
         rs = [0,0,0,0] #np.random.random([4,1])*0.02 - 0.01
         self.ms_.setJoints(rs)
         self.currentStep = 0
-        return self.ms_.getJoints()
+        return self.observe()
+
+    def observe(self):
+        return np.array(self.ms_.getJoints()).reshape(4,)
 
     def seed(self, _seed):
         self.seed_ = _seed
