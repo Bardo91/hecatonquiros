@@ -77,6 +77,8 @@ class ModelSolverOR(ModelSolver):
         for ik in IK_TYPE:
             self.ikModels[ik] = None
 
+        self.handles_ = []
+
     def __checkIkDbs(self, _ikType):
         if(self.ikModels[_ikType] == None):
             self.ikModels[_ikType] = databases.inversekinematics.InverseKinematicsModel(self.robot_, iktype=_ikType.value)
@@ -158,3 +160,12 @@ class ModelSolverOR(ModelSolver):
     def angularRotationJacobian():
         raise NotImplementedError( "This ModelSolver does not implements set pose method" )
         return np.array([])
+
+    def drawPoint(self, _point, _color = (1,0,0), _pointSize = 15):
+        self.handles_.append(self.orEnv_.plot3( points=np.array(_point),
+                                                pointsize=_pointSize,
+                                                colors=np.array(_color)))
+        return len(self.handles_)-1
+
+    def removeElement(self, _idx):
+        del self.handles_[_idx]
