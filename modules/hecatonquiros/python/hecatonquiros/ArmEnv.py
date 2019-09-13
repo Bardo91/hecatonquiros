@@ -30,7 +30,10 @@ class ArmEnv(gym.Env):
         self.completeActionSpace_ = [p for p in itertools.product(self.possibleActions_, repeat=4)]
 
         self.action_space = gym.spaces.Discrete(len(self.completeActionSpace_))
-        self.observation_space = gym.spaces.Box(low=math.pi/2, high=math.pi/2, shape=(4,), dtype=np.float16)
+        # self.observation_space = gym.spaces.Box(low=math.pi/2, high=math.pi/2, shape=(4,), dtype=np.float16)
+        self.observation_space = gym.spaces.Box(low=np.array([-math.pi/2, -math.pi/2, -math.pi/2, -math.pi/2, -0.2, -0.2, 0.05]), 
+                                                high=np.array([math.pi/2, math.pi/2, math.pi/2, math.pi/2, 0.2, 0.2, 0.2]), dtype=np.float32)
+        self.targetPosition_ = self.observation_space.sample()[4:7]
 
     def step(self, action):
         action_list = self.completeActionSpace_[action]
@@ -65,14 +68,27 @@ class ArmEnv(gym.Env):
         
         return ob, reward, episode_over, {}
 
+    def setTarget(self, _target):
+        self.targetPosition_ = _target
+        if len(self.ms_.handles_) > 0:
+            self.ms_.removeElement(0)
+        self.ms_.drawPoint(self.targetPosition_)
+
     def reset(self):
+        if len(self.ms_.handles_) > 0:
+            self.ms_.removeElement(0)
+
         rs = [0,0,0,0] #np.random.random([4,1])*0.02 - 0.01
         self.ms_.setJoints(rs)
         self.currentStep = 0
+        self.targetPosition_ = self.observation_space.sample()[4:7]
+        self.ms_.drawPoint(self.targetPosition_)
         return self.observe()
 
     def observe(self):
-        return np.array(self.ms_.getJoints()).reshape(4,)
+        ob = np.array(self.ms_.getJoints()).reshape(4,)
+        ob = np.append(ob, self.targetPosition_)
+        return ob
 
     def seed(self, _seed):
         self.seed_ = _seed

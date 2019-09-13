@@ -39,17 +39,21 @@ model.add(Activation('linear'))
 print(model.summary())
 model.load_weights(sys.argv[1])
 
-raw_input("Press Enter to start...")
-
-env.reset()
-ob = env.observe()
-for i in range(20):
-    ob = ob.reshape(1,1,4)
-    action = model.predict(ob)
-    a = np.argmax(action)
-    ob, rew, op, _ = env.step(a)
-    print(env.ms_.jointsTransform()[-1][0:3,3])
-    time.sleep(0.03)
 
 while True:
-    time.sleep(0.03)
+    print("Enter coordinates: ")
+    x = float(raw_input("x: "))
+    y = float(raw_input("y: "))
+    z = float(raw_input("x: "))
+    raw_input("Press Enter to start...")
+
+    env.reset()
+    env.setTarget(np.array([x,y,z]))
+    ob = env.observe()
+    for i in range(50):
+        ob = ob.reshape(1,1,7)
+        action = model.predict(ob)
+        a = np.argmax(action)
+        ob, rew, op, _ = env.step(a)
+        print(env.ms_.jointsTransform()[-1][0:3,3])
+        time.sleep(0.03)
