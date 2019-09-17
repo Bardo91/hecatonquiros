@@ -55,8 +55,8 @@ class ArmEnv(gym.Env):
         
         episode_over = False
         if(self.currentStep > 1000 or distToTarget < 0.01):
-            if(distToTarget > 0.1):
-                reward -= 100 # staying far gives a negative reward
+            # if(distToTarget > 0.1):
+            #     reward -= 100 # staying far gives a negative reward
             episode_over = True   
 
         if(distToTarget < 0.01):
