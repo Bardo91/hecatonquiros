@@ -9,7 +9,7 @@ import numpy as np
 from ArmEnv import ArmEnv
 
 # Create the environment
-env = ArmEnv([-0.2,0,0.2])
+env = ArmEnv([-0.2,0,0.2], _fixTarget = True)
 #np.random.seed(123)
 #env.seed(123)
 env.reset()
@@ -19,7 +19,7 @@ env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environm
 model = PPO2(MlpPolicy, env, verbose=1, tensorboard_log="./ppo_bipedal_tensorboard/")
 
 # Train the agent
-model.learn(total_timesteps=1000000)
+model.learn(total_timesteps=100000)
 
 while True:
     input("Press key to see what happens")

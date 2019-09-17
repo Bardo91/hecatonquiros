@@ -14,7 +14,8 @@ import itertools
 class ArmEnv(gym.Env):
     metadata = {'render.modes': ['robot']}
 
-    def __init__(self, _targetPosition):
+    def __init__(self, _targetPosition, _fixTarget = False):
+        self.fixTarget_ = _fixTarget
         self.data_ = {}
         self.data_["visualize"] = True
         self.data_["robot_file"]= "/home/bardo91/programming/hecatonquiros/modules/hecatonquiros/config/arm_4dof.robot.xml"
@@ -73,7 +74,8 @@ class ArmEnv(gym.Env):
         if len(self.ms_.handles_) > 0:
             self.ms_.removeElement(0)
 
-        self.targetPosition_ = self.__computeRandomValidTarget()
+        if not self.fixTarget_:
+            self.targetPosition_ = self.__computeRandomValidTarget()
         rs = np.array([[0],[0],[0],[0]]) + np.random.random([4,1])*0.02 - 0.01
         self.ms_.setJoints(rs)
         self.currentStep = 0
