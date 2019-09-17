@@ -1,10 +1,6 @@
 ![Logo](hecatonquiros.jpeg)
 
-[![Releases](https://img.shields.io/github/release/bardo91/hecatonquiros.svg)](https://github.com/bardo91/hecatonquiros/releases)
-
-[![Issues](https://img.shields.io/github/issues/bardo91/hecatonquiros.svg)](https://github.com/bardo91/hecatonquiros/issues)
-
-[![Stars](https://img.shields.io/github/stars/bardo91/hecatonquiros.svg)](https://github.com/bardo91/hecatonquiros/stars)
+[![Releases](https://img.shields.io/github/release/bardo91/hecatonquiros.svg)](https://github.com/bardo91/hecatonquiros/releases)  [![Issues](https://img.shields.io/github/issues/bardo91/hecatonquiros.svg)](https://github.com/bardo91/hecatonquiros/issues)  [![Stars](https://img.shields.io/github/stars/bardo91/hecatonquiros.svg)](https://github.com/bardo91/hecatonquiros/stars)
 
 
 [WIKI](https://github.com/ViGUS/hecatonquiros/wiki)
