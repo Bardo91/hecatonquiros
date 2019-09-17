@@ -25,6 +25,8 @@ from enum import Enum
 from openravepy import *
 from ModelSolver import ModelSolver
 
+import IPython
+
 class IK_TYPE(Enum):
     IK_3D = IkParameterization.Type.Translation3D
     IK_4D = IkParameterization.Type.TranslationXAxisAngle4D
@@ -93,7 +95,7 @@ class ModelSolverOR(ModelSolver):
         if(self.data_["enable_physics"]):
             self.armController_.SetDesired(_joints)
         else:
-            self.robot_.SetDOFValues(_joints, self.robotManip_.GetArmIndices())
+            self.robot_.SetJointValues(_joints)
 
         self.orEnv_.UpdatePublishedBodies()
     

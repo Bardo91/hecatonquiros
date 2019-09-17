@@ -22,13 +22,13 @@ while(True):
     end = time.time()
     if(end-start > 1):
         body = ms.orEnv_.ReadKinBodyXMLFile("/usr/local/share/openrave-0.15/data/lego2.kinbody.xml")
-        body.SetName("body{}".format(counter))
+        #body.SetName("body{}".format(counter))
 
-        ms.orEnv_.AddKinBody(body,True)
-        T = np.eye(4)
-        T[0:3,3] = np.array((-0.15,0,1))
-        body.SetTransform(T)
-        counter = counter +1
+        # ms.orEnv_.AddKinBody(body,True)
+        # T = np.eye(4)
+        # T[0:3,3] = np.array((-0.15,0,1))
+        # body.SetTransform(T)
+        # counter = counter +1
         start = end
     rot = rot+rotSpeed
     if rot > math.pi/2 or rot < -math.pi/2:
