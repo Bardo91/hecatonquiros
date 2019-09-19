@@ -110,6 +110,9 @@ class ModelSolverOR(ModelSolver):
             T.append(body.GetTransform())
         return T
 
+    def endEffectorPosition(self):
+        return self.jointsTransform()[-1][0:3,3]
+
     ### Get transforms of specific joint
     def jointTransform(self, _idx):
         return self.robot_.GetLinks()[_idx].GetTransform()
