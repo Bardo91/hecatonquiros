@@ -14,7 +14,7 @@ import itertools
 class ArmEnv(gym.Env):
     metadata = {'render.modes': ['robot']}
 
-    def __init__(self, _targetPosition, _fixTarget = False):
+    def __init__(self, _targetPosition = [-0.2,0,0.2] , _fixTarget = False):
         self.fixTarget_ = _fixTarget
         self.data_ = {}
         self.data_["visualize"] = True
@@ -27,9 +27,6 @@ class ArmEnv(gym.Env):
         self.currentStep = 0
 
         self.seed_ = 0
-        self.possibleActions_ = [0,1, 2, 3]
-        self.completeActionSpace_ = [p for p in itertools.product(self.possibleActions_, repeat=4)]
-
         self.action_space = gym.spaces.Box( np.array([-0.01, -0.01, -0.01, -0.01]), 
                                             np.array([0.01, 0.01, 0.01, 0.01]), dtype=np.float32)
                                             
@@ -45,18 +42,22 @@ class ArmEnv(gym.Env):
         self.ms_.setJoints(cj)
         self.ms_.orEnv_.StepSimulation(0.03)
 
-        distToTarget = np.linalg.norm(    self.targetPosition_ - 
-                                    self.ms_.jointsTransform()[-1][0:3,3])
+        distToTarget = np.linalg.norm(    self.targetPosition_ -  self.ms_.endEffectorPosition())
 
-        reward = distToTargetInit - distToTarget # Getting closer gives positive reward
+        reward = 0
+        if distToTargetInit - distToTarget > 0:
+            reward = 1
+        else:
+            reward = -1
         self.currentStep +=1
 
         ob = self.observe()
         
         episode_over = False
-        if(self.currentStep > 1000 or distToTarget < 0.01):
-            # if(distToTarget > 0.1):
-            #     reward -= 100 # staying far gives a negative reward
+        if(self.currentStep > 2000 or distToTarget < 0.05):
+            if(distToTarget > 0.1):
+                reward -= 100 # staying far gives a negative reward
+            reward -= self.currentStep
             episode_over = True   
 
         if(distToTarget < 0.01):
@@ -76,7 +77,9 @@ class ArmEnv(gym.Env):
 
         if not self.fixTarget_:
             self.targetPosition_ = self.__computeRandomValidTarget()
+        
         rs = np.array([[0],[0],[0],[0]]) + np.random.random([4,1])*0.02 - 0.01
+
         self.ms_.setJoints(rs)
         self.currentStep = 0
         self.ms_.drawPoint(self.targetPosition_)
@@ -86,7 +89,6 @@ class ArmEnv(gym.Env):
         j = self.observation_space.sample().tolist()
         self.ms_.setJoints(j[0:4])
         return self.ms_.jointsTransform()[-1][0:3,3]
-
 
     def observe(self):
         ob = np.array(self.ms_.getJoints()).reshape(4,)
